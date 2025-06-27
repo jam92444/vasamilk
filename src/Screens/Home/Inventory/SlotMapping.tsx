@@ -5,6 +5,8 @@ import { getSlotMapping } from "../../../Services/ApiService";
 import { userToken } from "../../../Utils/Data";
 import CustomModal from "../../../Modal/CustomModal";
 import { useNavigate } from "react-router-dom";
+import InventoryLogFilter from "../../../Components/Inventory/InventoryLogFilter";
+import dayjs from "dayjs";
 
 const { Title } = Typography;
 
@@ -31,6 +33,13 @@ interface SlotLog {
 
 const SlotMapping = () => {
   const navigate = useNavigate();
+  const [filters, setFilters] = useState({
+    fromDate: dayjs().format("YYYY-MM-DD"),
+    toDate: dayjs().format("YYYY-MM-DD"),
+    customerId: null,
+    distributorId: null,
+  });
+
   const [slotsLog, setSlotsLog] = useState<SlotLog[]>([]);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
@@ -41,11 +50,22 @@ const SlotMapping = () => {
   const [selectedSlot, setSelectedSlot] = useState<SlotLog | null>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
-  const handleGetSlot = async (page = 1, pageSize = 10) => {
+  const handleGetSlot = async (
+    page = 1,
+    pageSize = 10,
+    overrideFilters = filters
+  ) => {
     setLoading(true);
     try {
       const formData = new FormData();
       formData.append("token", userToken);
+      formData.append("from_date", overrideFilters.fromDate);
+      formData.append("to_date", overrideFilters.toDate);
+
+      if (overrideFilters.customerId)
+        formData.append("customer_id", overrideFilters.customerId);
+      if (overrideFilters.distributorId)
+        formData.append("distributor_id", overrideFilters.distributorId);
 
       const res = await getSlotMapping(page, pageSize, formData);
       if (res.data.status) {
@@ -159,6 +179,12 @@ const SlotMapping = () => {
           Back
         </Button>
       </div>
+      <InventoryLogFilter
+        onFilter={(newFilters) => {
+          setFilters(newFilters);
+          handleGetSlot(1, pagination.pageSize!, newFilters);
+        }}
+      />
 
       <Table
         dataSource={slotsLog}
@@ -171,7 +197,7 @@ const SlotMapping = () => {
         size="small"
         onChange={(pagination) => {
           setPagination(pagination);
-          handleGetSlot(pagination.current!, pagination.pageSize!);
+          handleGetSlot(pagination.current!, pagination.pageSize!, filters);
         }}
       />
 

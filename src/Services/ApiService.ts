@@ -145,3 +145,14 @@ export const getDistributorList = (payload: any) => {
     payload
   );
 };
+
+//  (drop down) - Customer  drop down
+export const getCustomer = (payload: any) => {
+  return axiosInstance.post("/milk-api/drop-down/customer-drop-down", payload);
+};
+export const getDistributor = (payload: any) => {
+  return axiosInstance.post(
+    "/milk-api/drop-down/distributer-drop-down",
+    payload
+  );
+};

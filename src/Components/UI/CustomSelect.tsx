@@ -7,18 +7,20 @@ export interface Option {
   value?: string | number;
   disabled?: boolean;
 }
+
 interface Props {
   label: string;
   name: string;
-  value: string | number | string[];
+  value: string | number | string[] | number[]; // ✅ Updated line
   options: Option[];
-  onChange: (value: string | number | string[]) => void;
+  onChange: (value: string | number | string[] | number[]) => void; // ✅ Also update onChange
   onBlur?: (e: React.FocusEvent<HTMLElement>) => void;
   error?: string | undefined | false;
   touched?: boolean;
   mode?: "multiple" | "tags";
   required?: boolean;
-  placeholder?: string; // <-- Add this line
+  placeholder?: string;
+  className?: string; // Optional, if you're passing className
 }
 
 const CustomSelect: React.FC<Props> = ({
@@ -30,6 +32,7 @@ const CustomSelect: React.FC<Props> = ({
   error,
   touched,
   required,
+  className,
   mode,
   placeholder, // destructure here
 }) => {
@@ -55,6 +58,13 @@ const CustomSelect: React.FC<Props> = ({
         onChange={onChange}
         mode={mode}
         onBlur={onBlur}
+        showSearch
+        optionFilterProp="label"
+        filterOption={(input, option) =>
+          (option?.label?.toString().toLowerCase() ?? "").includes(
+            input.toLowerCase()
+          )
+        }
         options={enhancedOptions}
         placeholder={placeholder}
         className="custom-select"

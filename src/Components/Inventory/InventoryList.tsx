@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import InventoryEditModal from "../../Modal/InventoryEditModal";
 import InventoryAddModal from "../../Modal/InventoryAddModal";
 import { useNavigate } from "react-router-dom";
+// import InventoryListAddModal from "../../Screens/Home/Inventory/InventoryListAddModal";
 
 const InventoryList = () => {
   const navigate = useNavigate();
@@ -30,6 +31,8 @@ const InventoryList = () => {
   const [canUpdateInventory, setCanUpdateInventory] = useState(true);
   // add inventory model
   const [addModalVisible, setAddModalVisible] = useState(false);
+  // add inventory List model
+  // const [addListModalVisible, setAddListModalVisible] = useState(false);
   // loading
   const [loading, setLoading] = useState(false);
 
@@ -118,36 +121,6 @@ const InventoryList = () => {
     }
     setAddModalVisible(false);
   };
-  // // add inventory List
-  // const handleAddInventoryList = (values: any) => {
-  //   if (values.status === 2) {
-  //     toast.info("Inventory updates are currently disabled.");
-  //     return;
-  //   }
-  //   const token = getDecryptedCookie("user_token").token;
-  //   const formData = new FormData();
-  //   formData.append("token", token);
-  //   formData.append("total_quantity", values.total_quantity);
-  //   formData.append("inventory_id", values.id);
-  //   {
-  //     values.comment && formData.append("comment", values.comment);
-  //   }
-
-  //   try {
-  //     updateInventory(formData).then((res) => {
-  //       if (res.data.status === 1) {
-  //         console.log(res.data);
-  //         toast.success(res.data.msg);
-  //       } else {
-  //         toast.info(res.data.msg);
-  //       }
-  //     });
-  //     console.log(values);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  //   setAddModalVisible(false);
-  // };
 
   const formatValue = (value: any) => {
     return value !== null && value !== undefined && value !== "" ? value : "-";
@@ -242,8 +215,10 @@ const InventoryList = () => {
           {/* {record.status === 1 && canUpdateInventory && (
             <Button
               size="small"
-              type="primary"
-              onClick={() => handleAddInventoryList(record)}
+              onClick={() => {
+                setEditRecord(record); // prefill for add
+                setAddListModalVisible(true);
+              }}
             >
               Add
             </Button>
@@ -335,6 +310,16 @@ const InventoryList = () => {
           onClose={() => setAddModalVisible(false)}
           onSave={handleSaveAdd}
         />
+
+        {/* <InventoryListAddModal
+          visible={addListModalVisible}
+          record={editRecord} // Pass record here
+          onClose={() => {
+            setAddListModalVisible(false);
+            setEditRecord(null);
+          }}
+          onSave={handleSaveAdd}
+        />*/}
       </Spin>
     </div>
   );

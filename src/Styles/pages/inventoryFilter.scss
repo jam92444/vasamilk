@@ -1,0 +1,22 @@
+@use "../abstracts/index.scss" as *;
+
+.inventory-filter {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  gap: 0.5rem;
+  width: 100%;
+  .range {
+    font-family: $font-poppins;
+    margin-top: 0.5rem;
+    font-size: 14px;
+    p {
+      font-weight: $font-bold;
+    }
+  }
+  .custom-select {
+    font-size: $text-xs;
+    width: 200px;
+  }
+}
