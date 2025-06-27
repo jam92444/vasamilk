@@ -1,0 +1,27 @@
+@use "../abstracts/index.scss" as *;
+
+.inventory-graph {
+  padding: 1rem;
+  margin-top: 1.5rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  border-radius: 10px;
+}
+.inventory {
+  padding: 2rem 1.3rem;
+
+  h2 {
+    margin-bottom: 1.5rem;
+    word-wrap: break-word;
+  }
+}
+
+@media (max-width: "500px") {
+  .inventory {
+    padding: 0.5rem;
+
+    h2 {
+      margin-bottom: 1.5rem;
+      word-wrap: break-word;
+    }
+  }
+}

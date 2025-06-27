@@ -1,0 +1,31 @@
+@use "../abstracts/index.scss" as *;
+
+.customer {
+  font-family: $font-poppins;
+  .customer-title {
+    .title {
+      font-size: $text-xl;
+      text-transform: uppercase;
+    }
+    padding: 0 0.5rem;
+    @include flex();
+    font-size: $text-sm;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+
+    //   padding: 0 2rem;
+  }
+  .filter {
+    margin-bottom: 1rem;
+  }
+
+  .add-btn {
+    //   background-color: ;
+    font-family: $font-poppins;
+    background-color: $bg-blue;
+    color: $text-white;
+    font-size: $text-xs;
+    font-weight: $font-medium;
+    padding: 6px 1rem;
+  }
+}

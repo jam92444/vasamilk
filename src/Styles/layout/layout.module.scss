@@ -1,0 +1,48 @@
+@use "../abstracts/index.scss" as *;
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background: $glass-white-bg;
+  color: $text-primary;
+
+  .sidebar {
+    width: 250px;
+    background-color: $btn-secondary-bg;
+    color: $btn-secondary-text;
+    padding: 1rem;
+    position: relative;
+    z-index: 10;
+
+    @media (max-width: 768px) {
+      position: fixed;
+      width: 200px;
+      height: 100%;
+      left: -200px;
+      transition: left 0.3s ease-in-out;
+      &.open {
+        left: 0;
+      }
+    }
+  }
+
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .header {
+      background-color: $btn-primary-bg;
+      padding: 1rem;
+      font-size: $text-lg;
+      font-weight: $btn-font-weight-bold;
+      color: $btn-primary-text;
+    }
+
+    .content {
+      flex: 1;
+      padding: 1rem;
+      min-height: 90vh;
+      background: $btn-neutral-bg;
+    }
+  }
+}

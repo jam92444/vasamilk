@@ -1,0 +1,194 @@
+@use "./abstracts/index.scss" as *;
+@use "./base/reset";
+@use "./abstracts/font" as *;
+
+body {
+  font-family: $font-poppins;
+  overflow: hidden; // ✅ Disable body scroll
+  height: 100vh; // Important for full layout height
+  margin: 0 auto;
+}
+
+:root {
+  --primary-color: #1e88e5;
+  --secondary-color: #0d47a1;
+  --background-color: #f5f7fa;
+  --header-bg: #ffffff;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --menu-bg: #0d47a1;
+  --menu-selected-bg: #1565c0;
+  --menu-text: #ffffff;
+  --border-radius: 8px;
+}
+
+.ant-pagination-options .ant-select-selector {
+  cursor: pointer !important;
+}
+
+.main-layout {
+  height: 100vh;
+  display: flex;
+  background-color: var(--background-color);
+  font-family: $font-poppins;
+  overflow-x: hidden;
+
+  & > .ant-layout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-color);
+  }
+
+  &__sider {
+    background-color: var(--menu-bg) !important;
+    font-family: $font-poppins;
+
+    .ant-menu-item {
+      color: var(--menu-text);
+    }
+
+    .ant-menu-item-selected {
+      background-color: var(--menu-selected-bg) !important;
+      color: var(--menu-text) !important;
+    }
+
+    .ant-menu-item:hover {
+      background-color: lighten(#0d47a1, 5%) !important;
+    }
+  }
+
+  &__logo {
+    color: var(--menu-text);
+    font-size: 20px;
+    font-family: $font-poppins;
+    font-weight: 600;
+    user-select: none;
+    overflow-x: hidden;
+    padding: 16px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &__header {
+    background-color: var(--header-bg);
+    padding: 16px 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    user-select: none;
+  }
+
+  &__title {
+    font-size: 20px;
+    font-family: $font-poppins;
+    user-select: none;
+    color: var(--text-primary);
+    margin: 0;
+    font-weight: 600;
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    overflow-y: scroll;
+    background-color: var(--background-color);
+  }
+
+  @media (max-width: "500px") {
+    &__content {
+      padding: 0;
+    }
+  }
+  // Scrollbar styling
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(219, 14, 14, 0.15);
+    border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: $bg-darkBlue;
+  }
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) transparent;
+  &__content-container {
+    flex: 1;
+    padding: 16px;
+    background-color: white;
+    color: var(--text-primary);
+  }
+}
+.main-layout__menu {
+  background-color: var(--menu-bg) !important;
+
+  .ant-menu-item {
+    color: var(--menu-text) !important;
+    background-color: var(--menu-bg) !important;
+    border-radius: var(--border-radius);
+    margin: 0 8px;
+    margin-bottom: 0.3rem;
+    &:hover {
+      background-color: lighten(#0d47a1, 5%) !important;
+    }
+  }
+
+  .ant-menu-item-selected {
+    background-color: var(--menu-selected-bg) !important;
+    color: var(--menu-text) !important;
+  }
+
+  .ant-menu-item-icon {
+    color: var(--menu-text) !important;
+  }
+
+  .ant-menu-title-content {
+    color: var(--menu-text) !important;
+  }
+}
+
+.title {
+  font-size: $text-2xl;
+  font-family: $font-poppins;
+  font-weight: 700;
+}
+.custom-input-field.input-error {
+  border-color: #ff4d4f !important; // AntD error red
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+}
+
+.error-text {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.hint-text {
+  font-size: $text-xs;
+  margin-top: -1rem;
+}
+
+.required {
+  color: red;
+}
+.line-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px; // ensures vertical space for centering
+  width: 100%;
+
+  .ant-spin-dot-item {
+    background-color: var(--primary-color); // your theme color
+  }
+}
+.ant-btn {
+  padding: 4px !important;
+}
+.ant-table-cell {
+  font-family: $font-poppins !important;
+}

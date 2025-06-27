@@ -1,0 +1,31 @@
+@use "../../abstracts/index.scss" as *;
+
+.inventory-list-container {
+  margin: 2rem 0;
+  padding: 1rem 0;
+  font-size: 13px;
+}
+
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.compact-table .ant-table-cell {
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+.circular-page-btn {
+  border-radius: 50%;
+  padding: 4px 10px;
+  font-size: 13px;
+  border: none;
+  background: #f0f0f0;
+  cursor: pointer;
+}
+
+.circular-page-btn:hover {
+  background: #d6e4ff;
+}

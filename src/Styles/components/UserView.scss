@@ -1,0 +1,23 @@
+@use "../abstracts/index.scss" as *;
+
+.user-view {
+  padding: 1rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+  margin: 0 auto;
+  font-family: $font-poppins;
+  ul {
+    list-style: none;
+    padding: 0;
+    font-size: $text-xs;
+    li {
+      margin-bottom: 0.5rem;
+
+      strong {
+        display: inline-block;
+        width: 120px;
+        color: #333;
+      }
+    }
+  }
+}

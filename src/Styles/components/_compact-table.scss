@@ -1,0 +1,35 @@
+@use "../abstracts/index.scss" as *;
+
+.compact-table {
+  font-size: $text-xs;
+  font-family: $font-poppins !important;
+  .ant-table-cell {
+    padding: 6px 12px !important;
+  }
+
+  .ant-btn {
+    padding: 2px 4px !important;
+    font-size: 12px;
+  }
+
+  .ant-tag {
+    font-size: 12px;
+    padding: 2px 6px;
+  }
+}
+
+// // Custom pagination circle buttons
+.circular-page-btn {
+  background-color: white;
+  border-radius: 50%;
+  color: var(--primary-color);
+  font-size: $text-xs;
+
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+// .ant-pagination-item-active > .circular-page-btn {
+//   background-color: var(--primary-color);
+//   color: white;
+// }

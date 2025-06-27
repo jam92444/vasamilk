@@ -1,0 +1,21 @@
+.milk-required-report {
+  margin-top: 2rem;
+  width: 100%;
+  .ant-card {
+    background-color: #ffffff;
+  }
+
+  .ant-table-thead > tr > th {
+    background-color: #f9fafb;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .ant-table-tbody > tr > td {
+    text-align: center;
+  }
+
+  .ant-typography {
+    color: #333;
+  }
+}

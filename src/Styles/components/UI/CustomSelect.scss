@@ -1,0 +1,47 @@
+@use "../../abstracts/index.scss" as *;
+
+.custom-select-wrapper {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-weight: $font-medium;
+    margin-bottom: 6px;
+    font-size: $text-sm;
+    color: #333;
+  }
+
+  .custom-select {
+    width: 100%;
+    font-size: $text-sm;
+    .ant-select-selector {
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      font-size: $text-sm;
+      border: 1px solid #ccc;
+      transition: all 0.3s;
+
+      &:hover {
+        border-color: #4096ff;
+      }
+    }
+
+    &.ant-select-focused .ant-select-selector {
+      border-color: #4096ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+  }
+
+  .error-text {
+    margin-top: 4px;
+    color: #ff4d4f;
+    font-size: $text-xs;
+  }
+
+  &.has-error {
+    .custom-select .ant-select-selector {
+      border-color: #ff4d4f !important;
+    }
+  }
+}

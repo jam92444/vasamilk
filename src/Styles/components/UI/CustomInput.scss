@@ -1,0 +1,39 @@
+@use "../../abstracts/index.scss" as *;
+
+.custom-input-wrapper {
+  width: 100%;
+  font-family: $font-poppins;
+  .custom-input-label {
+    display: block;
+    border-radius: 0;
+    margin-bottom: 0.5rem;
+    font-weight: $font-medium;
+    font-size: $text-xs;
+    color: $btn-primary-text;
+  }
+
+  .custom-input-field {
+    width: 100%;
+    padding: 4px 11px;
+    border: 1px solid #ccc;
+    font-size: $text-sm;
+    transition: border-color 0.3s ease;
+
+    &:focus {
+      border-color: $btn-secondary-bg;
+      outline: none;
+    }
+  }
+
+  // 👇 Error border
+  &.input-error .custom-input-field {
+    border-color: red;
+  }
+
+  // 👇 Error message
+  .error-text {
+    color: red;
+    font-size: $text-xs;
+    margin-top: 0.25rem;
+  }
+}

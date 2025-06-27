@@ -1,0 +1,27 @@
+import { useMemo } from "react";
+
+type UseDropdownOptionsProps<T> = {
+  data: T[];
+  labelKey: keyof T;
+  valueKey: keyof T;
+};
+
+type Option = {
+  label: string;
+  value: string | number;
+};
+
+export function useDropdownOptions<T extends Record<string, any>>({
+  data,
+  labelKey,
+  valueKey,
+}: UseDropdownOptionsProps<T>): Option[] {
+  return useMemo(() => {
+    if (!Array.isArray(data)) return [];
+
+    return data.map((item) => ({
+      label: String(item[labelKey]),
+      value: item[valueKey],
+    }));
+  }, [data, labelKey, valueKey]);
+}

@@ -1,0 +1,166 @@
+@use "../abstracts/index.scss" as *;
+
+.login-page {
+  @include flex();
+  width: 100%;
+  height: 100vh;
+  padding: 3rem 2rem;
+  background-color: $btn-secondary-bg;
+  background-image: url("../../assets/Images/avif/loginbg.avif");
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: cover;
+
+  .login-section {
+    background-color: $glass-white-bg;
+    color: $glass-text-dark;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    @include flex(center, flex-start, column);
+
+    p {
+      font-family: "Poppins", sans-serif;
+      text-transform: uppercase;
+      font-size: 1.2rem;
+      margin-top: -2rem;
+      width: fit-content;
+      font-weight: 700;
+      color: $btn-primary-text;
+      background: $btn-neutral-bg;
+      padding: 0 8px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    form {
+      width: 100%;
+      .custom-input-wrapper {
+        width: 100%;
+        margin-bottom: 1.5rem;
+
+        label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-weight: 600;
+          font-size: 0.95rem;
+          color: $btn-primary-text;
+        }
+
+        .custom-input-field {
+          width: 100%;
+          padding: 0.8rem 1rem;
+          border-radius: 0.5rem;
+          border: 1px solid #ccc;
+          font-size: 1rem;
+          transition: border-color 0.3s ease;
+
+          &:focus {
+            border-color: $btn-secondary-bg;
+            outline: none;
+          }
+        }
+
+        // Formik error state
+        .input-error {
+          border-color: red;
+        }
+
+        .error-text {
+          color: red;
+          font-size: 0.85rem;
+          margin-top: 0.25rem;
+        }
+      }
+      .forget-password{
+        width: fit-content;
+        float: right;
+        text-align: end;
+        font-size: $text-xs;
+        cursor: pointer;
+      }
+      .forget-password:hover{
+        color: $btn-secondary-bg;
+      }
+      .custom-button {
+        background-color: $btn-secondary-bg;
+        width: 100%;
+        margin-top: 1rem;
+        padding: 1.2rem;
+        font-size: 1rem;
+        font-weight: bold;
+        color: $btn-primary-text;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: darken($btn-secondary-bg, 10%);
+        }
+      }
+    }
+  }
+
+  // 🔁 Responsive Design
+  @media (max-width: 768px) {
+    flex-direction: column;
+    padding: 1rem;
+
+    .title {
+      padding: 0 1rem;
+
+      img {
+        padding: 10%;
+      }
+    }
+
+    .login-section {
+      padding: 2rem 1rem;
+
+      p {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .custom-button {
+        padding: 1rem;
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .login-section {
+      padding: 1.5rem 1rem;
+
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      p {
+        font-size: 0.9rem;
+      }
+
+      .custom-button {
+        padding: 0.8rem;
+        font-size: 0.85rem;
+      }
+    }
+  }
+}

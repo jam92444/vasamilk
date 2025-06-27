@@ -1,0 +1,18 @@
+@use "../../abstracts/index.scss" as *;
+
+.custom-button {
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  font-family: $font-poppins;
+  &:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}

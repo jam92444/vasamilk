@@ -1,0 +1,89 @@
+@use "../../abstracts/index.scss" as *;
+
+.add-user-form {
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+
+  .title-box {
+    margin-bottom: 2rem;
+  }
+  .sample {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 30px;
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: border-color 0.2s ease;
+
+      &:focus {
+        border-color: #007bff;
+        outline: none;
+      }
+    }
+
+    .error-message {
+      grid-column: 1 / -1;
+      color: #d9534f;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    h3 {
+      grid-column: 1 / -1;
+      margin-bottom: 10px;
+      color: #007bff;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 4px;
+    }
+
+    .submit-button {
+      grid-column: 1 / -1;
+      justify-self: end;
+      padding: 10px 30px;
+      font-weight: 600;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+
+    /* Responsive: stack on smaller screens */
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+
+      .submit-button {
+        justify-self: stretch;
+      }
+    }
+  }
+}

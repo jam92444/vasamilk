@@ -1,0 +1,63 @@
+@use "../abstracts/index.scss" as *;
+
+.otp-form {
+  width: 100%;
+  max-width: 500px;
+  padding: 1rem;
+  box-sizing: border-box;
+  margin: 0 auto;
+
+  .otp-inputs {
+    display: flex;
+    flex-wrap: wrap; // ensure wrapping
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+    margin: 1rem auto;
+
+    .otp-box {
+      width: 50px;
+      height: 50px;
+      text-align: center;
+      font-size: 1.5rem;
+      @include flex();
+      @media (max-width: 480px) {
+        font-size: 1.2rem;
+      }
+
+      @media (max-width: 360px) {
+        font-size: $text-xs;
+      }
+    }
+  }
+
+  .otpbtn {
+    background-color: $btn-secondary-bg !important;
+    width: 100%;
+    padding: 1.5rem;
+    color: $btn-secondary-text;
+    font-weight: $btn-font-weight-bold;
+    font-size: $text-base;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+
+    @media (max-width: 480px) {
+      padding: 1rem;
+      font-size: $text-sm;
+    }
+  }
+
+  .resent-otp {
+    width: 100%;
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    transition: 0.3s;
+     &:hover {
+      color: $btn-secondary-bg;
+    }
+  }
+}
