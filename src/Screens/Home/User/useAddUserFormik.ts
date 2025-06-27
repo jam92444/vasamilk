@@ -84,8 +84,8 @@ const useAddUserFormik = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user_id } = location.state || {};
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isEdit, setIsEdit] = useState(!!user_id);
+  const [isSubmitting] = useState(false);
+  const isEdit = !!user_id;
 
   const slotOptions = [
     { label: "Morning (09:15 - 13:00)", value: 1 },
@@ -159,6 +159,7 @@ const useAddUserFormik = () => {
 
     if (isEdit && user_id) {
       payload.id = Number(user_id);
+      console.log(payload);
       updateUser(payload).then(onSuccess).catch(onError);
     } else {
       createUser(payload).then(onSuccess).catch(onError);

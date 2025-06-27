@@ -23,7 +23,6 @@ interface Props {
 
 const CustomSelect: React.FC<Props> = ({
   label,
-  name,
   value,
   options,
   onChange,

@@ -7,7 +7,7 @@ import CustomInput from "../../Components/UI/CustomInput";
 import CustomButton from "../../Components/UI/CustomButton";
 import "../../Styles/pages/_login.scss";
 import { useNavigate } from "react-router-dom";
-import { getDecryptedCookie, setEncryptedCookie } from "../../Utils/cookies";
+import { setEncryptedCookie } from "../../Utils/cookies";
 import { siteName } from "../../App";
 
 // schema

@@ -118,36 +118,36 @@ const InventoryList = () => {
     }
     setAddModalVisible(false);
   };
-  // add inventory List
-  const handleAddInventoryList = (values: any) => {
-    if (values.status === 2) {
-      toast.info("Inventory updates are currently disabled.");
-      return;
-    }
-    const token = getDecryptedCookie("user_token").token;
-    const formData = new FormData();
-    formData.append("token", token);
-    formData.append("total_quantity", values.total_quantity);
-    formData.append("inventory_id", values.id);
-    {
-      values.comment && formData.append("comment", values.comment);
-    }
+  // // add inventory List
+  // const handleAddInventoryList = (values: any) => {
+  //   if (values.status === 2) {
+  //     toast.info("Inventory updates are currently disabled.");
+  //     return;
+  //   }
+  //   const token = getDecryptedCookie("user_token").token;
+  //   const formData = new FormData();
+  //   formData.append("token", token);
+  //   formData.append("total_quantity", values.total_quantity);
+  //   formData.append("inventory_id", values.id);
+  //   {
+  //     values.comment && formData.append("comment", values.comment);
+  //   }
 
-    try {
-      updateInventory(formData).then((res) => {
-        if (res.data.status === 1) {
-          console.log(res.data);
-          toast.success(res.data.msg);
-        } else {
-          toast.info(res.data.msg);
-        }
-      });
-      console.log(values);
-    } catch (error) {
-      console.log(error);
-    }
-    setAddModalVisible(false);
-  };
+  //   try {
+  //     updateInventory(formData).then((res) => {
+  //       if (res.data.status === 1) {
+  //         console.log(res.data);
+  //         toast.success(res.data.msg);
+  //       } else {
+  //         toast.info(res.data.msg);
+  //       }
+  //     });
+  //     console.log(values);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  //   setAddModalVisible(false);
+  // };
 
   const formatValue = (value: any) => {
     return value !== null && value !== undefined && value !== "" ? value : "-";
@@ -239,7 +239,7 @@ const InventoryList = () => {
           <Button size="small" onClick={() => handleView(record)}>
             View
           </Button>
-          {record.status === 1 && canUpdateInventory && (
+          {/* {record.status === 1 && canUpdateInventory && (
             <Button
               size="small"
               type="primary"
@@ -247,7 +247,7 @@ const InventoryList = () => {
             >
               Add
             </Button>
-          )}
+          )} */}
           {record.status === 1 && canUpdateInventory && (
             <Button
               size="small"
