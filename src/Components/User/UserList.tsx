@@ -409,7 +409,7 @@ const UserList = () => {
         rowKey={(record) => record.id}
         pagination={{
           ...pagination,
-          showSizeChanger: false,
+          showSizeChanger: true,
           itemRender: (page, type, originalElement) =>
             type === "page" ? (
               <button className="circular-page-btn">{page}</button>

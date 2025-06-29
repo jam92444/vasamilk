@@ -45,11 +45,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setUserDetails(null);
       setIsAuthenticated(false);
     }
-    setLoading(false); // loading done after check
+    setLoading(false);
   }, []);
 
   if (loading) {
-    return <Spinner />; // show spinner while loading
+    return <Spinner />;
   }
 
   return (

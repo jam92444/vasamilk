@@ -32,23 +32,16 @@ const InventoryView: React.FC = () => {
     formData.append("token", token);
     formData.append("inventory_id", inventory.id);
 
-    try {
-      setLoading(true);
-      const res = await getlistInventoryLog(page, pageSize, formData);
-      if (res.data?.status === 1) {
-        setInventoryLog(res.data.data || []);
-        setPagination((prev) => ({
-          ...prev,
-          total: res.data.total || 0,
-        }));
-      } else {
-        setInventoryLog([]);
-      }
-    } catch (error) {
-      console.error("Error fetching inventory log:", error);
+    setLoading(true);
+    const res = await getlistInventoryLog(page, pageSize, formData);
+    if (res.data?.status === 1) {
+      setInventoryLog(res.data.data || []);
+      setPagination((prev) => ({
+        ...prev,
+        total: res.data.total || 0,
+      }));
+    } else {
       setInventoryLog([]);
-    } finally {
-      setLoading(false);
     }
   };
 

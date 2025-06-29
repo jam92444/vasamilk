@@ -7,12 +7,12 @@ import {
   getInventoryList,
   updateInventory,
 } from "../../Services/ApiService";
-import "../../Styles/pages/Admin/InventoryList.scss";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { userToken } from "../../Utils/Data";
 import InventoryEditModal from "../../Modal/InventoryEditModal";
 import InventoryAddModal from "../../Modal/InventoryAddModal";
-import { useNavigate } from "react-router-dom";
-// import InventoryListAddModal from "../../Screens/Home/Inventory/InventoryListAddModal";
+import "../../Styles/pages/Admin/InventoryList.scss";
 
 const InventoryList = () => {
   const navigate = useNavigate();
@@ -23,16 +23,21 @@ const InventoryList = () => {
   });
   // inventory data
   const [inventoryData, setInventoryData] = useState([]);
+
   // edit inventory
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editRecord, setEditRecord] = useState<any>(null);
+
   // permission states
   const [canAddInventory, setCanAddInventory] = useState(true);
   const [canUpdateInventory, setCanUpdateInventory] = useState(true);
+
   // add inventory model
   const [addModalVisible, setAddModalVisible] = useState(false);
+
   // add inventory List model
   // const [addListModalVisible, setAddListModalVisible] = useState(false);
+
   // loading
   const [loading, setLoading] = useState(false);
 
@@ -108,17 +113,14 @@ const InventoryList = () => {
       values.comment && formData.append("comment", values.comment);
     }
 
-    try {
-      addInventory(formData).then((res) => {
-        if (res.data.status === 1) {
-          toast.success(res.data.msg);
-        } else {
-          toast.info(res.data.msg);
-        }
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    addInventory(formData).then((res) => {
+      if (res.data.status === 1) {
+        toast.success(res.data.msg);
+      } else {
+        toast.info(res.data.msg);
+      }
+    });
+
     setAddModalVisible(false);
   };
 
@@ -128,12 +130,8 @@ const InventoryList = () => {
 
   // save edited value
   const handleSaveEdit = (updatedValues: any) => {
-    console.log("Saving edited data:", updatedValues);
-
-    const token = getDecryptedCookie("user_token").token;
-    console.log(token);
     const formData = new FormData();
-    formData.append("token", token);
+    formData.append("token", userToken);
 
     if (editRecord?.id) {
       formData.append("inventory_id", editRecord.id.toString());

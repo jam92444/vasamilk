@@ -47,7 +47,11 @@ const CustomSelect: React.FC<Props> = ({
       : options;
 
   return (
-    <div className={`custom-select-wrapper ${showError ? "has-error" : ""}`}>
+    <div
+      className={`custom-select-wrapper ${
+        showError ? "has-error" : ""
+      } ${className}`}
+    >
       {label && (
         <label className="custom-select-label">
           {label} {required && <span className="required">*</span>}

@@ -8,6 +8,8 @@ import Inventory from "../Screens/Home/Inventory/Inventory";
 import InventoryView from "../Screens/Home/Inventory/InventoryView";
 import SlotMapping from "../Screens/Home/Inventory/SlotMapping";
 import Distributor from "../Screens/Home/Distributor/Distributor";
+import ListAssignedSlot from "../Screens/Home/Distributor/ListAssignedSlot";
+import AssignRoute from "../Screens/Home/Distributor/AssignRoute";
 export const HomeRoutes: RouteObject[] | undefined = [
   {
     element: <AdminRoute />,
@@ -51,6 +53,14 @@ export const HomeRoutes: RouteObject[] | undefined = [
           {
             path: `/distributor-list`,
             element: <Distributor />,
+          },
+          {
+            path: `/route-details`,
+            element: <ListAssignedSlot />,
+          },
+          {
+            path: `/distributor-list/assign-route`,
+            element: <AssignRoute />,
           },
         ],
       },

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import type { MenuProps } from "antd";
-import { Layout, Menu, Grid, message, Modal } from "antd";
+import { Layout, Menu, Grid, Modal } from "antd";
 import { useNavigate, useLocation } from "react-router-dom"; // import useLocation
 import "../Styles/main.scss";
 import asset from "../Utils/asset";
 import { clearCookie, getDecryptedCookie } from "../Utils/cookies";
 import { logout } from "../Services/ApiService";
+import { toast } from "react-toastify";
 
 const { Content, Sider } = Layout;
 const { useBreakpoint } = Grid;
@@ -76,16 +77,16 @@ const MainLayout: React.FC<LayoutProps> = ({ children }) => {
         logout(formData)
           .then((res) => {
             if (res.data.status === 1) {
-              message.success(res.data.msg);
+              toast.success(res.data.msg);
               clearCookie("user_token");
               navigate("/");
             } else {
-              message.error("Logout failed. Please try again.");
+              toast.error("Logout failed. Please try again.");
             }
           })
           .catch((error) => {
             console.error("Logout error:", error);
-            message.error("Something went wrong during logout.");
+            toast.error("Something went wrong during logout.");
           });
       },
     });

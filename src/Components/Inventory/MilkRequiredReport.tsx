@@ -10,25 +10,8 @@ const { Title } = Typography;
 
 const MilkRequiredReport = () => {
   const navigate = useNavigate();
-  const [requiredMilk, setRequiredMilk] = useState<any[]>([]);
+  const [requiredMilk, setRequiredMilk] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  const handleGetRequiredMilkReport = async (formData: FormData) => {
-    try {
-      setLoading(true);
-      const res = await getdailyMilkRequired(formData);
-
-      if (res.data.status === 1) {
-        setRequiredMilk(res.data.data || []);
-      } else {
-        console.error("API Error:", res.data);
-      }
-    } catch (error) {
-      console.error("Fetch error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     const token = getDecryptedCookie("user_token")?.token;
@@ -36,6 +19,19 @@ const MilkRequiredReport = () => {
     formData.append("token", token);
     handleGetRequiredMilkReport(formData);
   }, []);
+
+  // get milk required data
+  const handleGetRequiredMilkReport = async (formData: FormData) => {
+    setLoading(true);
+    const res = await getdailyMilkRequired(formData);
+
+    if (res.data.status === 1) {
+      setRequiredMilk(res.data.data || []);
+    } else {
+      console.error("API Error:", res.data);
+    }
+    setLoading(false);
+  };
 
   const mapSlot: Record<number, string> = {
     1: "Morning",

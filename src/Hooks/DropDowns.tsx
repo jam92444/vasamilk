@@ -1,6 +1,5 @@
 // src/Hooks/useDropdownData.ts
 import { useEffect, useState } from "react";
-import { message } from "antd";
 import { getDecryptedCookie } from "../Utils/cookies";
 import {
   getCustomer,
@@ -9,6 +8,7 @@ import {
 } from "../Services/ApiService";
 import { PriceTagData } from "../Utils/Data";
 import { useDropdownOptions } from "./useDropdownOptions";
+import { toast } from "react-toastify";
 
 export function useDropdownData(userType?: number) {
   const [priceOptionsRaw, setPriceOptionsRaw] = useState([]);
@@ -71,15 +71,15 @@ export function useDropdownData(userType?: number) {
     },
   ];
 
+  useEffect(() => {
+    fetchDropdownData();
+  }, [userType]);
+
   const GetPayTagIDs = async () => {
-    try {
-      const prices = await PriceTagData();
-      setPriceOptionsRaw(prices?.data || []);
-    } catch {
-      message.error("Failed to load price tags");
-    } finally {
-      setIsLoadingDropdowns(false);
-    }
+    const prices = await PriceTagData();
+    setPriceOptionsRaw(prices?.data || []);
+
+    setIsLoadingDropdowns(false);
   };
 
   const loadLineDropdowns = async () => {
@@ -91,17 +91,19 @@ export function useDropdownData(userType?: number) {
     formData.append("token", user.token);
     formData.append("type", type);
 
-    try {
-      const res = await getLinesDropDown(formData);
-      if (res.data.status === 1) {
-        setLineOptionsRaw(res.data.data);
-      } else {
-        message.error(res.data.msg || "Failed to fetch line data");
-      }
-    } catch (error) {
-      console.error("Line dropdown error:", error);
-      message.error("Error loading line data");
-    }
+    getLinesDropDown(formData)
+      .then((res) => {
+        if (res.data.status === 1) {
+          setLineOptionsRaw(res.data.data);
+        } else {
+          toast.error(res.data.msg || "Failed to fetch line data");
+        }
+      })
+      .catch((error) => {
+        toast.error(
+          error?.message || "Something went wrong while fetching line data."
+        );
+      });
   };
 
   const customerDropDown = async () => {
@@ -113,16 +115,11 @@ export function useDropdownData(userType?: number) {
     formData.append("token", user.token);
     formData.append("type", type);
 
-    try {
-      const res = await getCustomer(formData);
-      if (res.data.status === 1) {
-        setCustomerRaw(res.data.data);
-      } else {
-        message.error(res.data.msg || "Failed to fetch line data");
-      }
-    } catch (error) {
-      console.error("Line dropdown error:", error);
-      message.error("Error loading line data");
+    const res = await getCustomer(formData);
+    if (res.data.status === 1) {
+      setCustomerRaw(res.data.data);
+    } else {
+      toast.error(res.data.msg || "Failed to fetch line data");
     }
   };
 
@@ -132,40 +129,31 @@ export function useDropdownData(userType?: number) {
 
     const formData = new FormData();
     formData.append("token", user.token);
-    try {
-      const res = await getDistributor(formData);
-      if (res.data.status === 1) {
-        setDistributorRaw(res.data.data);
-      } else {
-        message.error(res.data.msg || "Failed to fetch line data");
-      }
-    } catch (error) {
-      console.error("Line dropdown error:", error);
-      message.error("Error loading line data");
+
+    const res = await getDistributor(formData);
+    if (res.data.status === 1) {
+      setDistributorRaw(res.data.data);
+    } else {
+      toast.error(res.data.msg || "Failed to fetch line data");
     }
   };
 
-  //calling fucntions to fetch data
-  useEffect(() => {
-    const fetchDropdownData = async () => {
-      setIsLoadingDropdowns(true);
-      const hasUserType = !!userType;
+  const fetchDropdownData = async () => {
+    setIsLoadingDropdowns(true);
+    const hasUserType = !!userType;
 
-      try {
-        await Promise.all([
-          GetPayTagIDs(),
-          distributorDropDown(),
-          customerDropDown(),
-          hasUserType ? loadLineDropdowns() : Promise.resolve(),
-        ]);
-      } catch (error) {
-        console.error("Dropdown loading error:", error);
-        message.error("Failed to load dropdown data");
-      }
-    };
-
-    fetchDropdownData();
-  }, [userType]);
+    try {
+      await Promise.all([
+        GetPayTagIDs(),
+        distributorDropDown(),
+        customerDropDown(),
+        hasUserType ? loadLineDropdowns() : Promise.resolve(),
+      ]);
+    } catch (error) {
+      console.error("Dropdown loading error:", error);
+      toast.error("Failed to load dropdown data");
+    }
+  };
 
   return {
     isLoadingDropdowns,

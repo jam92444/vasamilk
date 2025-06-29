@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { message } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getDecryptedCookie } from "../../../Utils/cookies";
 import {
@@ -159,7 +158,6 @@ const useAddUserFormik = () => {
 
     if (isEdit && user_id) {
       payload.id = Number(user_id);
-      console.log(payload);
       updateUser(payload).then(onSuccess).catch(onError);
     } else {
       createUser(payload).then(onSuccess).catch(onError);
@@ -209,61 +207,56 @@ const useAddUserFormik = () => {
     if (!user_id || !token) return;
 
     (async () => {
-      try {
-        const formData = new FormData();
-        formData.append("token", token);
-        formData.append("user_id", user_id.toString());
-        const res = await getUserById(formData);
+      const formData = new FormData();
+      formData.append("token", token);
+      formData.append("user_id", user_id.toString());
+      const res = await getUserById(formData);
 
-        if (res.data.status === 1) {
-          const userData = res.data.data;
+      if (res.data.status === 1) {
+        const userData = res.data.data;
 
-          const defaultSlotData = [
-            { slot_id: 1, quantity: 0, method: 0, start_date: "" },
-            { slot_id: 2, quantity: 0, method: 0, start_date: "" },
-          ];
+        const defaultSlotData = [
+          { slot_id: 1, quantity: 0, method: 0, start_date: "" },
+          { slot_id: 2, quantity: 0, method: 0, start_date: "" },
+        ];
 
-          const updatedSlots = [...defaultSlotData];
-          if (Array.isArray(userData.slot_data)) {
-            userData.slot_data.forEach((slot: any) => {
-              const index = slot.slot_id - 1;
-              if (index >= 0 && index < 2) {
-                updatedSlots[index] = {
-                  ...(isEdit && { id: slot.id }),
-                  slot_id: slot.slot_id,
-                  quantity: slot.quantity,
-                  method: slot.method,
-                  start_date: slot.start_date,
-                };
-              }
-            });
-          }
-
-          setValues({
-            name: userData.name,
-            user_name: userData.user_name,
-            email: userData.email,
-            phone: userData.phone,
-            alternative_number: userData.alternative_number || "",
-            password: "",
-            user_type: userData.user_type,
-            customer_type: userData.customer_type,
-            price_tag_id: userData.price_tag_id,
-            line_id: userData.line_id,
-            pay_type: userData.pay_type,
-            slot_data: updatedSlots,
-            start_date:
-              userData.slot_data?.find((s: any) => s.slot_id === 1)
-                ?.start_date || "",
-
-            isEdit: true,
+        const updatedSlots = [...defaultSlotData];
+        if (Array.isArray(userData.slot_data)) {
+          userData.slot_data.forEach((slot: any) => {
+            const index = slot.slot_id - 1;
+            if (index >= 0 && index < 2) {
+              updatedSlots[index] = {
+                ...(isEdit && { id: slot.id }),
+                slot_id: slot.slot_id,
+                quantity: slot.quantity,
+                method: slot.method,
+                start_date: slot.start_date,
+              };
+            }
           });
-        } else {
-          message.error(res.data.msg || "Failed to fetch user data");
         }
-      } catch (err) {
-        console.error("Error loading user:", err);
-        message.error("Something went wrong loading user data");
+
+        setValues({
+          name: userData.name,
+          user_name: userData.user_name,
+          email: userData.email,
+          phone: userData.phone,
+          alternative_number: userData.alternative_number || "",
+          password: "",
+          user_type: userData.user_type,
+          customer_type: userData.customer_type,
+          price_tag_id: userData.price_tag_id,
+          line_id: userData.line_id,
+          pay_type: userData.pay_type,
+          slot_data: updatedSlots,
+          start_date:
+            userData.slot_data?.find((s: any) => s.slot_id === 1)?.start_date ||
+            "",
+
+          isEdit: true,
+        });
+      } else {
+        toast.error(res.data.msg || "Failed to fetch user data");
       }
     })();
   }, [user_id, token]);

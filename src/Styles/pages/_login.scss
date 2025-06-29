@@ -15,7 +15,7 @@
     background-color: $glass-white-bg;
     color: $glass-text-dark;
     width: 100%;
-    max-width: 500px;
+    max-width: 450px;
     margin: 0 auto;
     padding: 3rem 2rem;
     border-radius: 1rem;
@@ -83,14 +83,14 @@
           margin-top: 0.25rem;
         }
       }
-      .forget-password{
+      .forget-password {
         width: fit-content;
         float: right;
         text-align: end;
         font-size: $text-xs;
         cursor: pointer;
       }
-      .forget-password:hover{
+      .forget-password:hover {
         color: $btn-secondary-bg;
       }
       .custom-button {

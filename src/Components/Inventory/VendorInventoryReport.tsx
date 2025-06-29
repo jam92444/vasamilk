@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Card,
   Descriptions,
-  message,
   Spin,
   InputNumber,
   DatePicker,
@@ -17,6 +16,7 @@ import {
 import dayjs, { Dayjs } from "dayjs";
 import { getDecryptedCookie } from "../../Utils/cookies";
 import { getVendorMilkReport } from "../../Services/ApiService";
+import { toast } from "react-toastify";
 
 const { RangePicker } = DatePicker;
 const { Title } = Typography;
@@ -55,7 +55,7 @@ const VendorMilkReport = () => {
   const fetchVendorReport = async () => {
     const token = user?.token;
     if (!token) {
-      message.error("Authentication token is missing.");
+      toast.error("Authentication token is missing.");
       return;
     }
 
@@ -68,20 +68,12 @@ const VendorMilkReport = () => {
     formData.append("to_date", dateRange[1].format("YYYY-MM-DD"));
     formData.append("log_type", String(logType));
 
-    try {
-      const res = await getVendorMilkReport(formData);
-      if (res.data.status === 1) {
-        setReport(res.data.data);
-      } else {
-        message.error(res.data.msg || "Failed to load vendor report.");
-        setReport(null);
-      }
-    } catch (error) {
-      console.error("Error fetching vendor milk report:", error);
-      message.error("An error occurred while fetching the vendor report.");
+    const res = await getVendorMilkReport(formData);
+    if (res.data.status === 1) {
+      setReport(res.data.data);
+    } else {
+      toast.error(res.data.msg || "Failed to load vendor report.");
       setReport(null);
-    } finally {
-      setLoading(false);
     }
   };
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Table, message, Typography, Button, Descriptions } from "antd";
+import { Table, Typography, Button, Descriptions } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { getSlotMapping } from "../../../Services/ApiService";
 import { userToken } from "../../../Utils/Data";
@@ -7,6 +7,7 @@ import CustomModal from "../../../Modal/CustomModal";
 import { useNavigate } from "react-router-dom";
 import InventoryLogFilter from "../../../Components/Inventory/InventoryLogFilter";
 import dayjs from "dayjs";
+import { toast } from "react-toastify";
 
 const { Title } = Typography;
 
@@ -56,33 +57,35 @@ const SlotMapping = () => {
     overrideFilters = filters
   ) => {
     setLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("token", userToken);
-      formData.append("from_date", overrideFilters.fromDate);
-      formData.append("to_date", overrideFilters.toDate);
 
-      if (overrideFilters.customerId)
-        formData.append("customer_id", overrideFilters.customerId);
-      if (overrideFilters.distributorId)
-        formData.append("distributor_id", overrideFilters.distributorId);
+    const formData = new FormData();
+    formData.append("token", userToken);
+    formData.append("from_date", overrideFilters.fromDate);
+    formData.append("to_date", overrideFilters.toDate);
 
-      const res = await getSlotMapping(page, pageSize, formData);
-      if (res.data.status) {
-        setSlotsLog(res.data.data);
-        setPagination({
-          current: page,
-          pageSize,
-          total: res.data.total || res.data.data.length,
-        });
-      } else {
-        message.error("Failed to fetch slot logs");
-      }
-    } catch {
-      message.error("An error occurred while fetching slot logs.");
-    } finally {
-      setLoading(false);
-    }
+    if (overrideFilters.customerId)
+      formData.append("customer_id", overrideFilters.customerId);
+    if (overrideFilters.distributorId)
+      formData.append("distributor_id", overrideFilters.distributorId);
+
+    getSlotMapping(page, pageSize, formData)
+      .then((res) => {
+        if (res.data.status) {
+          setSlotsLog(res.data.data);
+          setPagination({
+            current: page,
+            pageSize,
+            total: res.data.total || res.data.data.length,
+          });
+        } else {
+          toast.error("Failed to fetch slot logs");
+        }
+      })
+      .catch((error) => {
+        toast.error(
+          error?.message || "Something went wrong while fetching slot logs."
+        );
+      });
   };
 
   useEffect(() => {

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { Table, Typography, Tag, message } from "antd";
-import { toast } from "react-toastify";
+import { Table, Typography, Tag, Button } from "antd";
 import { userToken } from "../../../Utils/Data";
 import { getDistributorList } from "../../../Services/ApiService";
+import { useNavigate } from "react-router-dom";
+import CustomButton from "../../../Components/UI/CustomButton";
+import { toast } from "react-toastify";
 
 const { Text } = Typography;
 
@@ -10,24 +12,22 @@ interface Route {
   id: number;
   line_name: string;
   status: number;
+  __parentId?: number;
+  __distributorName?: string;
 }
 
 interface DistributorRecord {
   distributer_id: number;
   distributer_name: string;
-  line_data?: Route[];
+  line_data?: Route[] | null;
 }
 
 const Distributor = () => {
+  const navigate = useNavigate();
   const [distributors, setDistributors] = useState<DistributorRecord[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleGetDistributorList = () => {
-    if (!userToken) {
-      toast.info("Token not found");
-      return;
-    }
-
     setLoading(true);
     const formData = new FormData();
     formData.append("token", userToken);
@@ -37,14 +37,29 @@ const Distributor = () => {
         if (res.data.status === 1) {
           setDistributors(res.data.data);
         } else {
-          message.error("Failed to fetch distributors");
+          toast.error("Failed to fetch distributors");
         }
       })
       .catch((error) => {
         console.error(error);
-        message.error("Something went wrong");
+        toast.error("Something went wrong");
       })
       .finally(() => setLoading(false));
+  };
+
+  const handleRouteDetailPage = (
+    route: Route,
+    distributorId: number,
+    distributorName: string
+  ) => {
+    navigate(`/route-details`, {
+      state: {
+        distributorId,
+        distributorName: distributorName,
+        line_id: route.id,
+        lineName: route.line_name,
+      },
+    });
   };
 
   useEffect(() => {
@@ -62,11 +77,10 @@ const Distributor = () => {
       title: "Phone",
       dataIndex: "distributer_name",
       key: "phone",
-      render: (text: String) => <Text>{text.split(" - ")[1]}</Text>,
+      render: (text: string) => <Text>{text.split(" - ")[1]}</Text>,
     },
   ];
 
-  // Route (line_data) table columns
   const routeColumns = [
     {
       title: "Route ID",
@@ -91,11 +105,36 @@ const Distributor = () => {
           <Tag color="red">Inactive</Tag>
         ),
     },
+    {
+      title: "Action",
+      key: "action",
+      width: 140,
+      render: (_: any, record: Route) => (
+        <Button
+          type="link"
+          onClick={() =>
+            handleRouteDetailPage(
+              record,
+              record.__parentId as number,
+              record.__distributorName as string
+            )
+          }
+        >
+          View Details
+        </Button>
+      ),
+    },
   ];
 
   return (
     <div style={{ padding: "1rem" }}>
-      <h2 style={{ marginBottom: "2rem" }}>Distributor List</h2>
+      <div className="flex-center-between" style={{ marginBottom: "1rem" }}>
+        <h2>Distributor List</h2>
+        <CustomButton
+          text="Assign Slot"
+          onClick={() => navigate("assign-route")}
+        />
+      </div>
       <Table
         loading={loading}
         dataSource={distributors}
@@ -105,7 +144,13 @@ const Distributor = () => {
           expandedRowRender: (record) =>
             (record?.line_data ?? []).length > 0 ? (
               <Table
-                dataSource={record?.line_data}
+                dataSource={
+                  record.line_data?.map((route) => ({
+                    ...route,
+                    __parentId: record.distributer_id,
+                    __distributorName: record.distributer_name,
+                  })) ?? []
+                }
                 columns={routeColumns}
                 pagination={false}
                 rowKey="id"
@@ -115,7 +160,7 @@ const Distributor = () => {
             ),
           rowExpandable: () => true,
         }}
-        pagination={{ pageSize: 10 }}
+        pagination={false}
       />
     </div>
   );

@@ -1,8 +1,8 @@
+import dayjs from "dayjs";
 import { useState } from "react";
 import { DatePicker, Button } from "antd";
 import { useDropdownData } from "../../Hooks/DropDowns";
 import { userdata } from "../../Utils/Data";
-import dayjs from "dayjs";
 import CustomSelect from "../UI/CustomSelect";
 import "../../Styles/pages/inventoryFilter.scss";
 const { RangePicker } = DatePicker;
@@ -21,7 +21,6 @@ const InventoryLogFilter = ({
 
   const defaultFrom = dayjs();
   const defaultTo = dayjs();
-
   const [fromDate, setFromDate] = useState(defaultFrom);
   const [toDate, setToDate] = useState(defaultTo);
   const [customerId, setCustomerId] = useState<string | number>("");
@@ -29,6 +28,7 @@ const InventoryLogFilter = ({
   const [status, setStatus] = useState<string | number>("");
   const [slotMode, setSlotMode] = useState<string[] | number[]>([]);
 
+  //setting value
   const handleFilter = () => {
     onFilter({
       fromDate: fromDate.format("YYYY-MM-DD"),
@@ -40,6 +40,7 @@ const InventoryLogFilter = ({
     });
   };
 
+  //reset the filter
   const handleReset = () => {
     setFromDate(defaultFrom);
     setToDate(defaultTo);
