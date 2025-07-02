@@ -22,7 +22,7 @@ export function useDropdownData() {
   const [customerRaw, setCustomerRaw] = useState([]);
   const [distributorRaw, setDistributorRaw] = useState([]);
   const [assignRoute, setAssignRoute] = useState([]);
-  const [isLoadingDropdowns, setIsLoadingDropdowns] = useState(false);
+  const [isLoadingDropdowns] = useState(false);
 
   const priceTagDropdownOptions = useDropdownOptions({
     data: priceOptionsRaw,
