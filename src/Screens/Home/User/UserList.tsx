@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Table, Spin, Alert, Button, Space, Popconfirm } from "antd";
+import { Spin, Alert, Button, Space, Popconfirm } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/lib/table";
 import {
   EditOutlined,
@@ -7,14 +7,15 @@ import {
   CheckCircleOutlined,
   StopOutlined,
 } from "@ant-design/icons";
-import { changeUserStatus, fetchUserList } from "../../Services/ApiService";
-import { getDecryptedCookie } from "../../Utils/cookies";
-import "../../Styles/components/_compact-table.scss";
+import { changeUserStatus, fetchUserList } from "../../../Services/ApiService";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import UserFilters from "./UserFilter";
-import UserView from "./UserView";
-import CustomModal from "../../Modal/CustomModal";
+import UserView from "../../../Modal/UserView";
+import CustomModal from "../../../Components/UI/CustomModal";
+import "../../../Styles/components/_compact-table.scss";
+import { useUserDetails } from "../../../Utils/Data";
+import CustomTable from "../../../Components/UI/CustomTable";
 
 interface User {
   id: number;
@@ -35,7 +36,7 @@ interface User {
 }
 
 const UserList = () => {
-  const user = getDecryptedCookie("user_token");
+  const { token } = useUserDetails();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,33 +65,40 @@ const UserList = () => {
   }>({});
 
   useEffect(() => {
-    if (user?.token) {
+    if (token) {
       loadUsers(pagination.current || 1, pagination.pageSize || 10);
     }
-  }, [user?.token]);
+  }, [token]);
 
   const loadUsers = (page: number, pageSize: number) => {
-    if (!user?.token) return;
+    if (!token) return;
 
     const filterData = new FormData();
-    filterData.append("token", user.token);
-    if (filters.pay_type_text) {
-      filterData.append("pay_type", filters.pay_type_text);
+    filterData.append("token", token);
+    {
+      filters.pay_type_text &&
+        filterData.append("pay_type", filters.pay_type_text);
     }
-    if (filters.customer_type) {
-      filterData.append("customer_type", filters.customer_type);
+    {
+      filters.customer_type &&
+        filterData.append("customer_type", filters.customer_type);
     }
-    if (filters.price_tag_id) {
-      filterData.append("price_tag_id", filters.price_tag_id);
+    {
+      filters.price_tag_id &&
+        filterData.append("price_tag_id", filters.price_tag_id);
     }
-    if (filters.status_text) {
-      filterData.append("status", filters.status_text === "Active" ? "1" : "2");
+    {
+      filters.status_text &&
+        filterData.append(
+          "status",
+          filters.status_text === "Active" ? "1" : "2"
+        );
     }
-    if (filters.user_type) {
-      filterData.append("user_type", filters.user_type);
+    {
+      filters.user_type && filterData.append("user_type", filters.user_type);
     }
-    if (filters.line_id) {
-      filterData.append("line_id", filters.line_id);
+    {
+      filters.line_id && filterData.append("line_id", filters.line_id);
     }
 
     setLoading(true);
@@ -116,48 +124,41 @@ const UserList = () => {
     navigate(`/edit-user`, { state: { user_id: record.id } });
   };
 
-  const handleToggleStatus = (record: User) => {
-    const currentStatus = record.status_text === "Active" ? "-1" : "1";
-    const formData = new FormData();
+  const handleChangeUserStatus = (
+    record: User,
+    action: "toggle" | "delete"
+  ) => {
+    let newStatus = "0";
 
-    formData.append("token", user.token);
+    if (action === "toggle") {
+      newStatus = record.status_text === "Active" ? "0" : "1";
+    } else if (action === "delete") {
+      newStatus = "-1";
+    }
+
+    const formData = new FormData();
+    formData.append("token", token);
     formData.append("user_id", String(record.id));
-    formData.append("status", currentStatus);
+    formData.append("status", newStatus);
 
     changeUserStatus(formData)
       .then((res) => {
         if (res.data.status === 0) {
           toast.error(res.data.msg || "Failed to update user status");
         } else {
-          toast.success(
-            currentStatus === "1" ? "User activated" : "User deactivated"
-          );
+          if (action === "toggle") {
+            toast.success(
+              newStatus === "1" ? "User activated" : "User deactivated"
+            );
+          } else if (action === "delete") {
+            toast.success("User deleted");
+          }
           loadUsers(pagination.current || 1, pagination.pageSize || 10);
         }
       })
       .catch((error) => {
-        console.error("Status toggle error:", error);
+        console.error("Status change error:", error);
         toast.error("Something went wrong");
-      });
-  };
-
-  const handleDelete = (record: User) => {
-    const formData = new FormData();
-    formData.append("token", user.token);
-    formData.append("user_id", String(record.id));
-    formData.append("status", "-1");
-
-    changeUserStatus(formData)
-      .then((res) => {
-        if (res.data.status === 0) {
-          toast.error(res.data.msg);
-        } else {
-          toast.success("User deleted");
-          loadUsers(pagination.current || 1, pagination.pageSize || 10);
-        }
-      })
-      .catch((error) => {
-        console.error(error.message);
       });
   };
 
@@ -303,7 +304,7 @@ const UserList = () => {
             title={`Are you sure you want to ${
               record.status_text === "Active" ? "deactivate" : "activate"
             } this user?`}
-            onConfirm={() => handleToggleStatus(record)}
+            onConfirm={() => handleChangeUserStatus(record, "toggle")}
           >
             <Button
               type="text"
@@ -321,7 +322,7 @@ const UserList = () => {
           </Popconfirm>
           <Popconfirm
             title="Are you sure you want to delete this user?"
-            onConfirm={() => handleDelete(record)}
+            onConfirm={() => handleChangeUserStatus(record, "delete")}
           >
             <Button
               type="text"
@@ -345,10 +346,10 @@ const UserList = () => {
     const page = 1;
     const pageSize = resetPageSize;
     const formData = new FormData();
-    formData.append("token", user.token);
+    formData.append("token", token);
 
     setLoading(true);
-    fetchUserList(page, pageSize, formData)
+    fetchUserList(page, pageSize, formData) // reason behind calling this is when we reset the value we
       .then((res) => {
         setUsers(res.data?.data || []);
         setPagination((prev) => ({
@@ -362,7 +363,7 @@ const UserList = () => {
       .finally(() => setLoading(false));
   };
 
-  if (!user?.token) {
+  if (!token) {
     return (
       <Alert
         message="Unauthorized"
@@ -401,12 +402,11 @@ const UserList = () => {
         onResetFilters={handleResetFilters}
       />
 
-      <Table
-        size="small"
-        className="compact-table"
+      <CustomTable
         columns={columns}
-        dataSource={users}
-        rowKey={(record) => record.id}
+        data={users}
+        rowKey={(record) => record.id.toString()}
+        loading={false} // or use actual loading state if available
         pagination={{
           ...pagination,
           showSizeChanger: true,
@@ -423,9 +423,11 @@ const UserList = () => {
           },
         }}
         onChange={handleTableChange}
-        scroll={{ x: "max-content" }}
-        locale={{ emptyText: "No users found" }}
+        scrollX="max-content"
+        emptyText="No users found"
+        className="compact-table"
       />
+
       <CustomModal
         visible={viewModalVisible}
         title="User Details"

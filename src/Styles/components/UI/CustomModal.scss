@@ -1,0 +1,39 @@
+// src/Modal/CustomModal.scss
+
+.custom-modal-scrollable-content {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 8px;
+
+  // Smooth scroll experience
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+}
+
+/* Responsive tweaks */
+@media screen and (max-width: 768px) {
+  .ant-modal {
+    width: 95% !important;
+    max-width: 95vw;
+    margin: 0 auto;
+  }
+
+  .custom-modal-scrollable-content {
+    max-height: 60vh; // slightly smaller for short screens
+    font-size: 13px;
+  }
+
+  .ant-modal-content {
+    padding: 12px !important;
+  }
+}

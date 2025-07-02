@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, Col, Row, Statistic } from "antd";
-import asset from "../../Utils/asset";
-import "../../Styles/components/_inventory-stats.scss";
+import asset from "../../../Utils/asset";
+import "../../../Styles/components/_inventory-stats.scss";
 
 interface InventoryStatsProps {
   eve_slot_count: number;

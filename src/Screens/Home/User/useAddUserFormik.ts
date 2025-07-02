@@ -9,6 +9,7 @@ import {
   updateUser,
 } from "../../../Services/ApiService";
 import { toast } from "react-toastify";
+import { useUserDetails } from "../../../Utils/Data";
 
 export const validationSchema = (isEdit: boolean) =>
   Yup.object().shape({
@@ -80,6 +81,7 @@ export const validationSchema = (isEdit: boolean) =>
   });
 
 const useAddUserFormik = () => {
+  const { token } = useUserDetails();
   const navigate = useNavigate();
   const location = useLocation();
   const { user_id } = location.state || {};
@@ -95,8 +97,6 @@ const useAddUserFormik = () => {
     { label: "Direct", value: 1 },
     { label: "Distributor", value: 2 },
   ];
-
-  const token = getDecryptedCookie("user_token")?.token;
 
   const handleAddUser = (values: any, { resetForm }: any) => {
     if (!token) {

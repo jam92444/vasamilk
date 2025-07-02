@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import CustomButton from "../../../Components/UI/CustomButton";
-import UserList from "../../../Components/User/UserList";
+import UserList from "./UserList";
 import "../../../Styles/pages/_customer.scss";
 
 const CustomerManagement = () => {

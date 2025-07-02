@@ -21,7 +21,7 @@ export function useDropdownOptions<T extends Record<string, any>>({
 
     return data.map((item) => ({
       label: String(item[labelKey]),
-      value: item[valueKey],
+      value: String(item[valueKey]),
     }));
   }, [data, labelKey, valueKey]);
 }

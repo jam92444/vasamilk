@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Select, Space, Spin } from "antd";
 import {
   CustomerType,
   payTypesOptions,
-  userdata,
   UserDropDown,
-} from "../../Utils/Data";
-import CustomButton from "../UI/CustomButton";
-import { useDropdownData } from "../../Hooks/DropDowns";
+} from "../../../Utils/Data";
+import CustomButton from "../../../Components/UI/CustomButton";
+import { useDropdownData } from "../../../Hooks/DropDowns";
 
 const { Option } = Select;
 
@@ -38,8 +37,18 @@ const UserFilters: React.FC<UserFiltersProps> = ({
   onExportFilters,
   onResetFilters,
 }) => {
-  const { priceDropdownOptions, lineDropdownOptions, isLoadingDropdowns } =
-    useDropdownData(userdata?.user_type || null);
+  const {
+    isLoadingDropdowns,
+    loadLineDropdowns,
+    priceTagDropdownOptions,
+    lineDropdownOptions,
+    payTagIdDropDown,
+  } = useDropdownData();
+
+  useEffect(() => {
+    payTagIdDropDown();
+    loadLineDropdowns();
+  }, []);
 
   const exportFilters = () => {
     onExportFilters(filterValues);
@@ -51,7 +60,6 @@ const UserFilters: React.FC<UserFiltersProps> = ({
     </div>
   ) : (
     <Space style={{ marginBottom: 16, flexWrap: "wrap" }} size="middle" wrap>
-      {/* User Type */}
       <Select
         placeholder="User Type"
         allowClear
@@ -66,7 +74,6 @@ const UserFilters: React.FC<UserFiltersProps> = ({
         ))}
       </Select>
 
-      {/* Status */}
       <Select
         placeholder="Status"
         allowClear
@@ -78,7 +85,6 @@ const UserFilters: React.FC<UserFiltersProps> = ({
         <Option value="Inactive">Inactive</Option>
       </Select>
 
-      {/* Pay Type */}
       <Select
         placeholder="Pay Type"
         allowClear
@@ -93,7 +99,6 @@ const UserFilters: React.FC<UserFiltersProps> = ({
         ))}
       </Select>
 
-      {/* Customer Type */}
       <Select
         placeholder="Customer Type"
         allowClear
@@ -108,7 +113,6 @@ const UserFilters: React.FC<UserFiltersProps> = ({
         ))}
       </Select>
 
-      {/* Price Tag */}
       <Select
         placeholder="Price Tag"
         allowClear
@@ -116,14 +120,13 @@ const UserFilters: React.FC<UserFiltersProps> = ({
         value={filterValues.price_tag_id || undefined}
         onChange={(val) => onFilterChange("price_tag_id", val)}
       >
-        {priceDropdownOptions.map(({ label, value }) => (
+        {priceTagDropdownOptions.map(({ label, value }) => (
           <Option key={value} value={value}>
             {label}
           </Option>
         ))}
       </Select>
 
-      {/* line / Route */}
       <Select
         placeholder="Line / Route"
         allowClear
@@ -138,7 +141,6 @@ const UserFilters: React.FC<UserFiltersProps> = ({
         ))}
       </Select>
 
-      {/* Filter & Reset Buttons */}
       <div>
         <CustomButton
           style={{ fontSize: "12px", marginRight: ".5rem" }}

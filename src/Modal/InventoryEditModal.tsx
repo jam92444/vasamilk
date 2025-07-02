@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import { Modal, Button, Input, InputNumber } from "antd";
+import { Button, Input, InputNumber } from "antd";
 import { useFormik } from "formik";
+import CustomModal from "../Components/UI/CustomModal";
 
 interface InventoryEditModalProps {
   visible: boolean;
@@ -36,22 +37,11 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({
   }, [record]);
 
   return (
-    <Modal
+    <CustomModal
+      visible={visible}
       title="Edit Inventory"
-      open={visible}
-      onCancel={onClose}
-      footer={[
-        <Button key="cancel" onClick={onClose}>
-          Cancel
-        </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          onClick={() => formik.handleSubmit()}
-        >
-          Save
-        </Button>,
-      ]}
+      onClose={onClose}
+      width={500}
     >
       <form onSubmit={formik.handleSubmit}>
         <div style={{ marginBottom: 16 }}>
@@ -77,8 +67,17 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({
             min={0}
           />
         </div>
+
+        <div style={{ textAlign: "right", marginTop: 24 }}>
+          <Button onClick={onClose} style={{ marginRight: 8 }}>
+            Cancel
+          </Button>
+          <Button type="primary" onClick={() => formik.handleSubmit()}>
+            Save
+          </Button>
+        </div>
       </form>
-    </Modal>
+    </CustomModal>
   );
 };
 

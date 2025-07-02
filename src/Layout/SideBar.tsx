@@ -4,9 +4,10 @@ import { Layout, Menu, Grid, Modal } from "antd";
 import { useNavigate, useLocation } from "react-router-dom"; // import useLocation
 import "../Styles/main.scss";
 import asset from "../Utils/asset";
-import { clearCookie, getDecryptedCookie } from "../Utils/cookies";
+import { clearCookie } from "../Utils/cookies";
 import { logout } from "../Services/ApiService";
 import { toast } from "react-toastify";
+import { getUserToken } from "../Utils/Data";
 
 const { Content, Sider } = Layout;
 const { useBreakpoint } = Grid;
@@ -68,11 +69,10 @@ const MainLayout: React.FC<LayoutProps> = ({ children }) => {
       cancelText: "Cancel",
       okType: "danger",
       onOk: () => {
-        const user = getDecryptedCookie("user_token");
-        if (!user?.token) return;
+        if (getUserToken()) return;
 
         const formData = new FormData();
-        formData.append("token", user.token);
+        formData.append("token", getUserToken());
 
         logout(formData)
           .then((res) => {
@@ -111,7 +111,6 @@ const MainLayout: React.FC<LayoutProps> = ({ children }) => {
             if (key === "logout") {
               handleLogout();
             } else {
-              // navigate to selected route
               navigate(`/${key}`);
             }
           }}

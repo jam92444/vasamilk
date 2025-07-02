@@ -1,17 +1,18 @@
 // src/routes/authRoutes.ts
 import { Navigate, Outlet } from "react-router-dom";
 import { getDecryptedCookie } from "../Utils/cookies";
+import { useUserDetails } from "../Utils/Data";
 
 // Guard for login and auth pages
 export const AuthRoute = () => {
-  const userdata = getDecryptedCookie("user_token");
+  const { token, userDetails } = useUserDetails();
 
-  if (!userdata) {
+  if (!token) {
     return <Outlet />;
   }
 
   // Redirect logged-in users based on role
-  switch (userdata.user_type) {
+  switch (userDetails.user_type) {
     case 1:
       return <Navigate to="/user" />;
     case 2:
@@ -37,12 +38,15 @@ export const VerifyOTPSent = () => {
 
 // Authenticating according to user
 export const HomePrivateRoute = () => {
-  const userData = getDecryptedCookie("user_token");
-  return userData ? <Outlet /> : <Navigate to={"/"} />;
+  const { userDetails } = useUserDetails();
+  return userDetails ? <Outlet /> : <Navigate to={"/"} />;
 };
 
 //Admin Route access
 export const AdminRoute = () => {
-  const userData = getDecryptedCookie("user_token").user_type;
-  return userData === 1 ? <Outlet /> : <Navigate to={"/"} />;
+  const { userDetails } = useUserDetails();
+
+  if (!userDetails) return null;
+
+  return userDetails.user_type === 1 ? <Outlet /> : <Navigate to="/" replace />;
 };

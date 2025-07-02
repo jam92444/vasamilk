@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import useAddUserFormik from "./useAddUserFormik";
 import CustomButton from "../../../Components/UI/CustomButton";
 import CustomInput from "../../../Components/UI/CustomInput";
 import CustomSelect from "../../../Components/UI/CustomSelect";
-import "../../../Styles/pages/Admin/AddUser.scss";
+import "../../../Styles/pages/AddUser.scss";
 import { useDropdownData } from "../../../Hooks/DropDowns";
+import {
+  CustomerType,
+  payTypesOptions,
+  UserDropDown,
+} from "../../../Utils/Data";
 const AddUser: React.FC = () => {
   const navigate = useNavigate();
   const {
@@ -22,28 +27,22 @@ const AddUser: React.FC = () => {
     methodOptions,
   } = useAddUserFormik();
 
-  const { priceDropdownOptions, lineDropdownOptions, isLoadingDropdowns } =
-    useDropdownData(values.user_type);
-
-  const customerTypes = [
-    { label: "Regular", value: 1 },
-    { label: "Occasional", value: 2 },
-  ];
-
-  const userTypes = [
-    { label: "Admin", value: 2 },
-    { label: "Vendor/logger", value: 3 },
-    { label: "Distributor", value: 4 },
-    { label: "Customer", value: 5 },
-  ];
-
-  const payTypes = [
-    { label: "Daily", value: 1 },
-    { label: "Monthly", value: 2 },
-  ];
+  //api drop down calls
+  const {
+    priceTagDropdownOptions,
+    loadLineDropdowns,
+    payTagIdDropDown,
+    lineDropdownOptions,
+    isLoadingDropdowns,
+  } = useDropdownData();
 
   const isCustomer = values.user_type === 5;
   const isRegularCustomer = Number(values.customer_type) === 1;
+
+  useEffect(() => {
+    payTagIdDropDown();
+    loadLineDropdowns();
+  }, []);
 
   return (
     <div className="add-user-form">
@@ -125,7 +124,7 @@ const AddUser: React.FC = () => {
             label="User Type"
             name="user_type"
             value={values.user_type}
-            options={userTypes}
+            options={UserDropDown}
             onChange={(val) => setFieldValue("user_type", val)}
             onBlur={handleBlur}
             error={errors.user_type as string}
@@ -139,7 +138,7 @@ const AddUser: React.FC = () => {
                 label="Customer Type"
                 name="customer_type"
                 value={values.customer_type}
-                options={customerTypes}
+                options={CustomerType}
                 onChange={(val) => setFieldValue("customer_type", val)}
                 onBlur={handleBlur}
                 error={errors.customer_type as string}
@@ -168,8 +167,8 @@ const AddUser: React.FC = () => {
                 name="price_tag_id"
                 value={values.price_tag_id}
                 options={
-                  priceDropdownOptions.length
-                    ? priceDropdownOptions
+                  priceTagDropdownOptions.length
+                    ? priceTagDropdownOptions
                     : [{ label: "No price tags", value: "" }]
                 }
                 onChange={(val) => setFieldValue("price_tag_id", val)}
@@ -183,7 +182,7 @@ const AddUser: React.FC = () => {
                 label="Pay Type"
                 name="pay_type"
                 value={values.pay_type}
-                options={payTypes}
+                options={payTypesOptions}
                 onChange={(val) => setFieldValue("pay_type", val)}
                 onBlur={handleBlur}
                 error={errors.pay_type as string}

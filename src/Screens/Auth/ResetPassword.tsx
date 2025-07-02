@@ -6,7 +6,7 @@ import { resetPassword } from "../../Services/ApiService";
 import CustomInput from "../../Components/UI/CustomInput";
 import CustomButton from "../../Components/UI/CustomButton";
 import "../../Styles/pages/_login.scss";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { getDecryptedCookie, clearCookie } from "../../Utils/cookies";
 import { siteName } from "../../App";
 import { useAuth } from "../../Context/AuthContext";
@@ -44,7 +44,6 @@ const initialValues: ResetTypes = {
 
 const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { isAuthenticated, userDetails } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -54,10 +53,6 @@ const ResetPassword: React.FC = () => {
     return (
       <Navigate to={userDetails?.user_type === 1 ? "/admin-dashboard" : "/"} />
     );
-  }
-
-  if (location.state?.from !== "otp-verification") {
-    return <Navigate to="/" />;
   }
 
   const handleResetPassword = (values: ResetTypes) => {

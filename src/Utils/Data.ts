@@ -1,16 +1,22 @@
-import {
-  getLinesDropDown,
-  getPriceTagDropDown,
-  getSlotDropDown,
-} from "../Services/ApiService";
+import { getSlotDropDown } from "../Services/ApiService";
 import { getDecryptedCookie } from "./cookies";
+import { useMemo } from "react";
 
-export const userToken = getDecryptedCookie("user_token")?.token;
-export const userdata = getDecryptedCookie("user_token");
+export const getUserToken = () => getDecryptedCookie("user_token")?.token;
+export const getUserData = () => getDecryptedCookie("user_token");
 
-console.log(userToken);
+// console.log(userToken);
 const formData = new FormData();
-formData.append("token", userToken);
+formData.append("token", getUserToken());
+
+export const useUserDetails = () => {
+  const userDetails = useMemo(() => getDecryptedCookie("user_token"), []);
+  return {
+    token: userDetails?.token,
+    userDetails,
+    type: userDetails?.user_type, // Add type if used separately
+  };
+};
 
 export const SlotData = async () => {
   try {
@@ -18,37 +24,6 @@ export const SlotData = async () => {
     return res.data;
   } catch (error) {
     console.error("Error fetching slot data:", error);
-    return null;
-  }
-};
-
-export const LineData = async (userType: number | string) => {
-  try {
-    const userToken = getDecryptedCookie("user_token")?.token;
-    if (!userToken) throw new Error("User token missing");
-
-    const formData = new FormData();
-    formData.append("token", userToken);
-
-    // Send actual integer (1 or 2)
-    const numericType = parseInt(userType as string, 10);
-    const type = numericType === 4 ? 2 : 1;
-    formData.append("type", type.toString()); // still must append as string
-
-    const res = await getLinesDropDown(formData);
-    return res.data;
-  } catch (error) {
-    console.error("Error fetching line data:", error);
-    return null;
-  }
-};
-
-export const PriceTagData = async () => {
-  try {
-    const res = await getPriceTagDropDown(formData);
-    return res.data;
-  } catch (error) {
-    console.error("Error fetching price tag data:", error);
     return null;
   }
 };
@@ -80,4 +55,15 @@ export const CustomerType = [
 export const payTypesOptions = [
   { label: "Daily", value: 1 },
   { label: "Monthly", value: 2 },
+];
+
+export const inOutOption = [
+  {
+    label: "In",
+    value: 1,
+  },
+  {
+    label: "Out",
+    value: 2,
+  },
 ];

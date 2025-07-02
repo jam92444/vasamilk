@@ -1,6 +1,7 @@
 // src/Modal/CustomModal.tsx
 import { Modal } from "antd";
 import type { ReactNode } from "react";
+import "../../Styles/components/UI/CustomModal.scss";
 
 interface CustomModalProps {
   visible: boolean;
@@ -15,7 +16,7 @@ const CustomModal = ({
   title,
   onClose,
   children,
-  width = 500,
+  width = 800,
 }: CustomModalProps) => {
   return (
     <Modal
@@ -24,10 +25,9 @@ const CustomModal = ({
       onCancel={onClose}
       footer={null}
       width={width}
-      destroyOnClose
       centered
     >
-      {children}
+      <div className="custom-modal-scrollable-content">{children}</div>
     </Modal>
   );
 };

@@ -1,10 +1,9 @@
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DatePicker, Button } from "antd";
-import { useDropdownData } from "../../Hooks/DropDowns";
-import { userdata } from "../../Utils/Data";
-import CustomSelect from "../UI/CustomSelect";
-import "../../Styles/pages/inventoryFilter.scss";
+import { useDropdownData } from "../../../Hooks/DropDowns";
+import CustomSelect from "../../../Components/UI/CustomSelect";
+import "../../../Styles/pages/inventoryFilter.scss";
 const { RangePicker } = DatePicker;
 
 const InventoryLogFilter = ({
@@ -13,11 +12,13 @@ const InventoryLogFilter = ({
   onFilter: (filters: any) => void;
 }) => {
   const {
+    customerDropDown,
+    distributorDropDown,
     CustomerDropdownOptions,
     distributorDropdownOptions,
     SlotstatusDropDownOptions,
     modeDropDownOptions,
-  } = useDropdownData(userdata.user_type);
+  } = useDropdownData();
 
   const defaultFrom = dayjs();
   const defaultTo = dayjs();
@@ -28,6 +29,9 @@ const InventoryLogFilter = ({
   const [status, setStatus] = useState<string | number>("");
   const [slotMode, setSlotMode] = useState<string[] | number[]>([]);
 
+  useEffect(() => {
+    customerDropDown(), distributorDropDown();
+  }, []);
   //setting value
   const handleFilter = () => {
     onFilter({

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Table, Typography, Tag, Button } from "antd";
-import { userToken } from "../../../Utils/Data";
+import { useUserDetails } from "../../../Utils/Data";
 import { getDistributorList } from "../../../Services/ApiService";
 import { useNavigate } from "react-router-dom";
 import CustomButton from "../../../Components/UI/CustomButton";
 import { toast } from "react-toastify";
+import "../../../Styles/pages/_distributor.scss";
 
 const { Text } = Typography;
 
@@ -24,13 +25,14 @@ interface DistributorRecord {
 
 const Distributor = () => {
   const navigate = useNavigate();
+  const { token } = useUserDetails();
   const [distributors, setDistributors] = useState<DistributorRecord[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleGetDistributorList = () => {
     setLoading(true);
     const formData = new FormData();
-    formData.append("token", userToken);
+    formData.append("token", token);
 
     getDistributorList(formData)
       .then((res) => {
@@ -83,12 +85,6 @@ const Distributor = () => {
 
   const routeColumns = [
     {
-      title: "Route ID",
-      dataIndex: "id",
-      key: "id",
-      width: 100,
-    },
-    {
       title: "Route Name",
       dataIndex: "line_name",
       key: "line_name",
@@ -131,6 +127,7 @@ const Distributor = () => {
       <div className="flex-center-between" style={{ marginBottom: "1rem" }}>
         <h2>Distributor List</h2>
         <CustomButton
+          className="assign-slot-button"
           text="Assign Slot"
           onClick={() => navigate("assign-route")}
         />
@@ -140,6 +137,8 @@ const Distributor = () => {
         dataSource={distributors}
         columns={distributorColumns}
         rowKey="distributer_id"
+        style={{ fontFamily: "Poppins", fontSize: "13px" }}
+        size="small"
         expandable={{
           expandedRowRender: (record) =>
             (record?.line_data ?? []).length > 0 ? (

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Spin, Alert } from "antd";
-import { getDecryptedCookie } from "../../../Utils/cookies";
 import { dailyInventoryReport } from "../../../Services/ApiService";
-import InventoryStats from "../../../Components/Inventory/InventoryStats";
-import InventoryChart from "../../../Modal/InventoryChart";
-import InventoryList from "../../../Components/Inventory/InventoryList";
-import MilkRequiredReport from "../../../Components/Inventory/MilkRequiredReport";
+import InventoryStats from "./InventoryStats";
+import InventoryChart from "../charts/InventoryChart";
+import InventoryList from "./InventoryList";
+import MilkRequiredReport from "./MilkRequiredReport";
 import "../../../Styles/pages/_inventory.scss";
+import { useUserDetails } from "../../../Utils/Data";
 
 interface SlotReport {
   eve_slot_count: number;
@@ -15,10 +15,10 @@ interface SlotReport {
 }
 
 const Inventory: React.FC = () => {
+  const { token } = useUserDetails();
   const [dailySlotReport, setDailySlotReport] = useState<SlotReport | null>(
     null
   );
-  const token = getDecryptedCookie("user_token").token;
   const formData = new FormData();
   formData.append("token", token);
   const [loading, setLoading] = useState(true);
@@ -80,8 +80,8 @@ const Inventory: React.FC = () => {
       )}
       <div>
         <InventoryChart />
-        <InventoryList />
         <MilkRequiredReport />
+        <InventoryList />
       </div>
     </div>
   );

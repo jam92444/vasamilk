@@ -3,24 +3,25 @@ import { Select } from "antd";
 import "../../Styles/components/UI/CustomSelect.scss";
 
 export interface Option {
-  label?: string;
-  value?: string | number;
+  label: string;
+  value: string | number;
   disabled?: boolean;
 }
 
 interface Props {
   label: string;
   name: string;
-  value: string | number | string[] | number[]; // ✅ Updated line
+  value: string | number | (string | number)[] | null;
   options: Option[];
-  onChange: (value: string | number | string[] | number[]) => void; // ✅ Also update onChange
+  onChange: (value: string | number | (string | number)[] | null) => void;
   onBlur?: (e: React.FocusEvent<HTMLElement>) => void;
   error?: string | undefined | false;
   touched?: boolean;
   mode?: "multiple" | "tags";
   required?: boolean;
   placeholder?: string;
-  className?: string; // Optional, if you're passing className
+  className?: string;
+  disabled?: boolean;
 }
 
 const CustomSelect: React.FC<Props> = ({
@@ -32,18 +33,17 @@ const CustomSelect: React.FC<Props> = ({
   error,
   touched,
   required,
-  className,
+  className = "",
+  disabled,
   mode,
-  placeholder, // destructure here
+  placeholder,
 }) => {
   const showError = touched && error;
 
+  // Add a default option only for single select
   const enhancedOptions: Option[] =
-    typeof value === "string" || typeof value === "number"
-      ? [
-          { label: `-- Select ${label} --`, value: "", disabled: true },
-          ...options,
-        ]
+    !mode && !placeholder
+      ? [{ label: `-- Select ${label} --`, value: "" }, ...options]
       : options;
 
   return (
@@ -57,11 +57,13 @@ const CustomSelect: React.FC<Props> = ({
           {label} {required && <span className="required">*</span>}
         </label>
       )}
+
       <Select
         value={value}
         onChange={onChange}
         mode={mode}
         onBlur={onBlur}
+        disabled={disabled}
         showSearch
         optionFilterProp="label"
         filterOption={(input, option) =>
@@ -70,9 +72,10 @@ const CustomSelect: React.FC<Props> = ({
           )
         }
         options={enhancedOptions}
-        placeholder={placeholder}
+        placeholder={placeholder || `Select ${label}`}
         className="custom-select"
       />
+
       {showError && <div className="error-text">{error}</div>}
     </div>
   );

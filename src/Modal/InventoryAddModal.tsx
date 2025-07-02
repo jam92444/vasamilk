@@ -1,13 +1,15 @@
 import React from "react";
-import { Modal, Button, Input, InputNumber } from "antd";
+import { Button, Input, InputNumber } from "antd";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import CustomModal from "../Components/UI/CustomModal";
 
 interface InventoryAddModalProps {
   visible: boolean;
   onClose: () => void;
   onSave: (values: any) => void;
 }
+
 const validationSchema = Yup.object({
   total_quantity: Yup.number()
     .required("Total quantity is required")
@@ -32,23 +34,7 @@ const InventoryAddModal: React.FC<InventoryAddModalProps> = ({
   });
 
   return (
-    <Modal
-      title="Add Inventory"
-      open={visible}
-      onCancel={onClose}
-      footer={[
-        <Button key="cancel" onClick={onClose}>
-          Cancel
-        </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          onClick={() => formik.handleSubmit()}
-        >
-          Save
-        </Button>,
-      ]}
-    >
+    <CustomModal visible={visible} title="Add Inventory" onClose={onClose}>
       <form onSubmit={formik.handleSubmit}>
         <div style={{ marginBottom: 16 }}>
           <label style={{ fontWeight: 500 }}>Total Quantity</label>
@@ -81,8 +67,15 @@ const InventoryAddModal: React.FC<InventoryAddModalProps> = ({
             placeholder="Enter comment"
           />
         </div>
+
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button type="primary" onClick={() => formik.handleSubmit()}>
+            Save
+          </Button>
+        </div>
       </form>
-    </Modal>
+    </CustomModal>
   );
 };
 

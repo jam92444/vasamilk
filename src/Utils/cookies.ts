@@ -11,13 +11,13 @@ export const setEncryptedCookie = (
 ) => {
   const encrypted = encryptData(data);
   Cookies.set(name, encrypted, {
-    secure: true,
-    sameSite: "Strict",
     ...options,
   });
 };
 
-export const getDecryptedCookie = <T = any>(name: string): T | string | null => {
+export const getDecryptedCookie = <T = any>(
+  name: string
+): T | string | null => {
   const encrypted = Cookies.get(name);
   if (!encrypted) return null;
 

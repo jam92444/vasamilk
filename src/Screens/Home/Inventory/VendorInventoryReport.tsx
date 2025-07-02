@@ -14,9 +14,9 @@ import {
   Space,
 } from "antd";
 import dayjs, { Dayjs } from "dayjs";
-import { getDecryptedCookie } from "../../Utils/cookies";
-import { getVendorMilkReport } from "../../Services/ApiService";
+import { getVendorMilkReport } from "../../../Services/ApiService";
 import { toast } from "react-toastify";
+import { useUserDetails } from "../../../Utils/Data";
 
 const { RangePicker } = DatePicker;
 const { Title } = Typography;
@@ -32,11 +32,10 @@ interface VendorReport {
 const VendorMilkReport = () => {
   const [report, setReport] = useState<VendorReport | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const user = getDecryptedCookie("user_token");
+  const { token, userDetails } = useUserDetails();
 
   // Initial values for reset
-  const initialDistributorId = user?.distributor_id ?? 0;
+  const initialDistributorId = userDetails?.distributor_id ?? 0;
   const initialDateRange: [Dayjs, Dayjs] = [dayjs(), dayjs()];
   const initialLogType = 0;
 
@@ -53,7 +52,6 @@ const VendorMilkReport = () => {
   }, []);
 
   const fetchVendorReport = async () => {
-    const token = user?.token;
     if (!token) {
       toast.error("Authentication token is missing.");
       return;

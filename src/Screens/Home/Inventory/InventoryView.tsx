@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Table, Card, Spin, Button } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getDecryptedCookie } from "../../../Utils/cookies";
 import { getlistInventoryLog } from "../../../Services/ApiService";
 import type { TablePaginationConfig } from "antd";
+import { useUserDetails } from "../../../Utils/Data";
+import CustomTable from "../../../Components/UI/CustomTable";
 
 const InventoryView: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const record = location.state?.record;
-
+  const { token } = useUserDetails();
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 10,
@@ -18,7 +19,6 @@ const InventoryView: React.FC = () => {
 
   const [inventoryLog, setInventoryLog] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const token = getDecryptedCookie("user_token")?.token;
 
   const fetchInventoryLog = async (
     page: number,
@@ -43,6 +43,7 @@ const InventoryView: React.FC = () => {
     } else {
       setInventoryLog([]);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -142,21 +143,19 @@ const InventoryView: React.FC = () => {
         style={{ marginTop: 20 }}
       >
         <Spin spinning={loading}>
-          <Table
+          <CustomTable
+            data={inventoryLog}
             columns={logColumns}
-            dataSource={inventoryLog}
             rowKey={(record) => record.id}
-            size="small"
             pagination={{
               ...pagination,
               onChange: (page, pageSize) => {
                 setPagination({ ...pagination, current: page, pageSize });
               },
-              showSizeChanger: true,
-              style: { marginTop: 16, textAlign: "center" },
             }}
-            scroll={{ x: true }}
-            locale={{ emptyText: "No inventory log found." }}
+            loading={loading}
+            scrollX
+            emptyText="No inventory log found."
           />
         </Spin>
       </Card>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import type { ApexOptions } from "apexcharts";
 import ReactApexChart from "react-apexcharts";
-import { getDecryptedCookie } from "../Utils/cookies";
-import { dailyInventoryReport } from "../Services/ApiService";
-import "../Styles/pages/_inventory.scss";
+import { dailyInventoryReport } from "../../../Services/ApiService";
+import "../../../Styles/pages/_inventory.scss";
+import { getUserToken } from "../../../Utils/Data";
 
 const InventoryChart = () => {
   const [loading, setLoading] = useState(true);
@@ -16,9 +16,8 @@ const InventoryChart = () => {
     categories: [],
   });
 
-  const token = getDecryptedCookie("user_token").token;
   const formData = new FormData();
-  formData.append("token", token);
+  formData.append("token", getUserToken());
   const handleGetReport = () => {
     setLoading(true);
     dailyInventoryReport(formData)

@@ -1,0 +1,38 @@
+@use "../abstracts/index.scss" as *;
+
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  h2 {
+    margin: 0;
+  }
+
+  .backBtn {
+    padding-left: 0;
+    font-weight: bold;
+    font-size: $text-xs;
+  }
+}
+
+.assignmentBlock {
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background-color: #fafafa;
+}
+
+.actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 16px;
+}

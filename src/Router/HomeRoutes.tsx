@@ -3,7 +3,7 @@ import { AdminRoute } from "./PrivateRoute";
 import CustomerManagement from "../Screens/Home/User/CustomerManagement";
 import AddUser from "../Screens/Home/User/AddUser";
 import LayoutWrapper from "../Layout/LayoutWrapper";
-import InventoryList from "../Components/Inventory/InventoryList";
+import InventoryList from "../Screens/Home/Inventory/InventoryList";
 import Inventory from "../Screens/Home/Inventory/Inventory";
 import InventoryView from "../Screens/Home/Inventory/InventoryView";
 import SlotMapping from "../Screens/Home/Inventory/SlotMapping";

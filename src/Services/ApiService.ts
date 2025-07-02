@@ -146,6 +146,13 @@ export const getSlotMapping = (
 };
 
 /-----------------------------------------DistributorAPI------------------------------------------------------/;
+
+export const addInventoryListData = (payload: any) => {
+  return axiosInstance.post(
+    "/milk-api/milk-sales/distributer-inventory-log",
+    payload
+  );
+};
 export const getDistributorList = (payload: any) => {
   return axiosInstance.post(
     "/milk-api/slot-assign/get-distributer-line",
@@ -175,4 +182,15 @@ export const getRouteDetails = (
     `/milk-api/slot-assign/list-assigned-slot?page=${page}&size=${size}`,
     payload
   );
+};
+
+// Assign route Data drop down
+export const assignRouteApi = (payload: any) => {
+  return axiosInstance.post(
+    "/milk-api/drop-down/assign-router-drop-down",
+    payload
+  );
+};
+export const assignSlot = (payload: any) => {
+  return axiosInstance.post("/milk-api/slot-assign/assign-slot-map", payload);
 };

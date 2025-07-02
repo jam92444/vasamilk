@@ -1,0 +1,6 @@
+@use "../abstracts/index.scss" as *;
+
+.assign-slot-button {
+  font-size: $text-xs;
+  padding: 2rem 0.5rem;
+}

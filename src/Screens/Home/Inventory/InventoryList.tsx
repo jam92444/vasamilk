@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
 import { Table, Button, Space, Alert, Spin } from "antd";
 import type { TablePaginationConfig } from "antd";
-import { getDecryptedCookie } from "../../Utils/cookies";
 import {
   addInventory,
+  addInventoryListData,
   getInventoryList,
   updateInventory,
-} from "../../Services/ApiService";
+} from "../../../Services/ApiService";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { userToken } from "../../Utils/Data";
-import InventoryEditModal from "../../Modal/InventoryEditModal";
-import InventoryAddModal from "../../Modal/InventoryAddModal";
-import "../../Styles/pages/Admin/InventoryList.scss";
+import { useUserDetails } from "../../../Utils/Data";
+import InventoryEditModal from "../../../Modal/InventoryEditModal";
+import InventoryAddModal from "../../../Modal/InventoryAddModal";
+import "../../../Styles/pages/InventoryList.scss";
+import InventoryListAddModel from "../../../Modal/InventoryListAddModel";
+import CustomTable from "../../../Components/UI/CustomTable";
 
 const InventoryList = () => {
+  const { token } = useUserDetails();
   const navigate = useNavigate();
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
@@ -36,7 +39,7 @@ const InventoryList = () => {
   const [addModalVisible, setAddModalVisible] = useState(false);
 
   // add inventory List model
-  // const [addListModalVisible, setAddListModalVisible] = useState(false);
+  const [addListModalVisible, setAddListModalVisible] = useState(false);
 
   // loading
   const [loading, setLoading] = useState(false);
@@ -47,9 +50,6 @@ const InventoryList = () => {
 
   // fetching inventory data from the API.
   const handleGetInventory = async (page: number, pageSize: number) => {
-    const userData = getDecryptedCookie("user_token");
-    const token = userData?.token;
-
     if (!token) {
       console.error("No user token found.");
       return;
@@ -105,7 +105,6 @@ const InventoryList = () => {
 
   // saving  add inventory
   const handleSaveAdd = (values: any) => {
-    const token = getDecryptedCookie("user_token").token;
     const formData = new FormData();
     formData.append("token", token);
     formData.append("total_quantity", values.total_quantity);
@@ -124,6 +123,41 @@ const InventoryList = () => {
     setAddModalVisible(false);
   };
 
+  //  adding list
+  const handleSaveAddList = (values: any) => {
+    const quantity =
+      values.total_quantity !== undefined
+        ? values.total_quantity.toString()
+        : "";
+    const type = values.type !== undefined ? values.type.toString() : "";
+    const distributer_id =
+      values.distributer_id !== undefined
+        ? values.distributer_id.toString()
+        : "";
+
+    const formData = new FormData();
+    formData.append("token", token);
+    formData.append("given_qty", quantity);
+    formData.append("distributer_id", distributer_id);
+    formData.append("type", type);
+
+    addInventoryListData(formData)
+      .then((res) => {
+        if (res.data.status === 1) {
+          toast.success(res.data.msg);
+        } else {
+          toast.warning(res.data.msg);
+        }
+      })
+      .catch((err) => {
+        console.error("Add inventory error:", err);
+        toast.error("Something went wrong while adding inventory.");
+      })
+      .finally(() => {
+        setAddModalVisible(false);
+      });
+  };
+
   const formatValue = (value: any) => {
     return value !== null && value !== undefined && value !== "" ? value : "-";
   };
@@ -131,7 +165,7 @@ const InventoryList = () => {
   // save edited value
   const handleSaveEdit = (updatedValues: any) => {
     const formData = new FormData();
-    formData.append("token", userToken);
+    formData.append("token", token);
 
     if (editRecord?.id) {
       formData.append("inventory_id", editRecord.id.toString());
@@ -210,7 +244,7 @@ const InventoryList = () => {
           <Button size="small" onClick={() => handleView(record)}>
             View
           </Button>
-          {/* {record.status === 1 && canUpdateInventory && (
+          {record.status === 1 && canUpdateInventory && (
             <Button
               size="small"
               onClick={() => {
@@ -220,7 +254,7 @@ const InventoryList = () => {
             >
               Add
             </Button>
-          )} */}
+          )}
           {record.status === 1 && canUpdateInventory && (
             <Button
               size="small"
@@ -265,16 +299,13 @@ const InventoryList = () => {
           />
         )}
         {/* list */}
-        <Table
-          size="small"
-          className="compact-table"
+        <CustomTable
           columns={columns}
-          dataSource={inventoryData}
-          rowKey={(record) => record.id}
+          data={inventoryData}
+          rowKey={(record) => record.id.toString()}
           loading={loading}
           pagination={{
             ...pagination,
-            showSizeChanger: true,
             itemRender: (page, type, originalElement) =>
               type === "page" ? (
                 <button className="circular-page-btn">{page}</button>
@@ -288,9 +319,11 @@ const InventoryList = () => {
             },
           }}
           onChange={handleTableChange}
-          scroll={{ x: "max-content" }}
-          locale={{ emptyText: "No inventory found" }}
+          scrollX="max-content"
+          emptyText="No inventory found"
+          className="compact-table"
         />
+
         {/* edit inventor */}
         <InventoryEditModal
           visible={editModalVisible}
@@ -309,15 +342,14 @@ const InventoryList = () => {
           onSave={handleSaveAdd}
         />
 
-        {/* <InventoryListAddModal
+        <InventoryListAddModel
           visible={addListModalVisible}
-          record={editRecord} // Pass record here
           onClose={() => {
             setAddListModalVisible(false);
             setEditRecord(null);
           }}
-          onSave={handleSaveAdd}
-        />*/}
+          onSave={handleSaveAddList}
+        />
       </Spin>
     </div>
   );

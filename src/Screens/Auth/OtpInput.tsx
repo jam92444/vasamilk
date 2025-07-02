@@ -1,23 +1,20 @@
 import React, { useRef, useState, useEffect } from "react";
 import CustomInput from "../../Components/UI/CustomInput";
 import CustomButton from "../../Components/UI/CustomButton";
-import "../../Styles/pages/_login.scss";
-import "../../Styles/pages/_opt.scss";
 import { toast } from "react-toastify";
 import { resendOTP, verifyOTP } from "../../Services/ApiService";
 import { getDecryptedCookie, setEncryptedCookie } from "../../Utils/cookies";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { siteName } from "../../App";
+import "../../Styles/pages/_login.scss";
+import "../../Styles/pages/_opt.scss";
 const OtpInput: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [resendTimer, setResendTimer] = useState<number>(0);
 
-  if (location.state?.from !== "forget-password") {
-    return <Navigate to="/" />;
-  }
   useEffect(() => {
     inputRefs.current[0]?.focus();
     setResendTimer(120);
@@ -77,7 +74,7 @@ const OtpInput: React.FC = () => {
             expires: new Date(Date.now() + 5 * 60 * 1000),
           });
           sessionStorage.setItem("OTPVerified", "verified");
-          navigate("/reset-password", { state: { from: "otp-verification" } });
+          navigate("/reset-password");
         }
       });
     } else {

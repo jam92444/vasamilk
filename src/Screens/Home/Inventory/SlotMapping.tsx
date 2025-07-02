@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Table, Typography, Button, Descriptions } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { getSlotMapping } from "../../../Services/ApiService";
-import { userToken } from "../../../Utils/Data";
-import CustomModal from "../../../Modal/CustomModal";
-import { useNavigate } from "react-router-dom";
-import InventoryLogFilter from "../../../Components/Inventory/InventoryLogFilter";
+import { getUserToken, useUserDetails } from "../../../Utils/Data";
+import CustomModal from "../../../Components/UI/CustomModal";
+import { useLocation, useNavigate } from "react-router-dom";
+import InventoryLogFilter from "./InventoryLogFilter";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
+import CustomTable from "../../../Components/UI/CustomTable";
 
 const { Title } = Typography;
 
@@ -34,6 +35,8 @@ interface SlotLog {
 
 const SlotMapping = () => {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const { mode, slot_id } = state || {};
   const [filters, setFilters] = useState({
     fromDate: dayjs().format("YYYY-MM-DD"),
     toDate: dayjs().format("YYYY-MM-DD"),
@@ -54,42 +57,59 @@ const SlotMapping = () => {
   const handleGetSlot = async (
     page = 1,
     pageSize = 10,
-    overrideFilters = filters
+    overrideFilters = filters,
+    mode: number,
+    slot_id: number
   ) => {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append("token", userToken);
+    formData.append("token", getUserToken());
     formData.append("from_date", overrideFilters.fromDate);
     formData.append("to_date", overrideFilters.toDate);
+    formData.append("mode", mode.toString());
+    formData.append("slot_id", slot_id.toString());
 
     if (overrideFilters.customerId)
       formData.append("customer_id", overrideFilters.customerId);
     if (overrideFilters.distributorId)
       formData.append("distributor_id", overrideFilters.distributorId);
 
-    getSlotMapping(page, pageSize, formData)
-      .then((res) => {
-        if (res.data.status) {
-          setSlotsLog(res.data.data);
-          setPagination({
-            current: page,
-            pageSize,
-            total: res.data.total || res.data.data.length,
-          });
-        } else {
-          toast.error("Failed to fetch slot logs");
-        }
-      })
-      .catch((error) => {
-        toast.error(
-          error?.message || "Something went wrong while fetching slot logs."
-        );
-      });
+    try {
+      const res = await getSlotMapping(page, pageSize, formData);
+      if (res.data.status) {
+        setSlotsLog(res.data.data);
+        setPagination({
+          current: page,
+          pageSize,
+          total: res.data.total || res.data.data.length,
+        });
+      } else {
+        toast.error("Failed to fetch slot logs");
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.message || "Something went wrong while fetching slot logs."
+      );
+    }
+
+    setLoading(false);
   };
 
   useEffect(() => {
-    handleGetSlot(pagination.current!, pagination.pageSize!);
+    if (!mode || !slot_id) {
+      toast.error("Missing required parameters");
+      navigate(-1);
+      return;
+    }
+
+    handleGetSlot(
+      pagination.current!,
+      pagination.pageSize!,
+      filters,
+      mode,
+      slot_id
+    );
   }, []);
 
   const showDetails = (record: SlotLog) => {
@@ -102,7 +122,6 @@ const SlotMapping = () => {
       title: "Scheduled Date",
       dataIndex: "scheduled_date",
       key: "scheduled_date",
-      responsive: ["xs", "sm", "md", "lg", "xl"],
     },
     {
       title: "Slot",
@@ -114,52 +133,39 @@ const SlotMapping = () => {
       title: "Customer",
       dataIndex: "customer_name",
       key: "customer_name",
-      responsive: ["xs", "sm", "md", "lg", "xl"],
     },
     {
       title: "Milk Status",
       dataIndex: "milk_given_status",
       key: "milk_given_status",
-      responsive: ["xs", "sm", "md", "lg", "xl"],
     },
     {
       title: "Given Qty (L)",
       dataIndex: "milk_given_quantity",
       key: "milk_given_quantity",
-      responsive: ["sm", "md", "lg", "xl"],
     },
     {
       title: "Actual Qty (L)",
       dataIndex: "actual_milk_quantity",
       key: "actual_milk_quantity",
-      responsive: ["sm", "md", "lg", "xl"],
     },
     {
       title: "Distributor",
       dataIndex: "assigned_name",
       key: "assigned_name",
       render: (value: string | null) => value || "-",
-      responsive: ["md", "lg", "xl"],
     },
     {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <span style={{ color: "red", fontSize: 13 }}>
-          <Button
-            type="link"
-            onClick={() => showDetails(record)}
-            style={{
-              color: "red",
-              fontSize: 13,
-              padding: 0,
-              height: "auto",
-              lineHeight: "normal",
-            }}
-          >
-            View
-          </Button>
-        </span>
+        <Button
+          type="link"
+          onClick={() => showDetails(record)}
+          style={{ color: "red", fontSize: 13, padding: 0 }}
+        >
+          View
+        </Button>
       ),
     },
   ];
@@ -170,9 +176,8 @@ const SlotMapping = () => {
         style={{
           display: "flex",
           alignItems: "center",
-          gap: 8,
-          marginBottom: 16,
           justifyContent: "space-between",
+          marginBottom: 16,
         }}
       >
         <Title level={4} style={{ margin: 0 }}>
@@ -182,29 +187,33 @@ const SlotMapping = () => {
           Back
         </Button>
       </div>
+
       <InventoryLogFilter
         onFilter={(newFilters) => {
           setFilters(newFilters);
-          handleGetSlot(1, pagination.pageSize!, newFilters);
+          handleGetSlot(1, pagination.pageSize!, newFilters, mode, slot_id);
         }}
       />
 
-      <Table
-        dataSource={slotsLog}
+      <CustomTable
+        data={slotsLog}
         columns={columns}
         rowKey="slot_log_id"
         pagination={pagination}
         loading={loading}
-        style={{ fontSize: 13 }}
-        scroll={{ x: "max-content" }}
-        size="small"
         onChange={(pagination) => {
           setPagination(pagination);
-          handleGetSlot(pagination.current!, pagination.pageSize!, filters);
+          handleGetSlot(
+            pagination.current!,
+            pagination.pageSize!,
+            filters,
+            mode,
+            slot_id
+          );
         }}
+        scrollX="max-content"
       />
 
-      {/* Custom Modal to view slot details */}
       <CustomModal
         visible={isModalVisible}
         title="Slot Details"

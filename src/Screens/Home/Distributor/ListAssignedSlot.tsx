@@ -2,7 +2,7 @@ import { Table, Typography, Tag } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { userToken } from "../../../Utils/Data";
+import { useUserDetails } from "../../../Utils/Data";
 import { getRouteDetails } from "../../../Services/ApiService";
 import { toast } from "react-toastify";
 import CustomButton from "../../../Components/UI/CustomButton";
@@ -22,6 +22,7 @@ interface AssignedSlot {
 }
 
 const ListAssignedSlot = () => {
+  const { token } = useUserDetails();
   const navigate = useNavigate();
   const { state } = useLocation();
   const { distributorId, line_id, distributorName, lineName } = state || {};
@@ -41,14 +42,14 @@ const ListAssignedSlot = () => {
     distributorId?: number,
     lineId?: number
   ) => {
-    if (!userToken || !distributorId || !lineId) {
+    if (!token || !distributorId || !lineId) {
       toast.error("Missing required parameters");
       return;
     }
 
     setLoading(true);
     const formData = new FormData();
-    formData.append("token", userToken);
+    formData.append("token", token);
     formData.append("distributor_id", String(distributorId));
     formData.append("line_id", String(lineId));
 

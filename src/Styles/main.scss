@@ -190,6 +190,7 @@ body {
   padding: 4px !important;
 }
 .ant-table-cell {
+  font-size: 13px !important;
   font-family: $font-poppins !important;
 }
 
@@ -197,4 +198,13 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+Button {
+  width: fit-content;
+}
+.submit-btn {
+  font-size: $text-xs;
+  background-color: $bg-blue;
+  color: $text-white;
 }

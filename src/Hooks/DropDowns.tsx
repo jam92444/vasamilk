@@ -1,23 +1,30 @@
-// src/Hooks/useDropdownData.ts
-import { useEffect, useState } from "react";
-import { getDecryptedCookie } from "../Utils/cookies";
+import { useState } from "react";
 import {
+  assignRouteApi,
   getCustomer,
   getDistributor,
   getLinesDropDown,
+  getPriceTagDropDown,
 } from "../Services/ApiService";
-import { PriceTagData } from "../Utils/Data";
 import { useDropdownOptions } from "./useDropdownOptions";
 import { toast } from "react-toastify";
+import { getUserData, getUserToken } from "../Utils/Data";
 
-export function useDropdownData(userType?: number) {
+interface CustomerDropDownParams {
+  slot_id?: number;
+  line_id?: number;
+  type?: number;
+}
+
+export function useDropdownData() {
   const [priceOptionsRaw, setPriceOptionsRaw] = useState([]);
   const [lineOptionsRaw, setLineOptionsRaw] = useState([]);
-  const [isLoadingDropdowns, setIsLoadingDropdowns] = useState(true);
   const [customerRaw, setCustomerRaw] = useState([]);
   const [distributorRaw, setDistributorRaw] = useState([]);
+  const [assignRoute, setAssignRoute] = useState([]);
+  const [isLoadingDropdowns, setIsLoadingDropdowns] = useState(false);
 
-  const priceDropdownOptions = useDropdownOptions({
+  const priceTagDropdownOptions = useDropdownOptions({
     data: priceOptionsRaw,
     labelKey: "price_tag_name",
     valueKey: "price_tag_value",
@@ -32,7 +39,7 @@ export function useDropdownData(userType?: number) {
   const CustomerDropdownOptions = useDropdownOptions({
     data: customerRaw,
     labelKey: "name",
-    valueKey: "id",
+    valueKey: "slot_map_id",
   });
 
   const distributorDropdownOptions = useDropdownOptions({
@@ -41,50 +48,50 @@ export function useDropdownData(userType?: number) {
     valueKey: "id",
   });
 
+  const assignRouteDropDownOptions = useDropdownOptions({
+    data: assignRoute,
+    labelKey: "name",
+    valueKey: "id",
+  });
   const SlotstatusDropDownOptions = [
-    {
-      label: "Given",
-      value: 1,
-    },
-    {
-      label: "Upcoming",
-      value: 2,
-    },
-    {
-      label: "Partially Given",
-      value: 3,
-    },
-    {
-      label: "Cancelled",
-      value: 4,
-    },
+    { label: "Given", value: 1 },
+    { label: "Upcoming", value: 2 },
+    { label: "Partially Given", value: 3 },
+    { label: "Cancelled", value: 4 },
   ];
 
   const modeDropDownOptions = [
-    {
-      label: "Vendor",
-      value: "1",
-    },
-    {
-      label: "Distributor",
-      value: "2",
-    },
+    { label: "Vendor", value: "1" },
+    { label: "Distributor", value: "2" },
   ];
 
-  useEffect(() => {
-    fetchDropdownData();
-  }, [userType]);
+  const slotDropDown = [
+    { label: "Morning", value: "1" },
+    { label: "Evening", value: "2" },
+  ];
 
-  const GetPayTagIDs = async () => {
-    const prices = await PriceTagData();
-    setPriceOptionsRaw(prices?.data || []);
+  const assignTypeDropDown = [
+    { label: "Permanent", value: "1" },
+    { label: "Temporary", value: "2" },
+  ];
 
-    setIsLoadingDropdowns(false);
+  const payTagIdDropDown = () => {
+    const formData = new FormData();
+    formData.append("token", getUserToken());
+
+    getPriceTagDropDown(formData)
+      .then((res) => {
+        setPriceOptionsRaw(res.data?.data || []);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Failed to load price tag data");
+      });
   };
 
-  const loadLineDropdowns = async () => {
-    const user = getDecryptedCookie("user_token");
-    if (!user?.token || !userType) return;
+  const loadLineDropdowns = () => {
+    const user = getUserData();
+    if (!getUserToken() || !user?.user_type) return;
 
     const type = user.user_type === 4 ? "2" : "1";
     const formData = new FormData();
@@ -100,68 +107,96 @@ export function useDropdownData(userType?: number) {
         }
       })
       .catch((error) => {
-        toast.error(
-          error?.message || "Something went wrong while fetching line data."
-        );
+        toast.error(error || "Error loading line data");
       });
   };
 
-  const customerDropDown = async () => {
-    const user = getDecryptedCookie("user_token");
-    if (!user?.token || !userType) return;
-
-    const type = "4";
+  const customerDropDown = async ({
+    slot_id,
+    line_id,
+    type,
+  }: CustomerDropDownParams = {}) => {
+    const isType = type ? type.toString() : "4";
     const formData = new FormData();
-    formData.append("token", user.token);
-    formData.append("type", type);
-
-    const res = await getCustomer(formData);
-    if (res.data.status === 1) {
-      setCustomerRaw(res.data.data);
-    } else {
-      toast.error(res.data.msg || "Failed to fetch line data");
-    }
-  };
-
-  const distributorDropDown = async () => {
-    const user = getDecryptedCookie("user_token");
-    if (!user?.token) return;
-
-    const formData = new FormData();
-    formData.append("token", user.token);
-
-    const res = await getDistributor(formData);
-    if (res.data.status === 1) {
-      setDistributorRaw(res.data.data);
-    } else {
-      toast.error(res.data.msg || "Failed to fetch line data");
-    }
-  };
-
-  const fetchDropdownData = async () => {
-    setIsLoadingDropdowns(true);
-    const hasUserType = !!userType;
+    formData.append("token", getUserToken());
+    formData.append("type", isType);
+    formData.append("for_assign_key", "0");
+    if (slot_id) formData.append("slot_id", slot_id.toString());
+    if (line_id) formData.append("line_id", line_id.toString());
 
     try {
-      await Promise.all([
-        GetPayTagIDs(),
-        distributorDropDown(),
-        customerDropDown(),
-        hasUserType ? loadLineDropdowns() : Promise.resolve(),
-      ]);
-    } catch (error) {
-      console.error("Dropdown loading error:", error);
-      toast.error("Failed to load dropdown data");
+      const res = await getCustomer(formData);
+      if (res.data.status === 1) {
+        setCustomerRaw(res.data.data);
+        return res.data.data; // ✅ return customers
+      } else {
+        toast.error(res.data.msg || "Failed to fetch customer data");
+        return [];
+      }
+    } catch (err) {
+      toast.error("Error loading customer data");
+      return [];
+    }
+  };
+
+  const distributorDropDown = () => {
+    const formData = new FormData();
+    formData.append("token", getUserToken());
+
+    getDistributor(formData)
+      .then((res) => {
+        if (res.data.status === 1) {
+          setDistributorRaw(res.data.data);
+        } else {
+          toast.error(res.data.msg || "Failed to fetch distributor data");
+        }
+      })
+      .catch((err) => {
+        toast.error(err.message || "Error loading distributor data");
+      });
+  };
+
+  const AssignRouteDropDown = async (
+    type: number = 1,
+    slot_id: number = 1,
+    from?: string,
+    to?: string
+  ) => {
+    const formData = new FormData();
+    formData.append("token", getUserToken());
+    formData.append("type", type.toString());
+    formData.append("slot_id", slot_id.toString());
+    formData.append("for_assign_key", "0");
+    if (from) formData.append("from_date", from);
+    if (to) formData.append("to_date", to);
+
+    try {
+      const res = await assignRouteApi(formData);
+      console.log(res.data.data);
+      setAssignRoute(res.data.data || []);
+      return res.data.data || [];
+    } catch (err) {
+      console.error("Failed to load assign route", err);
+      return []; // ✅ fail-safe return
     }
   };
 
   return {
     isLoadingDropdowns,
-    priceDropdownOptions,
+    priceTagDropdownOptions,
     lineDropdownOptions,
     CustomerDropdownOptions,
     distributorDropdownOptions,
     SlotstatusDropDownOptions,
     modeDropDownOptions,
+    assignRoute,
+    slotDropDown,
+    assignTypeDropDown,
+    assignRouteDropDownOptions,
+    AssignRouteDropDown,
+    customerDropDown,
+    distributorDropDown,
+    payTagIdDropDown,
+    loadLineDropdowns,
   };
 }
