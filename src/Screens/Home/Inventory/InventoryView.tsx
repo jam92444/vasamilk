@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Card, Spin, Button } from "antd";
+import { Card, Spin, Button } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getlistInventoryLog } from "../../../Services/ApiService";
 import type { TablePaginationConfig } from "antd";

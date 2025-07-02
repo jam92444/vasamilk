@@ -1,0 +1,328 @@
+/* Box sizing reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove default margins */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+/* Set core body defaults */
+body {
+  min-height: 100vh;
+  max-width: 1980px;
+  overflow-x: hidden;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Remove list styles on ul, ol elements */
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Anchor element defaults */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Button and input resets */
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+/* Image defaults */
+img,
+picture {
+  max-width: 100%;
+  display: block;
+}
+
+/* Table defaults */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* Inherit fonts for form elements */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Remove animations and transitions for people who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/Fonts/Poppins/Poppins-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/Fonts/Poppins/Poppins-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/Fonts/Poppins/Poppins-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/Fonts/Poppins/Poppins-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/Fonts/Poppins/Poppins-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+body {
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  margin: 0 auto;
+}
+
+:root {
+  --primary-color: #1e88e5;
+  --secondary-color: #0d47a1;
+  --background-color: #f5f7fa;
+  --header-bg: #ffffff;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --menu-bg: #0d47a1;
+  --menu-selected-bg: #1565c0;
+  --menu-text: #ffffff;
+  --border-radius: 8px;
+}
+
+.ant-pagination-options .ant-select-selector {
+  cursor: pointer !important;
+}
+
+.main-layout {
+  height: 100vh;
+  display: flex;
+  background-color: var(--background-color);
+  font-family: "Poppins", sans-serif;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) transparent;
+}
+.main-layout > .ant-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color);
+}
+.main-layout__sider {
+  background-color: var(--menu-bg) !important;
+  font-family: "Poppins", sans-serif;
+}
+.main-layout__sider .ant-menu-item {
+  color: var(--menu-text);
+}
+.main-layout__sider .ant-menu-item-selected {
+  background-color: var(--menu-selected-bg) !important;
+  color: var(--menu-text) !important;
+}
+.main-layout__sider .ant-menu-item:hover {
+  background-color: #0f51b9 !important;
+}
+.main-layout__logo {
+  color: var(--menu-text);
+  font-size: 20px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 16px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.main-layout__header {
+  background-color: var(--header-bg);
+  padding: 16px 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.main-layout__title {
+  font-size: 20px;
+  font-family: "Poppins", sans-serif;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  color: var(--text-primary);
+  margin: 0;
+  font-weight: 600;
+}
+.main-layout__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow-y: scroll;
+  background-color: var(--background-color);
+}
+@media (max-width: 500px) {
+  .main-layout__content {
+    padding: 0;
+  }
+}
+.main-layout::-webkit-scrollbar {
+  width: 4px;
+}
+.main-layout::-webkit-scrollbar-thumb {
+  background-color: rgba(219, 14, 14, 0.15);
+  border-radius: 8px;
+}
+.main-layout::-webkit-scrollbar-thumb:hover {
+  background-color: #0d47a1;
+}
+.main-layout__content-container {
+  flex: 1;
+  padding: 16px;
+  background-color: white;
+  color: var(--text-primary);
+}
+
+.main-layout__menu {
+  background-color: var(--menu-bg) !important;
+}
+.main-layout__menu .ant-menu-item {
+  color: var(--menu-text) !important;
+  background-color: var(--menu-bg) !important;
+  border-radius: var(--border-radius);
+  margin: 0 8px;
+  margin-bottom: 0.3rem;
+}
+.main-layout__menu .ant-menu-item:hover {
+  background-color: #0f51b9 !important;
+}
+.main-layout__menu .ant-menu-item-selected {
+  background-color: var(--menu-selected-bg) !important;
+  color: var(--menu-text) !important;
+}
+.main-layout__menu .ant-menu-item-icon {
+  color: var(--menu-text) !important;
+}
+.main-layout__menu .ant-menu-title-content {
+  color: var(--menu-text) !important;
+}
+
+.title {
+  font-size: 24px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+}
+
+.custom-input-field.input-error {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+}
+
+.error-text {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.hint-text {
+  font-size: 12px;
+  margin-top: -1rem;
+}
+
+.required {
+  color: red;
+}
+
+.line-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100%;
+}
+.line-spinner .ant-spin-dot-item {
+  background-color: var(--primary-color);
+}
+
+.ant-btn {
+  padding: 4px !important;
+}
+
+.ant-table-cell {
+  font-size: 13px !important;
+  font-family: "Poppins", sans-serif !important;
+}
+
+.flex-center-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+Button {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.submit-btn {
+  font-size: 12px;
+  background-color: #1e88e5;
+  color: #ffffff;
+}
+
+.btn {
+  font-size: 12px;
+}/*# sourceMappingURL=main.css.map */

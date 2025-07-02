@@ -1,4 +1,4 @@
-import { Table, Typography, Tag } from "antd";
+import { Typography, Tag } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import { useUserDetails } from "../../../Utils/Data";
 import { getRouteDetails } from "../../../Services/ApiService";
 import { toast } from "react-toastify";
 import CustomButton from "../../../Components/UI/CustomButton";
+import CustomTable from "../../../Components/UI/CustomTable";
 
 const { Title, Text } = Typography;
 
@@ -53,25 +54,25 @@ const ListAssignedSlot = () => {
     formData.append("distributor_id", String(distributorId));
     formData.append("line_id", String(lineId));
 
-    getRouteDetails(page, pageSize, formData)
-      .then((res) => {
-        if (res.data.status === 1) {
-          setRouteData(res.data.data);
-          setPagination({
-            current: page,
-            pageSize,
-            total: res.data.total || res.data.data.length,
-          });
-          setLoading(false);
-        } else {
-          toast.error("Failed to fetch route data.");
-        }
-      })
-      .catch((error) => {
-        toast.error(
-          error?.message || "Something went wrong while fetching route details."
-        );
-      });
+    try {
+      const res = await getRouteDetails(page, pageSize, formData);
+      if (res.data.status === 1) {
+        setRouteData(res.data.data);
+        setPagination({
+          current: page,
+          pageSize,
+          total: res.data.total || res.data.data.length,
+        });
+      } else {
+        toast.error("Failed to fetch route data.");
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.message || "Something went wrong while fetching route details."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -142,21 +143,22 @@ const ListAssignedSlot = () => {
   ];
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div className="list-assign-slot" style={{ padding: "1rem" }}>
       <div className="flex-center-between">
         <Title level={4}>Route Details</Title>
         <CustomButton text="Back" onClick={() => navigate(-1)} />
       </div>
-      <Text>Line : {lineName}</Text>
-      <br />
-      <Text>Distributor : {distributorName}</Text>
+      <div className="" style={{ marginBottom: "2rem" }}>
+        <p style={{ fontSize: "12px" }}>Line : {lineName}</p>
+        <p style={{ fontSize: "12px" }}>Distributor : {distributorName}</p>
+      </div>
 
-      <Table
-        dataSource={routeData}
+      <CustomTable
         columns={columns}
-        rowKey="id"
+        data={routeData}
         loading={loading}
         pagination={pagination}
+        rowKey="id"
         onChange={(pagination) =>
           handleGetRouteDetails(
             pagination.current!,
@@ -165,8 +167,8 @@ const ListAssignedSlot = () => {
             line_id
           )
         }
-        scroll={{ x: "max-content" }}
-        style={{ marginTop: 24 }}
+        scrollX="max-content"
+        className="route-table"
       />
     </div>
   );

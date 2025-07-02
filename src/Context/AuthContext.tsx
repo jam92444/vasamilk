@@ -16,6 +16,7 @@ interface AuthContextType {
   setIsAuthenticated: (value: boolean) => void;
   emailSubmitted: boolean;
   setEmailSubmitted: (value: boolean) => void;
+  setLoading: (value: boolean) => void;
   otpVerified: boolean;
   setOtpVerified: (value: boolean) => void;
   userDetails: UserDetails | null;
@@ -55,6 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   return (
     <AuthContext.Provider
       value={{
+        setLoading,
         isAuthenticated,
         setIsAuthenticated,
         emailSubmitted,

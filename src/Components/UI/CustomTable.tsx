@@ -46,7 +46,7 @@ const CustomTable = <RecordType extends object>({
         }}
         onChange={onChange}
         size={size}
-        scroll={scroll} // ✅ Correct usage
+        scroll={scroll}
         locale={{ emptyText }}
       />
     </Spin>

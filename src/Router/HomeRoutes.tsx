@@ -1,7 +1,6 @@
 import type { RouteObject } from "react-router-dom";
 import { AdminRoute } from "./PrivateRoute";
 import CustomerManagement from "../Screens/Home/User/CustomerManagement";
-import AddUser from "../Screens/Home/User/AddUser";
 import LayoutWrapper from "../Layout/LayoutWrapper";
 import InventoryList from "../Screens/Home/Inventory/InventoryList";
 import Inventory from "../Screens/Home/Inventory/Inventory";
@@ -10,6 +9,7 @@ import SlotMapping from "../Screens/Home/Inventory/SlotMapping";
 import Distributor from "../Screens/Home/Distributor/Distributor";
 import ListAssignedSlot from "../Screens/Home/Distributor/ListAssignedSlot";
 import AssignRoute from "../Screens/Home/Distributor/AssignRoute";
+import AddUser from "../Screens/Home/User/AddUser";
 export const HomeRoutes: RouteObject[] | undefined = [
   {
     element: <AdminRoute />,

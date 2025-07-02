@@ -1,0 +1,79 @@
+.add-user-form {
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+}
+.add-user-form .title-box {
+  margin-bottom: 2rem;
+}
+.add-user-form .sample {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.add-user-form form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 30px;
+  /* Responsive: stack on smaller screens */
+}
+.add-user-form form .full-width {
+  grid-column: 1/-1;
+}
+.add-user-form form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+.add-user-form form input,
+.add-user-form form select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+.add-user-form form input:focus,
+.add-user-form form select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+.add-user-form form .error-message {
+  grid-column: 1/-1;
+  color: #d9534f;
+  font-size: 13px;
+  margin-top: 4px;
+}
+.add-user-form form h3 {
+  grid-column: 1/-1;
+  margin-bottom: 10px;
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 4px;
+}
+.add-user-form form .submit-button {
+  grid-column: 1/-1;
+  justify-self: end;
+  padding: 10px 30px;
+  font-weight: 600;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.add-user-form form .submit-button:hover {
+  background-color: #0056b3;
+}
+@media (max-width: 600px) {
+  .add-user-form form {
+    grid-template-columns: 1fr;
+  }
+  .add-user-form form .submit-button {
+    justify-self: stretch;
+  }
+}/*# sourceMappingURL=AddUser.css.map */

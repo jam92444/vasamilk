@@ -1,6 +1,6 @@
 import React from "react";
-import { Card, Col, Row, Statistic } from "antd";
 import asset from "../../../Utils/asset";
+import { Card, Col, Row, Statistic } from "antd";
 import "../../../Styles/components/_inventory-stats.scss";
 
 interface InventoryStatsProps {

@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
-import { Table, Typography, Button, Descriptions } from "antd";
-import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import { getSlotMapping } from "../../../Services/ApiService";
-import { getUserToken, useUserDetails } from "../../../Utils/Data";
-import CustomModal from "../../../Components/UI/CustomModal";
-import { useLocation, useNavigate } from "react-router-dom";
-import InventoryLogFilter from "./InventoryLogFilter";
 import dayjs from "dayjs";
-import { toast } from "react-toastify";
+import CustomModal from "../../../Components/UI/CustomModal";
+import InventoryLogFilter from "./InventoryLogFilter";
 import CustomTable from "../../../Components/UI/CustomTable";
+import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
+import { useEffect, useState } from "react";
+import { Typography, Button, Descriptions } from "antd";
+import { getSlotMapping } from "../../../Services/ApiService";
+import { getUserToken } from "../../../Utils/Data";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const { Title } = Typography;
 
@@ -69,7 +69,6 @@ const SlotMapping = () => {
     formData.append("to_date", overrideFilters.toDate);
     formData.append("mode", mode.toString());
     formData.append("slot_id", slot_id.toString());
-
     if (overrideFilters.customerId)
       formData.append("customer_id", overrideFilters.customerId);
     if (overrideFilters.distributorId)
@@ -214,6 +213,7 @@ const SlotMapping = () => {
         scrollX="max-content"
       />
 
+      {/* modal */}
       <CustomModal
         visible={isModalVisible}
         title="Slot Details"

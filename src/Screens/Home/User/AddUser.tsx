@@ -261,14 +261,14 @@ const AddUser: React.FC = () => {
             <CustomButton
               htmlType="submit"
               text="Submit"
-              className="submit-button"
+              className="submit-button backBtn btn"
               loading={isSubmitting}
             />
             <CustomButton
               onClick={() => navigate("/user")}
               htmlType="button"
               text="Cancel"
-              className=""
+              className=" backBtn btn"
             />
           </div>
         </form>

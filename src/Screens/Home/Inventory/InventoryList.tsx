@@ -1,20 +1,21 @@
-import { useEffect, useState } from "react";
-import { Table, Button, Space, Alert, Spin } from "antd";
 import type { TablePaginationConfig } from "antd";
+import { useEffect, useState } from "react";
+import { Button, Space, Alert, Spin } from "antd";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useUserDetails } from "../../../Utils/Data";
 import {
   addInventory,
   addInventoryListData,
   getInventoryList,
   updateInventory,
 } from "../../../Services/ApiService";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { useUserDetails } from "../../../Utils/Data";
 import InventoryEditModal from "../../../Modal/InventoryEditModal";
 import InventoryAddModal from "../../../Modal/InventoryAddModal";
-import "../../../Styles/pages/InventoryList.scss";
 import InventoryListAddModel from "../../../Modal/InventoryListAddModel";
 import CustomTable from "../../../Components/UI/CustomTable";
+import CustomButton from "../../../Components/UI/CustomButton";
+import "../../../Styles/pages/InventoryList.scss";
 
 const InventoryList = () => {
   const { token } = useUserDetails();
@@ -241,28 +242,32 @@ const InventoryList = () => {
       key: "actions",
       render: (_: any, record: any) => (
         <Space size="small">
-          <Button size="small" onClick={() => handleView(record)}>
-            View
-          </Button>
+          <CustomButton
+            text="View"
+            size="small"
+            className="view-btn btn"
+            onClick={() => handleView(record)}
+          />
+
           {record.status === 1 && canUpdateInventory && (
-            <Button
+            <CustomButton
+              text="Add"
               size="small"
+              className="btn"
               onClick={() => {
                 setEditRecord(record); // prefill for add
                 setAddListModalVisible(true);
               }}
-            >
-              Add
-            </Button>
+            />
           )}
           {record.status === 1 && canUpdateInventory && (
-            <Button
+            <CustomButton
+              text="Edit"
               size="small"
               type="primary"
+              className="edit-btn btn"
               onClick={() => handleEdit(record)}
-            >
-              Edit
-            </Button>
+            />
           )}
         </Space>
       ),
@@ -308,7 +313,10 @@ const InventoryList = () => {
             ...pagination,
             itemRender: (page, type, originalElement) =>
               type === "page" ? (
-                <button className="circular-page-btn">{page}</button>
+                <CustomButton
+                  className="circular-page-btn"
+                  text={page.toString()}
+                />
               ) : (
                 originalElement
               ),

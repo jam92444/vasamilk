@@ -1,0 +1,20 @@
+.inventory-filter {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  gap: 0.5rem;
+  width: 100%;
+}
+.inventory-filter .range {
+  font-family: "Poppins", sans-serif;
+  margin-top: 0.5rem;
+  font-size: 14px;
+}
+.inventory-filter .range p {
+  font-weight: 700;
+}
+.inventory-filter .custom-select {
+  font-size: 12px;
+  width: 200px;
+}/*# sourceMappingURL=inventoryFilter.css.map */

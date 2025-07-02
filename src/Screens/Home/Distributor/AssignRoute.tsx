@@ -1,13 +1,18 @@
-import { useEffect, useState } from "react";
-import { DatePicker, Button, Row, Col } from "antd";
-import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import { useDropdownData } from "../../../Hooks/DropDowns";
-import CustomSelect from "../../../Components/UI/CustomSelect";
-import { getUserToken, useUserDetails } from "../../../Utils/Data";
-import { assignRouteApi, getCustomer } from "../../../Services/ApiService";
-import "../../../Styles/pages/_assignRoute.scss";
 import CustomButton from "../../../Components/UI/CustomButton";
+import CustomSelect from "../../../Components/UI/CustomSelect";
+import { useEffect, useState } from "react";
+import { DatePicker, Row, Col } from "antd";
+import { useNavigate } from "react-router-dom";
+import { useDropdownData } from "../../../Hooks/DropDowns";
+import { getUserToken, useUserDetails } from "../../../Utils/Data";
+import { toast } from "react-toastify";
+import {
+  assignRouteApi,
+  assignSlot,
+  getCustomer,
+} from "../../../Services/ApiService";
+import "../../../Styles/pages/_assignRoute.scss";
 
 type AssignmentField =
   | "line_id"
@@ -33,6 +38,7 @@ const AssignRoute = () => {
     slotDropDown,
     distributorDropDown,
   } = useDropdownData();
+  const { token } = useUserDetails();
 
   const [distributor, setDistributor] = useState<string>("");
   const [slot, setSlot] = useState<string>("");
@@ -122,7 +128,9 @@ const AssignRoute = () => {
     const updated = [...assignments];
 
     if (field === "customers") {
-      updated[index][field] = value as string[];
+      updated[index][field] = Array.isArray(value)
+        ? value.map(String)
+        : [String(value)];
     } else {
       updated[index][field] = value.toString();
     }
@@ -139,26 +147,27 @@ const AssignRoute = () => {
       }
     }
 
-    if (field === "line_id") {
+    if (field == "line_id") {
       const selectedLineId = value as string;
       const type = assignType === 1 ? 1 : assignType === 2 ? 2 : 4;
+      console.log(type);
       const slotId = Number(slot);
-
+      console.log(slotId, selectedLineId);
       if (slotId && selectedLineId) {
         try {
           const formData = new FormData();
           formData.append("token", getUserToken());
           formData.append("type", type.toString());
           formData.append("slot_id", slotId.toString());
-          formData.append("line_id", selectedLineId.toString());
+          formData.append("line_id", selectedLineId);
           formData.append("for_assign_key", "0");
 
           const res = await getCustomer(formData);
           const customers = (res.data.data || []).map((c: any) => ({
             label: c.name,
-            value: c.slot_map_id,
+            value: String(c.user_id),
           }));
-
+          console.log(res.data.data);
           setCustomersPerAssignment((prev) => ({
             ...prev,
             [index]: customers,
@@ -184,8 +193,6 @@ const AssignRoute = () => {
   };
 
   const handleSubmit = () => {
-    const { token } = useUserDetails();
-
     const hasEmptyFields = assignments.some((item) => {
       const isTemp = Number(item.assign_type) === 2;
       return (
@@ -197,26 +204,41 @@ const AssignRoute = () => {
     });
 
     if (!distributor || !slot || hasEmptyFields) {
-      alert("Please fill all required fields.");
+      toast.info("Please fill all required fields.");
       return;
     }
 
-    const line_data = assignments.map((item) => ({
-      line_id: item.line_id,
-      assign_type: item.assign_type,
-      slot_mapping_ids: item.customers,
-      from_date: Number(item.assign_type) === 2 ? item.from_date : "",
-      to_date: Number(item.assign_type) === 2 ? item.to_date : "",
-    }));
+    const line_data = assignments.map((item) => {
+      const isTemp = Number(item.assign_type) === 2;
+      return {
+        line_id: item.line_id,
+        assign_type: item.assign_type,
+        slot_mapping_ids: item.customers,
+        ...(isTemp && {
+          from_date: item.from_date,
+          to_date: item.to_date,
+        }),
+      };
+    });
 
     const payload = {
       token,
-      distributorId: distributor,
+      distributor_id: distributor,
       slot_id: slot,
       line_data,
     };
 
-    console.log("SUBMIT DATA", payload);
+    assignSlot(payload)
+      .then((res) => {
+        if (res.data.status === 1) {
+          toast.success(res.data.msg);
+        } else {
+          toast.info(res.data.msg);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
@@ -332,12 +354,24 @@ const AssignRoute = () => {
                 <CustomSelect
                   label="Customers"
                   name={`customers_${index}`}
-                  value={item.customers}
+                  value={Array.isArray(item.customers) ? item.customers : []}
                   mode="multiple"
                   options={customerOptions}
-                  onChange={(value: any) =>
-                    handleAssignmentChange(index, "customers", value)
-                  }
+                  onChange={(value) => {
+                    if (Array.isArray(value)) {
+                      handleAssignmentChange(
+                        index,
+                        "customers",
+                        value.map(String)
+                      ); // 👈 normalize to string[]
+                    } else if (value != null) {
+                      handleAssignmentChange(index, "customers", [
+                        String(value),
+                      ]);
+                    } else {
+                      handleAssignmentChange(index, "customers", []);
+                    }
+                  }}
                   disabled={!slot || isDisabled}
                 />
               </Col>

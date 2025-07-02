@@ -1,3 +1,4 @@
+import dayjs, { Dayjs } from "dayjs";
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -6,17 +7,16 @@ import {
   InputNumber,
   DatePicker,
   Select,
-  Button,
   Row,
   Col,
   Form,
   Typography,
   Space,
 } from "antd";
-import dayjs, { Dayjs } from "dayjs";
 import { getVendorMilkReport } from "../../../Services/ApiService";
 import { toast } from "react-toastify";
 import { useUserDetails } from "../../../Utils/Data";
+import CustomButton from "../../../Components/UI/CustomButton";
 
 const { RangePicker } = DatePicker;
 const { Title } = Typography;
@@ -48,7 +48,6 @@ const VendorMilkReport = () => {
   // Fetch report on mount
   useEffect(() => {
     fetchVendorReport();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchVendorReport = async () => {
@@ -148,16 +147,19 @@ const VendorMilkReport = () => {
           </Row>
 
           <Space>
-            <Button
+            <CustomButton
               type="primary"
               onClick={fetchVendorReport}
               loading={loading}
-            >
-              Fetch Report
-            </Button>
-            <Button onClick={resetFilters} disabled={loading}>
-              Reset
-            </Button>
+              className="btn"
+              text="Fetch Report"
+            />
+            <CustomButton
+              className="btn"
+              text="Reset"
+              onClick={resetFilters}
+              disabled={loading}
+            />
           </Space>
         </Form>
       </Card>

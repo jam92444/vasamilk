@@ -1,5 +1,3 @@
-@use "../abstracts/index.scss" as *;
-
 .inventory-list-container {
   margin: 2rem 0;
   padding: 1rem 0;
@@ -18,10 +16,8 @@
 }
 
 .circular-page-btn {
-  // border-radius: 50%;
+  border-radius: 50%;
   padding: 4px 10px;
-  width: 20px;
-  height: 20px;
   font-size: 13px;
   border: none;
   background: #f0f0f0;
@@ -30,4 +26,4 @@
 
 .circular-page-btn:hover {
   background: #d6e4ff;
-}
+}/*# sourceMappingURL=InventoryList.css.map */

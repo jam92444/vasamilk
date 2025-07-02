@@ -1,21 +1,23 @@
-import { useEffect, useState } from "react";
-import { Spin, Alert, Button, Space, Popconfirm } from "antd";
-import type { ColumnsType, TablePaginationConfig } from "antd/lib/table";
 import {
   EditOutlined,
   DeleteOutlined,
   CheckCircleOutlined,
   StopOutlined,
 } from "@ant-design/icons";
-import { changeUserStatus, fetchUserList } from "../../../Services/ApiService";
+import { useEffect, useState } from "react";
+import { Alert, Button, Space, Popconfirm } from "antd";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import type { ColumnsType, TablePaginationConfig } from "antd/lib/table";
+import { useUserDetails } from "../../../Utils/Data";
+import { changeUserStatus, fetchUserList } from "../../../Services/ApiService";
 import UserFilters from "./UserFilter";
 import UserView from "../../../Modal/UserView";
 import CustomModal from "../../../Components/UI/CustomModal";
-import "../../../Styles/components/_compact-table.scss";
-import { useUserDetails } from "../../../Utils/Data";
 import CustomTable from "../../../Components/UI/CustomTable";
+import AppLoader from "../../../Components/UI/AppLoader";
+import CustomButton from "../../../Components/UI/CustomButton";
+import "../../../Styles/components/_compact-table.scss";
 
 interface User {
   id: number;
@@ -374,13 +376,7 @@ const UserList = () => {
       />
     );
   }
-
-  if (loading)
-    return (
-      <div style={{ textAlign: "center", padding: "2rem" }}>
-        <Spin tip="Loading users..." size="large" />
-      </div>
-    );
+  if (loading) return <AppLoader message="Loading users..." />;
 
   if (error)
     return (
@@ -406,13 +402,16 @@ const UserList = () => {
         columns={columns}
         data={users}
         rowKey={(record) => record.id.toString()}
-        loading={false} // or use actual loading state if available
+        loading={false}
         pagination={{
           ...pagination,
           showSizeChanger: true,
           itemRender: (page, type, originalElement) =>
             type === "page" ? (
-              <button className="circular-page-btn">{page}</button>
+              <CustomButton
+                text={page.toString()}
+                className="circular-page-btn"
+              />
             ) : (
               originalElement
             ),

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import type { ApexOptions } from "apexcharts";
 import ReactApexChart from "react-apexcharts";
-import { dailyInventoryReport } from "../../../Services/ApiService";
-import "../../../Styles/pages/_inventory.scss";
 import { getUserToken } from "../../../Utils/Data";
+import { useEffect, useState } from "react";
+import { dailyInventoryReport } from "../../../Services/ApiService";
+import type { ApexOptions } from "apexcharts";
+import "../../../Styles/pages/_inventory.scss";
 
 const InventoryChart = () => {
   const [loading, setLoading] = useState(true);

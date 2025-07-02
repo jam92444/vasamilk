@@ -2,7 +2,7 @@ import { createHashRouter } from "react-router-dom";
 import { AuthRoute, HomePrivateRoute } from "./PrivateRoute";
 import { AuthRoutes } from "./AuthRoute";
 import { HomeRoutes } from "./HomeRoutes";
-import Unauthorized from "../Screens/Auth/Unauthorized";
+import PageNotFound from "../Screens/Auth/PageNotFound";
 
 export const router = createHashRouter([
   {
@@ -16,6 +16,6 @@ export const router = createHashRouter([
   },
   {
     path: "*",
-    element: <Unauthorized />,
+    element: <PageNotFound />,
   },
 ]);

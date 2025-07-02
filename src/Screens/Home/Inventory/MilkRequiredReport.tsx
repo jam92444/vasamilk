@@ -1,11 +1,10 @@
+import CustomButton from "../../../Components/UI/CustomButton";
 import { useEffect, useState } from "react";
 import { Typography, Card, Spin, Row, Col } from "antd";
 import { getdailyMilkRequired } from "../../../Services/ApiService";
-import { getDecryptedCookie } from "../../../Utils/cookies";
-import "../../../Styles/pages/MilkRequiredReport.scss";
 import { useNavigate } from "react-router-dom";
-import CustomButton from "../../../Components/UI/CustomButton";
 import { useUserDetails } from "../../../Utils/Data";
+import "../../../Styles/pages/MilkRequiredReport.scss";
 
 const { Title } = Typography;
 

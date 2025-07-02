@@ -39,7 +39,7 @@ export function useDropdownData() {
   const CustomerDropdownOptions = useDropdownOptions({
     data: customerRaw,
     labelKey: "name",
-    valueKey: "slot_map_id",
+    valueKey: "id",
   });
 
   const distributorDropdownOptions = useDropdownOptions({
@@ -128,14 +128,11 @@ export function useDropdownData() {
       const res = await getCustomer(formData);
       if (res.data.status === 1) {
         setCustomerRaw(res.data.data);
-        return res.data.data; // ✅ return customers
       } else {
         toast.error(res.data.msg || "Failed to fetch customer data");
-        return [];
       }
     } catch (err) {
       toast.error("Error loading customer data");
-      return [];
     }
   };
 

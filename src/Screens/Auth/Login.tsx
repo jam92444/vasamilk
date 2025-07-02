@@ -62,7 +62,7 @@ const Login: React.FC = () => {
             is_occasional: response.data.is_occasional,
           };
 
-          setEncryptedCookie("user_token", userData);
+          setEncryptedCookie("user_token", userData, { expires: 365 });
           toast.success("Logged in successfully!");
 
           if (userData.user_type == 1) {

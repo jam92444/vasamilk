@@ -1,0 +1,54 @@
+.milk-required-report {
+  padding: 24px;
+}
+.milk-required-report .ant-typography {
+  font-family: "Poppins", sans-serif;
+}
+.milk-required-report .ant-card {
+  background-color: #fafafa;
+}
+.milk-required-report .ant-card-head-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #444;
+}
+.milk-required-report .summary-card-container {
+  background: #ffffff;
+}
+.milk-required-report .summary-card {
+  background: #ffffff;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+.milk-required-report .summary-card .button {
+  font-size: 12px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+}
+.milk-required-report .summary-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+.milk-required-report .summary-card p {
+  font-size: 20px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+}
+.milk-required-report .summary-card .ant-btn-link {
+  padding: 0;
+  color: #1890ff;
+  font-weight: 500;
+  font-size: 14px;
+}
+.milk-required-report .summary-card .ant-btn-link:hover {
+  color: #40a9ff;
+}
+.milk-required-report .ant-table {
+  margin-top: 24px;
+  font-size: 14px;
+}
+.milk-required-report .ant-table .ant-table-thead > tr > th {
+  background-color: #f0f2f5;
+  font-weight: 600;
+}/*# sourceMappingURL=MilkRequiredReport.css.map */

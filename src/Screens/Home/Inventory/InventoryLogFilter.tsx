@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
+import CustomSelect from "../../../Components/UI/CustomSelect";
 import { useEffect, useState } from "react";
 import { DatePicker, Button } from "antd";
 import { useDropdownData } from "../../../Hooks/DropDowns";
-import CustomSelect from "../../../Components/UI/CustomSelect";
 import "../../../Styles/pages/inventoryFilter.scss";
 const { RangePicker } = DatePicker;
 
@@ -19,7 +19,6 @@ const InventoryLogFilter = ({
     SlotstatusDropDownOptions,
     modeDropDownOptions,
   } = useDropdownData();
-
   const defaultFrom = dayjs();
   const defaultTo = dayjs();
   const [fromDate, setFromDate] = useState(defaultFrom);
@@ -78,14 +77,15 @@ const InventoryLogFilter = ({
           format="YYYY-MM-DD"
         />
       </div>
-
       <CustomSelect
         className="select"
         label="Customer"
         name="customer"
         value={customerId}
         options={CustomerDropdownOptions}
-        onChange={(value: any) => setCustomerId(value)}
+        onChange={(value: any) => {
+          setCustomerId(value);
+        }}
         placeholder="Select Customer"
       />
 

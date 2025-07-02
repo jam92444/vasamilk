@@ -1,5 +1,4 @@
 import React from "react";
-import { Button } from "antd";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import CustomModal from "../Components/UI/CustomModal";
@@ -7,6 +6,7 @@ import CustomSelect from "../Components/UI/CustomSelect";
 import { inOutOption } from "../Utils/Data";
 import { useDropdownData } from "../Hooks/DropDowns";
 import CustomInput from "../Components/UI/CustomInput";
+import CustomButton from "../Components/UI/CustomButton";
 
 interface InventoryEditModalProps {
   visible: boolean;
@@ -97,12 +97,19 @@ const InventoryListAddModel: React.FC<InventoryEditModalProps> = ({
         </div>
 
         <div style={{ textAlign: "right", marginTop: 24 }}>
-          <Button onClick={onClose} style={{ marginRight: 8 }}>
-            Cancel
-          </Button>
-          <Button type="primary" htmlType="submit">
-            Save
-          </Button>
+          <CustomButton
+            className="btn"
+            text="Cancel"
+            onClick={onClose}
+            style={{ marginRight: 8 }}
+          />
+
+          <CustomButton
+            type="primary"
+            htmlType="submit"
+            text="Save"
+            className="submit-btn"
+          />
         </div>
       </form>
     </CustomModal>

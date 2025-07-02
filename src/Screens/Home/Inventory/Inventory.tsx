@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Spin, Alert } from "antd";
+import { Alert } from "antd";
 import { dailyInventoryReport } from "../../../Services/ApiService";
 import InventoryStats from "./InventoryStats";
 import InventoryChart from "../charts/InventoryChart";
@@ -7,6 +7,7 @@ import InventoryList from "./InventoryList";
 import MilkRequiredReport from "./MilkRequiredReport";
 import "../../../Styles/pages/_inventory.scss";
 import { useUserDetails } from "../../../Utils/Data";
+import AppLoader from "../../../Components/UI/AppLoader";
 
 interface SlotReport {
   eve_slot_count: number;
@@ -48,12 +49,7 @@ const Inventory: React.FC = () => {
   }, []);
 
   if (loading) {
-    return (
-      <Spin
-        tip="Loading inventory report..."
-        style={{ margin: "2rem auto", display: "block" }}
-      />
-    );
+    return <AppLoader message="Loading inventory" />;
   }
 
   if (error) {

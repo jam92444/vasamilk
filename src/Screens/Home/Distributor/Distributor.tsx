@@ -1,9 +1,10 @@
+import AppLoader from "../../../Components/UI/AppLoader";
+import CustomButton from "../../../Components/UI/CustomButton";
 import { useEffect, useState } from "react";
 import { Table, Typography, Tag, Button } from "antd";
 import { useUserDetails } from "../../../Utils/Data";
 import { getDistributorList } from "../../../Services/ApiService";
 import { useNavigate } from "react-router-dom";
-import CustomButton from "../../../Components/UI/CustomButton";
 import { toast } from "react-toastify";
 import "../../../Styles/pages/_distributor.scss";
 
@@ -121,6 +122,10 @@ const Distributor = () => {
       ),
     },
   ];
+
+  if (loading) {
+    return <AppLoader message="Loading Distributor..." />;
+  }
 
   return (
     <div style={{ padding: "1rem" }}>

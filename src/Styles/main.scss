@@ -7,6 +7,7 @@ body {
   overflow: hidden; // ✅ Disable body scroll
   height: 100vh; // Important for full layout height
   margin: 0 auto;
+  max-width: 1980px;
 }
 
 :root {
@@ -64,7 +65,9 @@ body {
     font-family: $font-poppins;
     font-weight: 600;
     user-select: none;
-    overflow-x: hidden;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     padding: 16px;
     text-align: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -207,4 +210,8 @@ Button {
   font-size: $text-xs;
   background-color: $bg-blue;
   color: $text-white;
+}
+.btn {
+  font-size: $text-xs;
+  font-weight: $font-medium;
 }

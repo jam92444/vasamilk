@@ -1,8 +1,9 @@
 import React from "react";
-import { Button, Input, InputNumber } from "antd";
+import { Input, InputNumber } from "antd";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import CustomModal from "../Components/UI/CustomModal";
+import CustomButton from "../Components/UI/CustomButton";
 
 interface InventoryAddModalProps {
   visible: boolean;
@@ -69,10 +70,12 @@ const InventoryAddModal: React.FC<InventoryAddModalProps> = ({
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="primary" onClick={() => formik.handleSubmit()}>
-            Save
-          </Button>
+          <CustomButton className="btn" onClick={onClose} text="Cancel" />
+          <CustomButton
+            onClick={() => formik.handleSubmit()}
+            text="Save"
+            className="submit-btn"
+          />
         </div>
       </form>
     </CustomModal>
