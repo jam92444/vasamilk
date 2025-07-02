@@ -1,18 +1,9 @@
 import Cookies from "js-cookie";
 import { encryptData, decryptData } from "./crypto";
 
-// Get correct type for options
-type CookieAttributes = Parameters<typeof Cookies.set>[2];
-
-export const setEncryptedCookie = (
-  name: string,
-  data: object | string,
-  options: CookieAttributes = {}
-) => {
+export const setEncryptedCookie = (name: string, data: object | string) => {
   const encrypted = encryptData(data);
-  Cookies.set(name, encrypted, {
-    ...options,
-  });
+  Cookies.set(name, encrypted);
 };
 
 export const getDecryptedCookie = <T = any>(
