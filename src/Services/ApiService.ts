@@ -194,3 +194,13 @@ export const assignRouteApi = (payload: any) => {
 export const assignSlot = (payload: any) => {
   return axiosInstance.post("/milk-api/slot-assign/assign-slot-map", payload);
 };
+
+export const dailyInventoryByDate = (payload: any) => {
+  return axiosInstance.post(
+    "/milk-api/dashboard/daily-inventory-report-by-date",
+    payload
+  );
+};
+export const getRouteOfDistributor = (payload: any) => {
+  return axiosInstance.post("/milk-api/drop-down/lines-drop-down", payload);
+};

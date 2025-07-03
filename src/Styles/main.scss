@@ -24,16 +24,16 @@ body {
   cursor: pointer !important;
 }
 
-// .ant-btn,
-// .ant-modal-confirm-title,
-// .ant-modal-confirm-content {
-//   font-family: "Helvetica" !important;
-// }
+.ant-btn,
+.ant-modal-confirm-title,
+.ant-modal-confirm-content {
+  font-family: $font-helvetica !important;
+}
 
 .main-layout {
   height: 100vh;
   display: flex;
-  background-color: var(--bac kground-color);
+  background-color: var(--background-color);
   overflow-x: hidden;
   .ant-menu-title-content {
     font-family: $font-helvetica !important;
@@ -46,7 +46,7 @@ body {
   }
 
   &__sider {
-    background-color: var(--menu-bg) !important;
+    background-color: $bg-darkBlue !important;
     font-family: $font-helvetica;
 
     .ant-menu-item {

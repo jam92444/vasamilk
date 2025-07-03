@@ -1,55 +1,144 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Statistic } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import CustomCalendar from "../../../Components/UI/CustomCalendar";
 import CustomerSlotCards from "../../../Components/UI/CustomerSlotCards";
 import "../../../Styles/pages/_distributordashboard.scss";
+import {
+  dailyInventoryByDate,
+  getRouteOfDistributor,
+} from "../../../Services/ApiService";
+import { getUserData, getUserToken } from "../../../Utils/Data";
+
+interface MilkSlotData {
+  slot_id: number;
+  total_quantity: string;
+  given_quantity: string;
+  scheduled_date: string;
+}
+
+interface RouteItem {
+  id: number;
+  line_name: string;
+  status: number;
+}
 
 const DistributorDashboard: React.FC = () => {
   const today = dayjs();
+  const [selectedDate, setSelectedDate] = useState(today);
+  const [remaining, setRemaining] = useState<number>(0);
+  const [milkData, setMilkData] = useState<MilkSlotData[]>([]);
+  const [route, setRoute] = useState<RouteItem[]>([]);
 
-  const disabledDate = (current: Dayjs) => {
-    return current && current > today.endOf("day");
+  const disabledDate = (current: Dayjs) =>
+    Boolean(current && current > today.endOf("day"));
+
+  const fetchDailyData = () => {
+    const formData = new FormData();
+    formData.append("token", getUserToken());
+    formData.append("from_date", selectedDate.format("YYYY-MM-DD"));
+    dailyInventoryByDate(formData)
+      .then((res) => {
+        if (res.data.status === 1) {
+          setRemaining(parseFloat(res.data.current_hold_quantity || "0"));
+          setMilkData(res.data.data || []);
+        }
+      })
+      .catch(console.error);
   };
 
-  const handleDateSelect = (date: Dayjs) => {
-    console.log("Selected Date:", date.format("YYYY-MM-DD"));
-    // Optional: set state to filter slot data by date
+  const fetchDistributorRoute = () => {
+    const formData = new FormData();
+    formData.append("token", getUserToken());
+    formData.append("from_date", selectedDate.format("YYYY-MM-DD"));
+    formData.append("distributer_id", getUserData().user_id.toString());
+    formData.append("type", "2");
+    getRouteOfDistributor(formData)
+      .then((res) => {
+        if (res.data.status === 1) {
+          setRoute(res.data.data || []);
+        }
+      })
+      .catch(console.error);
   };
+
+  useEffect(fetchDailyData, [selectedDate]);
+  useEffect(fetchDistributorRoute, [selectedDate]);
+
+  const morning = milkData.find((m) => m.slot_id === 1) || {
+    total_quantity: "0",
+    given_quantity: "0",
+  };
+  const evening = milkData.find((m) => m.slot_id === 2) || {
+    total_quantity: "0",
+    given_quantity: "0",
+  };
+
+  const totalMorning = parseFloat(morning.total_quantity);
+  const givenMorning = parseFloat(morning.given_quantity);
+  const totalEvening = parseFloat(evening.total_quantity);
+  const givenEvening = parseFloat(evening.given_quantity);
+
+  const stats = [
+    {
+      title: "Total Scheduled",
+      value: `${totalMorning + totalEvening} L`,
+      color: "#3f8600",
+    },
+    { title: "Remaining in Stock", value: `${remaining} L` },
+    { title: "Morning Scheduled", value: `${totalMorning} L` },
+    { title: "Morning Delivered", value: `${givenMorning} L` },
+    { title: "Evening Scheduled", value: `${totalEvening} L` },
+    { title: "Evening Delivered", value: `${givenEvening} L` },
+    {
+      title: "Total Delivered",
+      value: `${givenMorning + givenEvening} L`,
+    },
+  ];
 
   return (
-    <div className="container" style={{ padding: 16 }}>
+    <div className="container distributor-dashboard" style={{ padding: 16 }}>
+      {/* Routes */}
+      {route && route.length > 0 && (
+        <Card
+          title="Routes to Cover"
+          className="routes-card title"
+          style={{ marginBottom: 24 }}
+          variant="outlined"
+        >
+          <Row gutter={[8, 8]}>
+            {route.map((r) => (
+              <Col key={r.id} xs={24} sm={12} md={8} lg={6}>
+                <div className="route-item">{r.line_name}</div>
+              </Col>
+            ))}
+          </Row>
+        </Card>
+      )}
+
+      {/* Calendar & Stats */}
       <Row gutter={[24, 24]}>
-        {/* Left: Calendar */}
         <Col xs={24} lg={12}>
-          <Card title="Select Delivery Date" variant="borderless">
+          <Card
+            className="title"
+            title="Select Delivery Date"
+            variant="outlined"
+          >
             <CustomCalendar
               disabledDate={disabledDate}
-              onSelect={handleDateSelect}
+              onSelect={setSelectedDate}
             />
           </Card>
         </Col>
-
-        {/* Right: Stats */}
         <Col xs={24} lg={12}>
           <Row gutter={[16, 16]}>
-            {[
-              {
-                title: "Total Milk Delivered Today",
-                value: "1,000 L",
-                color: "#3f8600",
-              },
-              { title: "Morning Slot", value: "600 L" },
-              { title: "Evening Slot", value: "400 L" },
-              { title: "Routes to Cover", value: 15 },
-              { title: "Number of Customers", value: 120 },
-            ].map((stat, index) => (
-              <Col span={12} xs={12} sm={12} md={12} lg={12} key={index}>
-                <Card variant="borderless">
+            {stats.map((s, i) => (
+              <Col xs={12} sm={12} md={12} lg={12} key={i}>
+                <Card variant="outlined">
                   <Statistic
-                    title={stat.title}
-                    value={stat.value}
-                    valueStyle={{ color: stat.color || undefined }}
+                    title={s.title}
+                    value={s.value}
+                    valueStyle={{ color: s.color }}
                   />
                 </Card>
               </Col>
@@ -59,13 +148,16 @@ const DistributorDashboard: React.FC = () => {
       </Row>
 
       {/* Customer Cards */}
-      <Card
-        title="Customer Slot Overview"
-        style={{ marginTop: 32 }}
-        variant="borderless"
-      >
-        <CustomerSlotCards />
-      </Card>
+
+      <CustomerSlotCards
+        customerType="all"
+        selectedDate={selectedDate.format("YYYY-MM-DD")}
+      />
+
+      <CustomerSlotCards
+        customerType="cancel"
+        selectedDate={selectedDate.format("YYYY-MM-DD")}
+      />
     </div>
   );
 };
