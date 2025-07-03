@@ -1,7 +1,7 @@
 @use "../abstracts/index.scss" as *;
 
 .customer {
-  font-family: $font-poppins;
+  font-family: $font-helvetica;
   .customer-title {
     .title {
       font-size: $text-xl;
@@ -21,7 +21,7 @@
 
   .add-btn {
     //   background-color: ;
-    font-family: $font-poppins;
+    font-family: $font-helvetica;
     background-color: $bg-blue;
     color: $text-white;
     font-size: $text-xs;

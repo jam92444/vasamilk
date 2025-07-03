@@ -1,9 +1,6 @@
 @use "./abstracts/index.scss" as *;
 @use "./base/reset";
-@use "./abstracts/font" as *;
-
 body {
-  font-family: $font-poppins;
   overflow: hidden; // ✅ Disable body scroll
   height: 100vh; // Important for full layout height
   margin: 0 auto;
@@ -27,13 +24,20 @@ body {
   cursor: pointer !important;
 }
 
+// .ant-btn,
+// .ant-modal-confirm-title,
+// .ant-modal-confirm-content {
+//   font-family: "Helvetica" !important;
+// }
+
 .main-layout {
   height: 100vh;
   display: flex;
-  background-color: var(--background-color);
-  font-family: $font-poppins;
+  background-color: var(--bac kground-color);
   overflow-x: hidden;
-
+  .ant-menu-title-content {
+    font-family: $font-helvetica !important;
+  }
   & > .ant-layout {
     flex: 1;
     display: flex;
@@ -43,7 +47,7 @@ body {
 
   &__sider {
     background-color: var(--menu-bg) !important;
-    font-family: $font-poppins;
+    font-family: $font-helvetica;
 
     .ant-menu-item {
       color: var(--menu-text);
@@ -62,7 +66,7 @@ body {
   &__logo {
     color: var(--menu-text);
     font-size: 20px;
-    font-family: $font-poppins;
+    font-family: $font-helvetica;
     font-weight: 600;
     user-select: none;
     white-space: nowrap;
@@ -84,7 +88,7 @@ body {
 
   &__title {
     font-size: 20px;
-    font-family: $font-poppins;
+    font-family: $font-helvetica;
     user-select: none;
     color: var(--text-primary);
     margin: 0;
@@ -157,7 +161,7 @@ body {
 
 .title {
   font-size: $text-2xl;
-  font-family: $font-poppins;
+  font-family: $font-helvetica;
   font-weight: 700;
 }
 .custom-input-field.input-error {
@@ -194,7 +198,7 @@ body {
 }
 .ant-table-cell {
   font-size: 13px !important;
-  font-family: $font-poppins !important;
+  font-family: $font-helvetica !important;
 }
 
 .flex-center-between {

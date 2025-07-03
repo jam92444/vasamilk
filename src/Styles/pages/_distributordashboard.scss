@@ -1,0 +1,15 @@
+@use "../abstracts/index.scss" as *;
+
+.container {
+  p,
+  .ant-tag,
+  .ant-statistic,
+  .ant-picker-calendar-date-value,
+  .ant-radio-button-label,
+  .ant-select-selection-item,
+  .ant-select-selection-item,
+  .ant-card-head-title,
+  .ant-statistic-content-value {
+    font-family: $font-helvetica !important;
+  }
+}

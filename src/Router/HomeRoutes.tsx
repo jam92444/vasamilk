@@ -1,5 +1,5 @@
 import type { RouteObject } from "react-router-dom";
-import { AdminRoute } from "./PrivateRoute";
+import { AdminRoute, DistributorRoute } from "./PrivateRoute";
 import CustomerManagement from "../Screens/Home/User/CustomerManagement";
 import LayoutWrapper from "../Layout/LayoutWrapper";
 import InventoryList from "../Screens/Home/Inventory/InventoryList";
@@ -10,12 +10,13 @@ import Distributor from "../Screens/Home/Distributor/Distributor";
 import ListAssignedSlot from "../Screens/Home/Distributor/ListAssignedSlot";
 import AssignRoute from "../Screens/Home/Distributor/AssignRoute";
 import AddUser from "../Screens/Home/User/AddUser";
+import DistributorDashboard from "../Screens/Home/Distributor/DistributorDashboard";
 export const HomeRoutes: RouteObject[] | undefined = [
   {
-    element: <AdminRoute />,
+    element: <LayoutWrapper />,
     children: [
       {
-        element: <LayoutWrapper />,
+        element: <AdminRoute />,
         children: [
           {
             path: "/user",
@@ -64,6 +65,16 @@ export const HomeRoutes: RouteObject[] | undefined = [
           },
         ],
       },
+      {
+        element: <DistributorRoute />,
+        children: [
+          {
+            path: "/distributor-dashboard",
+            element: <DistributorDashboard />,
+          },
+        ],
+      },
     ],
   },
+  // Distributor Routes
 ];

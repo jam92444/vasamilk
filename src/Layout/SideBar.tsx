@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import type { MenuProps } from "antd";
 import { Layout, Menu, Grid, Modal } from "antd";
-import { useNavigate, useLocation } from "react-router-dom"; // import useLocation
+import { useNavigate, useLocation } from "react-router-dom";
 import "../Styles/main.scss";
 import asset from "../Utils/asset";
 import { clearCookie } from "../Utils/cookies";
 import { logout } from "../Services/ApiService";
 import { toast } from "react-toastify";
-import { getUserToken } from "../Utils/Data";
+import { getUserData, getUserToken } from "../Utils/Data";
 
 const { Content, Sider } = Layout;
 const { useBreakpoint } = Grid;
@@ -32,23 +32,50 @@ function getItem(
   } as MenuItem;
 }
 
-const menuItems: MenuItem[] = [
-  getItem("User", "user", <img src={asset.user} width={18} alt="User" />),
-  getItem(
-    "Inventory",
-    "inventory",
-    <img src={asset.inventory} width={18} alt="Inventory" />
-  ),
-  getItem(
-    "Distributor",
-    "distributor-list",
-    <img src={asset.distributor} width={20} alt="Inventory" />
-  ),
-  getItem(
-    "Logout",
-    "logout",
-    <img src={asset.logout} width={18} alt="Logout" />
-  ),
+const menuConfig: {
+  item: MenuItem;
+  allowedUserTypes: number[];
+}[] = [
+  {
+    item: getItem(
+      "User",
+      "user",
+      <img src={asset.user} width={18} alt="User" />
+    ),
+    allowedUserTypes: [1, 2],
+  },
+  {
+    item: getItem(
+      "Inventory",
+      "inventory",
+      <img src={asset.inventory} width={18} alt="Inventory" />
+    ),
+    allowedUserTypes: [1, 2],
+  },
+  {
+    item: getItem(
+      "Distributor",
+      "distributor-list",
+      <img src={asset.distributor} width={20} alt="Distributor" />
+    ),
+    allowedUserTypes: [1, 2],
+  },
+  {
+    item: getItem(
+      "Dashboard",
+      "distributor-dashboard",
+      <img src={asset.inventory} width={20} alt="Distributor Dashboard" />
+    ),
+    allowedUserTypes: [4],
+  },
+  {
+    item: getItem(
+      "Logout",
+      "logout",
+      <img src={asset.logout} width={18} alt="Logout" />
+    ),
+    allowedUserTypes: [1, 2, 3, 4],
+  },
 ];
 
 const MainLayout: React.FC<LayoutProps> = ({ children }) => {
@@ -57,7 +84,12 @@ const MainLayout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Extract the current path without leading slash to match keys
+  const userType = getUserData()?.user_type;
+
+  const menuItems: MenuItem[] = menuConfig
+    .filter(({ allowedUserTypes }) => allowedUserTypes.includes(userType))
+    .map(({ item }) => item);
+
   const currentKey = location.pathname.startsWith("/")
     ? location.pathname.slice(1)
     : location.pathname;
@@ -69,7 +101,7 @@ const MainLayout: React.FC<LayoutProps> = ({ children }) => {
       cancelText: "Cancel",
       okType: "danger",
       onOk: () => {
-        if (getUserToken()) return;
+        if (!getUserToken()) return;
 
         const formData = new FormData();
         formData.append("token", getUserToken());
@@ -79,6 +111,7 @@ const MainLayout: React.FC<LayoutProps> = ({ children }) => {
             if (res.data.status === 1) {
               toast.success(res.data.msg);
               clearCookie("user_token");
+              localStorage.removeItem("user_data");
               navigate("/");
             } else {
               toast.error("Logout failed. Please try again.");

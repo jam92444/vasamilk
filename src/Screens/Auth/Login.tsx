@@ -17,7 +17,7 @@ const loginSchema = Yup.object().shape({
     .matches(/^[a-zA-Z0-9_]{3,20}$/, "Invalid username")
     .required("Username is required"),
   password: Yup.string()
-    .min(5, "Password must be at least 5 characters")
+    .min(3, "Password must be at least 3 characters")
     .required("Password is required"),
 });
 
@@ -65,8 +65,10 @@ const Login: React.FC = () => {
           setEncryptedCookie("user_token", userData, { expires: 365 });
           toast.success("Logged in successfully!");
 
-          if (userData.user_type == 1) {
+          if (response.data.user_type === 1) {
             navigate("/user");
+          } else if (response.data.user_type === 4) {
+            navigate("/distributor-dashboard");
           } else {
             navigate("/");
           }

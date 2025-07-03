@@ -15,8 +15,8 @@ export const AuthRoute = () => {
   switch (userDetails.user_type) {
     case 1:
       return <Navigate to="/user" />;
-    case 2:
-      return <Navigate to="/vendor/dashboard" />;
+    case 4:
+      return <Navigate to="/distributor" />;
     case 3:
       return <Navigate to="/user-dashboard" />;
     default:
@@ -49,4 +49,11 @@ export const AdminRoute = () => {
   if (!userDetails) return null;
 
   return userDetails.user_type === 1 ? <Outlet /> : <Navigate to="/" replace />;
+};
+export const DistributorRoute = () => {
+  const { userDetails } = useUserDetails();
+
+  if (!userDetails) return null;
+
+  return userDetails.user_type === 4 ? <Outlet /> : <Navigate to="/" replace />;
 };

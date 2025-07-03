@@ -1,0 +1,18 @@
+@font-face {
+  font-family: "Helvetica";
+  src: url("./assets/Fonts/helvetica-255/Helvetica.ttf") format("truetype");
+  font-style: normal;
+}
+
+/* body {
+  font-family: "Helvetica";
+} */
+:root {
+  --font-helvetica: "Helvetica";
+}
+
+.ant-btn,
+.ant-modal-confirm-title,
+.ant-modal-confirm-content {
+  font-family: var(--font-helvetica);
+}
