@@ -5,16 +5,35 @@ import { getSlotMapping } from "../../Services/ApiService";
 import dayjs from "dayjs";
 import "../../Styles/pages/_distributordashboard.scss";
 
-const getStatusTagColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "upcoming":
-      return "blue";
-    case "missing":
-      return "orange";
-    case "cancelled":
-      return "red";
+// Map status to Ant Design Tag colors
+const getStatusTagColor = (status: number) => {
+  switch (status) {
+    case 1:
+      return "blue"; // Given
+    case 2:
+      return "orange"; // Upcoming
+    case 3:
+      return "gold"; // Partially Given
+    case 4:
+      return "red"; // Cancelled
     default:
       return "default";
+  }
+};
+
+// Map status number to readable label
+const getStatusLabel = (status: number) => {
+  switch (status) {
+    case 1:
+      return "Given";
+    case 2:
+      return "Upcoming";
+    case 3:
+      return "Partially Given";
+    case 4:
+      return "Cancelled";
+    default:
+      return "Unknown";
   }
 };
 
@@ -24,12 +43,12 @@ interface Props {
 }
 
 interface CustomerData {
-  id: number;
-  customer: string;
-  slot: string;
-  quantity: string;
-  given_quantity: string;
-  status: string;
+  customer_id: number;
+  customer_name: string;
+  slot_name: string;
+  actual_milk_quantity: string;
+  milk_given_quantity: string;
+  status: number;
 }
 
 const CustomerSlotCards: React.FC<Props> = ({
@@ -46,14 +65,13 @@ const CustomerSlotCards: React.FC<Props> = ({
 
   const fetchCustomerData = () => {
     const page = 1;
-    const size = 100;
+    const size = 20;
     const formData = new FormData();
+
     formData.append("token", getUserToken());
-    formData.append("distributor_id", getUserData().user_type.toString());
+    formData.append("distributor_id", getUserData().user_id.toString());
     formData.append("from_date", today);
     formData.append("to_date", selectedDate);
-
-    // status: 1-upcoming, 2-missing, 3-completed, 4-cancelled
     formData.append("status", customerType === "all" ? "1,2,3" : "4");
     formData.append("mode", "2");
 
@@ -63,10 +81,11 @@ const CustomerSlotCards: React.FC<Props> = ({
     getSlotMapping(page, size, formData)
       .then((res) => {
         if (res.data.status === 1) {
+          const customerList = res.data.data || [];
           if (customerType === "all") {
-            setAllCustomerData(res.data.data || []);
+            setAllCustomerData(customerList);
           } else {
-            setCancelledCustomerData(res.data.data || []);
+            setCancelledCustomerData(customerList);
           }
         }
       })
@@ -79,15 +98,13 @@ const CustomerSlotCards: React.FC<Props> = ({
     fetchCustomerData();
   }, [selectedDate, slot, customerType]);
 
-  const handleSlotChange = (type: string) => {
-    setSlot(type);
-  };
+  const handleSlotChange = (type: string) => setSlot(type);
 
   const dataToShow =
     customerType === "all" ? allCustomerData : cancelledCustomerData;
 
   return (
-    <div>
+    <div className="container" style={{ userSelect: "none" }}>
       <Card
         title={
           customerType === "all" ? "Customer List" : "Cancelled Customer List"
@@ -118,8 +135,8 @@ const CustomerSlotCards: React.FC<Props> = ({
           </Space>
         }
         className={`customer-slot-card-container ${
-          customerType == "all" ? "listCard" : "listCard-2"
-        } `}
+          customerType === "all" ? "listCard" : "listCard-2"
+        }`}
       >
         <div className="customer-slot-cards">
           {dataToShow.length === 0 ? (
@@ -127,8 +144,11 @@ const CustomerSlotCards: React.FC<Props> = ({
               No records found.
             </p>
           ) : (
-            dataToShow.map((item) => (
-              <Card key={item.id} className="customer-slot-card">
+            dataToShow.map((item, index) => (
+              <Card
+                key={item.customer_id || `${item.customer_name}-${index}`}
+                className="customer-slot-card"
+              >
                 <Row
                   className="card-row"
                   align="middle"
@@ -136,20 +156,20 @@ const CustomerSlotCards: React.FC<Props> = ({
                   wrap
                 >
                   <Col xs={24} sm={12} md={4}>
-                    <strong>{item.customer}</strong>
+                    <strong>{item.customer_name}</strong>
                   </Col>
                   <Col xs={24} sm={12} md={4}>
-                    Slot: {item.slot}
+                    Slot: {item.slot_name}
                   </Col>
                   <Col xs={24} sm={12} md={4}>
-                    Required: {item.quantity}
+                    Required: {item.actual_milk_quantity}
                   </Col>
                   <Col xs={24} sm={12} md={4}>
-                    Given: {item.given_quantity}
+                    Given: {item.milk_given_quantity}
                   </Col>
                   <Col xs={24} sm={12} md={4}>
                     <Tag color={getStatusTagColor(item.status)}>
-                      {item.status}
+                      {getStatusLabel(item.status)}
                     </Tag>
                   </Col>
                 </Row>

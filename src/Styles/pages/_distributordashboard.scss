@@ -7,7 +7,6 @@
   .ant-picker-calendar-date-value,
   .ant-radio-button-label,
   .ant-select-selection-item,
-  .ant-select-selection-item,
   .ant-card-head-title,
   .ant-row,
   .ant-col,
@@ -16,53 +15,34 @@
   }
 }
 
-.customer-slot-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+.distributor-dashboard {
+  padding: 16px;
 
-.customer-slot-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-
-  .customer-slot-card {
+  .ant-card {
     border-radius: 8px;
-    border: 1px solid #d9d9d9;
-    padding: 12px;
-    transition: box-shadow 0.2s ease;
-    box-shadow: none;
+    border: 1px solid #e6e6e6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
-    &:hover {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    &.ant-card-bordered:not(.routes-card) {
+      margin-bottom: 24px;
     }
 
-    .card-row {
-      row-gap: 8px;
-
-      .col-item {
+    .ant-statistic {
+      .ant-statistic-title {
         font-size: 14px;
-        @media (max-width: 576px) {
-          font-size: 13px;
-          margin-bottom: 4px;
-        }
+        color: #888;
+      }
+
+      .ant-statistic-content {
+        font-size: 20px;
+        font-weight: 600;
       }
     }
   }
-}
-.routes-card {
-  .route-item {
-    background-color: #f0f2f5;
-    padding: 12px;
-    border-radius: 6px;
-    text-align: center;
-    font-weight: 500;
-    border: 1px solid #d9d9d9;
+
+  .ant-calendar {
+    border-radius: 8px;
   }
-}
-.distributor-dashboard {
-  padding: 16px;
 
   .routes-card {
     margin-bottom: 24px;
@@ -78,31 +58,9 @@
       text-align: center;
       font-weight: 500;
       transition: background 0.3s;
+
       &:hover {
         background: #f0f0f0;
-      }
-    }
-  }
-
-  .ant-card {
-    border-radius: 8px;
-    border: 1px solid #e6e6e6;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-
-    &.ant-card-bordered {
-      &:not(.routes-card) {
-        margin-bottom: 24px;
-      }
-    }
-
-    .ant-statistic {
-      .ant-statistic-title {
-        font-size: 14px;
-        color: #888;
-      }
-      .ant-statistic-content {
-        font-size: 20px;
-        font-weight: 600;
       }
     }
   }
@@ -110,47 +68,46 @@
   .customer-slot-cards {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
+    margin-top: 16px;
   }
 
   .customer-slot-card {
     border-radius: 8px;
     border: 1px solid #e6e6e6;
-    padding: 12px;
+    padding: 8px 16px;
     transition: transform 0.2s, box-shadow 0.2s;
+    background: #fff;
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: #d6e4ff;
     }
 
     .card-row {
       row-gap: 8px;
+      padding: 4px 0;
+
       .col-item {
         font-size: 14px;
         color: #333;
+
         @media (max-width: 480px) {
           font-size: 13px;
         }
       }
     }
   }
-
-  .ant-calendar {
-    border-radius: 8px;
-  }
-}
-.title {
-  .ant-card-head {
-    color: $text-white;
-    background-color: $bg-darkBlue;
-  }
 }
 
+.title .ant-card-head,
 .listCard .ant-card-head {
   color: $text-white;
-  background-color: $bg-darkBlue;
+  background-color: $bg-darkBlue !important;
 }
+
 .listCard-2 .ant-card-head {
   color: $text-white;
-  background-color: #f44336;
+  background-color: #f44336 !important; // red for cancelled
 }

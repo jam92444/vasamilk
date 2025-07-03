@@ -48,10 +48,11 @@ const DistributorDashboard: React.FC = () => {
   };
 
   const fetchDistributorRoute = () => {
+    const distributorId = getUserData().user_id;
     const formData = new FormData();
     formData.append("token", getUserToken());
     formData.append("from_date", selectedDate.format("YYYY-MM-DD"));
-    formData.append("distributer_id", getUserData().user_id.toString());
+    formData.append("distributer_id", distributorId.toString());
     formData.append("type", "2");
     getRouteOfDistributor(formData)
       .then((res) => {
@@ -99,13 +100,13 @@ const DistributorDashboard: React.FC = () => {
   return (
     <div className="container distributor-dashboard" style={{ padding: 16 }}>
       {/* Routes */}
-      {route && route.length > 0 && (
-        <Card
-          title="Routes to Cover"
-          className="routes-card title"
-          style={{ marginBottom: 24 }}
-          variant="outlined"
-        >
+      <Card
+        title="Routes to Cover"
+        className="routes-card title"
+        style={{ marginBottom: 24 }}
+        variant="outlined"
+      >
+        {route && route.length > 0 ? (
           <Row gutter={[8, 8]}>
             {route.map((r) => (
               <Col key={r.id} xs={24} sm={12} md={8} lg={6}>
@@ -113,8 +114,12 @@ const DistributorDashboard: React.FC = () => {
               </Col>
             ))}
           </Row>
-        </Card>
-      )}
+        ) : (
+          <p style={{ padding: "1rem", textAlign: "center", fontSize: "16px" }}>
+            No routes had assigned.
+          </p>
+        )}
+      </Card>
 
       {/* Calendar & Stats */}
       <Row gutter={[24, 24]}>
@@ -131,10 +136,18 @@ const DistributorDashboard: React.FC = () => {
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Row gutter={[16, 16]}>
+          <Row gutter={[8, 8]}>
             {stats.map((s, i) => (
               <Col xs={12} sm={12} md={12} lg={12} key={i}>
-                <Card variant="outlined">
+                <Card
+                  variant="outlined"
+                  style={{
+                    minHeight: 130, // Adjust height as needed
+                    display: "flex",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                  }}
+                >
                   <Statistic
                     title={s.title}
                     value={s.value}
