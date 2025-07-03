@@ -9,6 +9,7 @@ import {
   getRouteOfDistributor,
 } from "../../../Services/ApiService";
 import { getUserData, getUserToken } from "../../../Utils/Data";
+import AppLoader from "../../../Components/UI/AppLoader";
 
 interface MilkSlotData {
   slot_id: number;
@@ -29,42 +30,51 @@ const DistributorDashboard: React.FC = () => {
   const [remaining, setRemaining] = useState<number>(0);
   const [milkData, setMilkData] = useState<MilkSlotData[]>([]);
   const [route, setRoute] = useState<RouteItem[]>([]);
+  const [loading, setLoading] = useState(true); // ✅ Main loading state
 
   const disabledDate = (current: Dayjs) =>
     Boolean(current && current > today.endOf("day"));
 
-  const fetchDailyData = () => {
+  const fetchDailyData = async () => {
     const formData = new FormData();
     formData.append("token", getUserToken());
     formData.append("from_date", selectedDate.format("YYYY-MM-DD"));
-    dailyInventoryByDate(formData)
-      .then((res) => {
-        if (res.data.status === 1) {
-          setRemaining(parseFloat(res.data.current_hold_quantity || "0"));
-          setMilkData(res.data.data || []);
-        }
-      })
-      .catch(console.error);
+
+    try {
+      const res = await dailyInventoryByDate(formData);
+      if (res.data.status === 1) {
+        setRemaining(parseFloat(res.data.current_hold_quantity || "0"));
+        setMilkData(res.data.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching daily inventory:", error);
+    }
   };
 
-  const fetchDistributorRoute = () => {
+  const fetchDistributorRoute = async () => {
     const distributorId = getUserData().user_id;
     const formData = new FormData();
     formData.append("token", getUserToken());
     formData.append("from_date", selectedDate.format("YYYY-MM-DD"));
     formData.append("distributer_id", distributorId.toString());
     formData.append("type", "2");
-    getRouteOfDistributor(formData)
-      .then((res) => {
-        if (res.data.status === 1) {
-          setRoute(res.data.data || []);
-        }
-      })
-      .catch(console.error);
+
+    try {
+      const res = await getRouteOfDistributor(formData);
+      if (res.data.status === 1) {
+        setRoute(res.data.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching routes:", error);
+    }
   };
 
-  useEffect(fetchDailyData, [selectedDate]);
-  useEffect(fetchDistributorRoute, [selectedDate]);
+  useEffect(() => {
+    setLoading(true);
+    fetchDistributorRoute();
+    fetchDailyData();
+    setLoading(false);
+  }, [selectedDate]);
 
   const morning = milkData.find((m) => m.slot_id === 1) || {
     total_quantity: "0",
@@ -82,47 +92,43 @@ const DistributorDashboard: React.FC = () => {
 
   const stats = [
     {
-      title: "Total Scheduled",
-      value: `${totalMorning + totalEvening} L`,
+      title: "Morning Delivery",
+      scheduled: `${totalMorning} L`,
+      delivered: `${givenMorning} L`,
       color: "#3f8600",
+      single: false,
     },
-    { title: "Remaining in Stock", value: `${remaining} L` },
-    { title: "Morning Scheduled", value: `${totalMorning} L` },
-    { title: "Morning Delivered", value: `${givenMorning} L` },
-    { title: "Evening Scheduled", value: `${totalEvening} L` },
-    { title: "Evening Delivered", value: `${givenEvening} L` },
     {
-      title: "Total Delivered",
-      value: `${givenMorning + givenEvening} L`,
+      title: "Evening Delivery",
+      scheduled: `${totalEvening} L`,
+      delivered: `${givenEvening} L`,
+      color: "#1890ff",
+      single: false,
+    },
+    {
+      title: "Total",
+      scheduled: `${totalMorning + totalEvening} L`,
+      delivered: `${givenMorning + givenEvening} L`,
+      color: "#722ed1",
+      single: false,
+    },
+    {
+      title: "Remaining in Stock",
+      scheduled: `${remaining} L`,
+      color: "#fa541c",
+      single: true,
     },
   ];
 
+  if (loading) {
+    return <AppLoader message="Fetching dashboard data..." />;
+  }
+
   return (
     <div className="container distributor-dashboard" style={{ padding: 16 }}>
-      {/* Routes */}
-      <Card
-        title="Routes to Cover"
-        className="routes-card title"
-        style={{ marginBottom: 24 }}
-        variant="outlined"
-      >
-        {route && route.length > 0 ? (
-          <Row gutter={[8, 8]}>
-            {route.map((r) => (
-              <Col key={r.id} xs={24} sm={12} md={8} lg={6}>
-                <div className="route-item">{r.line_name}</div>
-              </Col>
-            ))}
-          </Row>
-        ) : (
-          <p style={{ padding: "1rem", textAlign: "center", fontSize: "16px" }}>
-            No routes had assigned.
-          </p>
-        )}
-      </Card>
-
       {/* Calendar & Stats */}
       <Row gutter={[24, 24]}>
+        {/* Calendar */}
         <Col xs={24} lg={12}>
           <Card
             className="title"
@@ -135,24 +141,73 @@ const DistributorDashboard: React.FC = () => {
             />
           </Card>
         </Col>
+
+        {/* Routes and Stats */}
         <Col xs={24} lg={12}>
-          <Row gutter={[8, 8]}>
-            {stats.map((s, i) => (
-              <Col xs={12} sm={12} md={12} lg={12} key={i}>
+          <Card
+            title="Routes to Cover"
+            className="routes-card title"
+            variant="outlined"
+          >
+            {route && route.length > 0 ? (
+              <Row gutter={[8, 8]}>
+                {route.map((r) => (
+                  <Col key={r.id} xs={12} sm={6}>
+                    <div className="route-item">{r.line_name}</div>
+                  </Col>
+                ))}
+              </Row>
+            ) : (
+              <p
+                style={{
+                  padding: "1rem",
+                  textAlign: "center",
+                  fontSize: "16px",
+                }}
+              >
+                No routes assigned.
+              </p>
+            )}
+          </Card>
+
+          <Row gutter={[10, 10]}>
+            {stats.map((stat, i) => (
+              <Col xs={24} sm={12} key={i}>
                 <Card
                   variant="outlined"
                   style={{
-                    minHeight: 130, // Adjust height as needed
+                    minHeight: 140,
                     display: "flex",
-                    justifyContent: "center",
                     flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "start",
                   }}
                 >
-                  <Statistic
-                    title={s.title}
-                    value={s.value}
-                    valueStyle={{ color: s.color }}
-                  />
+                  <h4 style={{ marginBottom: 8 }}>{stat.title}</h4>
+                  {stat.single ? (
+                    <Statistic
+                      value={stat.scheduled}
+                      valueStyle={{ color: stat.color }}
+                    />
+                  ) : (
+                    <Row justify="space-between">
+                      <Col>
+                        <Statistic
+                          title="Scheduled"
+                          value={stat.scheduled}
+                          style={{ paddingRight: "10px" }}
+                          valueStyle={{ color: stat.color }}
+                        />
+                      </Col>
+                      <Col>
+                        <Statistic
+                          title="Delivered"
+                          value={stat.delivered}
+                          valueStyle={{ color: "#595959" }}
+                        />
+                      </Col>
+                    </Row>
+                  )}
                 </Card>
               </Col>
             ))}
@@ -161,12 +216,10 @@ const DistributorDashboard: React.FC = () => {
       </Row>
 
       {/* Customer Cards */}
-
       <CustomerSlotCards
         customerType="all"
         selectedDate={selectedDate.format("YYYY-MM-DD")}
       />
-
       <CustomerSlotCards
         customerType="cancel"
         selectedDate={selectedDate.format("YYYY-MM-DD")}

@@ -17,7 +17,7 @@
 
 .distributor-dashboard {
   padding: 16px;
-
+  // overflow-x: scroll;
   .ant-card {
     border-radius: 8px;
     border: 1px solid #e6e6e6;
@@ -45,14 +45,13 @@
   }
 
   .routes-card {
-    margin-bottom: 24px;
+    margin-bottom: 1rem;
     background: #fff;
     border-radius: 8px;
     border: 1px solid #e6e6e6;
-
+    cursor: pointer;
     .route-item {
-      background: #fafafa;
-      padding: 12px;
+      padding: 4px;
       border-radius: 6px;
       border: 1px solid #d9d9d9;
       text-align: center;
@@ -68,7 +67,7 @@
   .customer-slot-cards {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0.5rem;
     margin-top: 16px;
   }
 
@@ -110,4 +109,16 @@
 .listCard-2 .ant-card-head {
   color: $text-white;
   background-color: #f44336 !important; // red for cancelled
+}
+
+.list-btn {
+  padding: 0px 1rem !important;
+  font-size: 12px;
+  color: $bg-darkBlue;
+}
+.select-btn {
+  padding: 0px 1rem !important;
+  font-size: 12px;
+
+  border: 1px solid #0000ff;
 }

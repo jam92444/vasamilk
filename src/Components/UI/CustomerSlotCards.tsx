@@ -4,36 +4,21 @@ import { getUserData, getUserToken } from "../../Utils/Data";
 import { getSlotMapping } from "../../Services/ApiService";
 import dayjs from "dayjs";
 import "../../Styles/pages/_distributordashboard.scss";
+import CustomButton from "./CustomButton";
 
-// Map status to Ant Design Tag colors
-const getStatusTagColor = (status: number) => {
-  switch (status) {
-    case 1:
-      return "blue"; // Given
-    case 2:
-      return "orange"; // Upcoming
-    case 3:
-      return "gold"; // Partially Given
-    case 4:
-      return "red"; // Cancelled
+// Get tag color based on milk_given_status (string)
+const getMilkStatusTagColor = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case "given":
+      return "blue";
+    case "missed":
+      return "red";
+    case "partially given":
+      return "gold";
+    case "upcoming":
+      return "orange";
     default:
       return "default";
-  }
-};
-
-// Map status number to readable label
-const getStatusLabel = (status: number) => {
-  switch (status) {
-    case 1:
-      return "Given";
-    case 2:
-      return "Upcoming";
-    case 3:
-      return "Partially Given";
-    case 4:
-      return "Cancelled";
-    default:
-      return "Unknown";
   }
 };
 
@@ -48,7 +33,7 @@ interface CustomerData {
   slot_name: string;
   actual_milk_quantity: string;
   milk_given_quantity: string;
-  status: number;
+  milk_given_status: string;
 }
 
 const CustomerSlotCards: React.FC<Props> = ({
@@ -104,34 +89,28 @@ const CustomerSlotCards: React.FC<Props> = ({
     customerType === "all" ? allCustomerData : cancelledCustomerData;
 
   return (
-    <div className="container" style={{ userSelect: "none" }}>
+    <div className="" style={{ userSelect: "none" }}>
       <Card
         title={
           customerType === "all" ? "Customer List" : "Cancelled Customer List"
         }
         extra={
           <Space>
-            <Button
-              type={slot === "all" ? "primary" : "default"}
+            <CustomButton
+              text="All"
               onClick={() => handleSlotChange("all")}
-              size="small"
-            >
-              All
-            </Button>
-            <Button
-              type={slot === "morning" ? "primary" : "default"}
+              className={` ${slot === "all" ? "list-btn" : "select-btn"} `}
+            />
+            <CustomButton
+              text="Morning"
               onClick={() => handleSlotChange("morning")}
-              size="small"
-            >
-              Morning
-            </Button>
-            <Button
-              type={slot === "evening" ? "primary" : "default"}
+              className={` ${slot === "morning" ? "list-btn" : "select-btn"} `}
+            />
+            <CustomButton
+              text="Evening"
               onClick={() => handleSlotChange("evening")}
-              size="small"
-            >
-              Evening
-            </Button>
+              className={` ${slot === "evening" ? "list-btn" : "select-btn"} `}
+            />
           </Space>
         }
         className={`customer-slot-card-container ${
@@ -144,37 +123,47 @@ const CustomerSlotCards: React.FC<Props> = ({
               No records found.
             </p>
           ) : (
-            dataToShow.map((item, index) => (
-              <Card
-                key={item.customer_id || `${item.customer_name}-${index}`}
-                className="customer-slot-card"
-              >
-                <Row
-                  className="card-row"
-                  align="middle"
-                  justify="space-between"
-                  wrap
+            <Row gutter={[16, 16]}>
+              {dataToShow.map((item, index) => (
+                <Col
+                  key={item.customer_id || `${item.customer_name}-${index}`}
+                  xs={24}
+                  sm={12}
+                  md={12}
+                  lg={8}
+                  xl={8}
                 >
-                  <Col xs={24} sm={12} md={4}>
-                    <strong>{item.customer_name}</strong>
-                  </Col>
-                  <Col xs={24} sm={12} md={4}>
-                    Slot: {item.slot_name}
-                  </Col>
-                  <Col xs={24} sm={12} md={4}>
-                    Required: {item.actual_milk_quantity}
-                  </Col>
-                  <Col xs={24} sm={12} md={4}>
-                    Given: {item.milk_given_quantity}
-                  </Col>
-                  <Col xs={24} sm={12} md={4}>
-                    <Tag color={getStatusTagColor(item.status)}>
-                      {getStatusLabel(item.status)}
-                    </Tag>
-                  </Col>
-                </Row>
-              </Card>
-            ))
+                  <Card className="customer-slot-card">
+                    {/* Customer name in a single full-width line */}
+                    <div
+                      style={{
+                        marginBottom: 8,
+                        fontWeight: 600,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {item.customer_name}
+                    </div>
+
+                    {/* Info grid */}
+                    <Row gutter={[8, 8]}>
+                      <Col span={12}>Slot: {item.slot_name}</Col>
+                      <Col span={12}>Required: {item.actual_milk_quantity}</Col>
+                      <Col span={12}>Given: {item.milk_given_quantity}</Col>
+                      <Col span={12}>
+                        <Tag
+                          color={getMilkStatusTagColor(item.milk_given_status)}
+                        >
+                          {item.milk_given_status}
+                        </Tag>
+                      </Col>
+                    </Row>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
           )}
         </div>
       </Card>

@@ -145,7 +145,7 @@ export const getSlotMapping = (
   );
 };
 
-/-----------------------------------------DistributorAPI------------------------------------------------------/;
+/-----------------------------------------DistributorAPI----------------------------------------------/;
 
 export const addInventoryListData = (payload: any) => {
   return axiosInstance.post(
