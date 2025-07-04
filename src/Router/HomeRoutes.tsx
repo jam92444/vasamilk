@@ -11,6 +11,10 @@ import ListAssignedSlot from "../Screens/Home/Distributor/ListAssignedSlot";
 import AssignRoute from "../Screens/Home/Distributor/AssignRoute";
 import AddUser from "../Screens/Home/User/AddUser";
 import DistributorDashboard from "../Screens/Home/Distributor/DistributorDashboard";
+import Slot from "../Screens/Home/Masters/Slot";
+import Lines from "../Screens/Home/Masters/Lines";
+import Reason from "../Screens/Home/Masters/Reason";
+import PriceTag from "../Screens/Home/Masters/PriceTag";
 export const HomeRoutes: RouteObject[] | undefined = [
   {
     element: <LayoutWrapper />,
@@ -62,6 +66,22 @@ export const HomeRoutes: RouteObject[] | undefined = [
           {
             path: `/distributor-list/assign-route`,
             element: <AssignRoute />,
+          },
+          {
+            path: `/masters/slot`,
+            element: <Slot />,
+          },
+          {
+            path: `/masters/line`,
+            element: <Lines />,
+          },
+          {
+            path: `/masters/reason`,
+            element: <Reason />,
+          },
+          {
+            path: `/masters/pricetag`,
+            element: <PriceTag />,
           },
         ],
       },

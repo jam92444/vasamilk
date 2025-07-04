@@ -16,7 +16,7 @@ export const AuthRoute = () => {
     case 1:
       return <Navigate to="/user" />;
     case 4:
-      return <Navigate to="/distributor" />;
+      return <Navigate to="/distributor-dashboard" />;
     case 3:
       return <Navigate to="/user-dashboard" />;
     default:

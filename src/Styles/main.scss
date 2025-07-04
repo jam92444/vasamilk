@@ -1,11 +1,5 @@
 @use "./abstracts/index.scss" as *;
 @use "./base/reset";
-body {
-  overflow: hidden; // ✅ Disable body scroll
-  height: 100vh; // Important for full layout height
-  margin: 0 auto;
-  max-width: 1980px;
-}
 
 :root {
   --primary-color: #1e88e5;
@@ -20,6 +14,14 @@ body {
   --border-radius: 8px;
 }
 
+// Global Styles
+body {
+  overflow: hidden;
+  height: 100vh;
+  margin: 0 auto;
+  max-width: 1980px;
+}
+
 .ant-pagination-options .ant-select-selector {
   cursor: pointer !important;
 }
@@ -30,15 +32,30 @@ body {
   font-family: $font-helvetica !important;
 }
 
+// Layout Structure
 .main-layout {
   height: 100vh;
   display: flex;
   background-color: var(--background-color);
   overflow-x: hidden;
-  .ant-menu-title-content {
-    font-family: $font-helvetica !important;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) transparent;
+
+  // Scrollbar (Webkit)
+  &::-webkit-scrollbar {
+    width: 4px;
   }
-  & > .ant-layout {
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(219, 14, 14, 0.15);
+    border-radius: 8px;
+
+    &:hover {
+      background-color: $bg-darkBlue;
+    }
+  }
+
+  > .ant-layout {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -48,9 +65,15 @@ body {
   &__sider {
     background-color: $bg-darkBlue !important;
     font-family: $font-helvetica;
+    z-index: 1000;
+    transition: all 0.3s ease;
 
     .ant-menu-item {
       color: var(--menu-text);
+
+      &:hover {
+        background-color: lighten(#0d47a1, 5%) !important;
+      }
     }
 
     .ant-menu-item-selected {
@@ -58,8 +81,12 @@ body {
       color: var(--menu-text) !important;
     }
 
-    .ant-menu-item:hover {
-      background-color: lighten(#0d47a1, 5%) !important;
+    @media (max-width: 600px) {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 250px;
     }
   }
 
@@ -89,10 +116,10 @@ body {
   &__title {
     font-size: 20px;
     font-family: $font-helvetica;
-    user-select: none;
-    color: var(--text-primary);
-    margin: 0;
     font-weight: 600;
+    user-select: none;
+    margin: 0;
+    color: var(--text-primary);
   }
 
   &__content {
@@ -102,35 +129,27 @@ body {
     padding: 1rem;
     overflow-y: scroll;
     background-color: var(--background-color);
-  }
+    position: relative;
+    z-index: 1;
 
-  @media (max-width: "500px") {
-    &__content {
+    @media (max-width: 500px) {
       padding: 0;
     }
   }
-  // Scrollbar styling
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
 
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(219, 14, 14, 0.15);
-    border-radius: 8px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: $bg-darkBlue;
-  }
-  scrollbar-width: thin;
-  scrollbar-color: var(--primary-color) transparent;
   &__content-container {
     flex: 1;
     padding: 16px;
     background-color: white;
     color: var(--text-primary);
   }
+
+  .ant-menu-title-content {
+    font-family: $font-helvetica !important;
+  }
 }
+
+// Sidebar menu
 .main-layout__menu {
   background-color: var(--menu-bg) !important;
 
@@ -138,8 +157,8 @@ body {
     color: var(--menu-text) !important;
     background-color: var(--menu-bg) !important;
     border-radius: var(--border-radius);
-    margin: 0 8px;
-    margin-bottom: 0.3rem;
+    margin: 0 8px 0.3rem;
+
     &:hover {
       background-color: lighten(#0d47a1, 5%) !important;
     }
@@ -150,22 +169,21 @@ body {
     color: var(--menu-text) !important;
   }
 
-  .ant-menu-item-icon {
-    color: var(--menu-text) !important;
-  }
-
+  .ant-menu-item-icon,
   .ant-menu-title-content {
     color: var(--menu-text) !important;
   }
 }
 
+// Utility & Components
 .title {
   font-size: $text-2xl;
   font-family: $font-helvetica;
   font-weight: 700;
 }
+
 .custom-input-field.input-error {
-  border-color: #ff4d4f !important; // AntD error red
+  border-color: #ff4d4f !important;
   box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
 }
 
@@ -174,6 +192,7 @@ body {
   font-size: 12px;
   margin-top: 4px;
 }
+
 .hint-text {
   font-size: $text-xs;
   margin-top: -1rem;
@@ -182,23 +201,28 @@ body {
 .required {
   color: red;
 }
+
 .line-spinner {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100px; // ensures vertical space for centering
+  height: 100px;
   width: 100%;
 
   .ant-spin-dot-item {
-    background-color: var(--primary-color); // your theme color
+    background-color: var(--primary-color);
   }
 }
+
 .ant-btn {
   padding: 4px !important;
 }
+
 .ant-table-cell {
   font-size: 13px !important;
   font-family: $font-helvetica !important;
+  font-size: 13px !important;
+  padding: 10px 15px !important;
 }
 
 .flex-center-between {
@@ -210,12 +234,69 @@ body {
 Button {
   width: fit-content;
 }
+
 .submit-btn {
   font-size: $text-xs;
   background-color: $bg-blue;
+  letter-spacing: 1.2px;
   color: $text-white;
 }
+
 .btn {
   font-size: $text-xs;
   font-weight: $font-medium;
+}
+
+// Toggle Button for Sidebar
+.sidebar-toggle {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1100;
+  font-size: 24px;
+  background-color: $bg-darkBlue;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+
+  @media (min-width: 769px) {
+    display: none;
+  }
+}
+// section title
+.management-title {
+  font-size: $text-xl;
+  font-weight: $font-bold;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  @include flex($justify: space-between, $align: center);
+}
+
+// table
+.ant-table {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d9d9d9;
+  overflow: hidden;
+  .ant-table-thead > tr > th {
+    background-color: $bg-darkBlue !important;
+    font-weight: $font-semibold !important;
+    color: $text-white !important;
+    font-size: $text-xs !important;
+    padding: 12px 16px !important;
+    letter-spacing: 1.2px !important;
+    // border-bottom: 2px solid #1890ff !important;
+  }
+}
+// custom pagination button
+.circular-page-btn {
+  // background-color: white !important;
+  border-radius: 50% !important;
+  color: var(--primary-color) !important;
+  font-size: $text-xs !important;
+
+  transition: 0.3s;
+  cursor: pointer;
 }

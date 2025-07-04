@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col, Tag, Button, Space } from "antd";
+import { Card, Row, Col, Tag, Space } from "antd";
 import { getUserData, getUserToken } from "../../Utils/Data";
 import { getSlotMapping } from "../../Services/ApiService";
-import dayjs from "dayjs";
 import "../../Styles/pages/_distributordashboard.scss";
 import CustomButton from "./CustomButton";
+import { useAuth } from "../../Context/AuthContext";
+import AppLoader from "./AppLoader";
 
 // Get tag color based on milk_given_status (string)
 const getMilkStatusTagColor = (status: string) => {
@@ -40,13 +41,12 @@ const CustomerSlotCards: React.FC<Props> = ({
   selectedDate,
   customerType = "all",
 }) => {
+  const { loading, setLoading } = useAuth();
   const [allCustomerData, setAllCustomerData] = useState<CustomerData[]>([]);
   const [cancelledCustomerData, setCancelledCustomerData] = useState<
     CustomerData[]
   >([]);
   const [slot, setSlot] = useState<string>("all");
-
-  const today = dayjs().format("YYYY-MM-DD");
 
   const fetchCustomerData = () => {
     const page = 1;
@@ -55,7 +55,7 @@ const CustomerSlotCards: React.FC<Props> = ({
 
     formData.append("token", getUserToken());
     formData.append("distributor_id", getUserData().user_id.toString());
-    formData.append("from_date", today);
+    formData.append("from_date", selectedDate);
     formData.append("to_date", selectedDate);
     formData.append("status", customerType === "all" ? "1,2,3" : "4");
     formData.append("mode", "2");
@@ -65,6 +65,7 @@ const CustomerSlotCards: React.FC<Props> = ({
 
     getSlotMapping(page, size, formData)
       .then((res) => {
+        setLoading(true);
         if (res.data.status === 1) {
           const customerList = res.data.data || [];
           if (customerType === "all") {
@@ -73,6 +74,7 @@ const CustomerSlotCards: React.FC<Props> = ({
             setCancelledCustomerData(customerList);
           }
         }
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching customer data:", error);
@@ -88,8 +90,10 @@ const CustomerSlotCards: React.FC<Props> = ({
   const dataToShow =
     customerType === "all" ? allCustomerData : cancelledCustomerData;
 
-  return (
-    <div className="" style={{ userSelect: "none" }}>
+  return loading ? (
+    <AppLoader message="Loading Customers" />
+  ) : (
+    <div className="customer-cards" style={{ userSelect: "none" }}>
       <Card
         title={
           customerType === "all" ? "Customer List" : "Cancelled Customer List"

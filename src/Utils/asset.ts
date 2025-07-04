@@ -9,6 +9,7 @@ import blueBox from "../assets/Icons/png/BlueBox.png";
 import addUser from "../assets/Icons/png/user-plus.png";
 import logout from "../assets/Icons/png/shutdown.png";
 import distributor from "../assets/Icons/png/distributor.png";
+import masters from "../assets/Icons/png/mastersIcon.png";
 
 const asset: { [key: string]: string } = {
   LoginImage,
@@ -22,6 +23,7 @@ const asset: { [key: string]: string } = {
   addUser,
   logout,
   distributor,
+  masters,
 };
 
 export default asset;

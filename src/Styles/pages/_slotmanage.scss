@@ -1,0 +1,27 @@
+@use "../abstracts/index.scss" as *;
+/* _slotmanage.scss */
+
+.masters {
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* Responsive tweaks for smaller screens */
+@media (max-width: 768px) {
+  .masters {
+    padding: 12px;
+
+    .management-title {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .ant-table {
+      .ant-table-thead > tr > th,
+      .ant-table-tbody > tr > td {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+    }
+  }
+}

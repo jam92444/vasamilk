@@ -1,0 +1,51 @@
+@use "../abstracts/index.scss" as *;
+
+.pricetag {
+  padding: 20px;
+
+  .management-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .table-actions {
+    display: flex;
+    gap: 12px;
+
+    .action-icon {
+      font-size: 18px;
+      cursor: pointer;
+      transition: color 0.3s ease;
+
+      &.edit {
+        color: #1890ff;
+      }
+      &.deactivate {
+        color: #fa8c16;
+      }
+      &.activate {
+        color: #52c41a;
+      }
+      &.delete {
+        color: #ff4d4f;
+      }
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+}
+.price-tag-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+}

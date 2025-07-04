@@ -1,0 +1,63 @@
+@use "../abstracts/index.scss" as *;
+
+.table-actions {
+  display: flex;
+  font-family: $font-helvetica;
+  align-items: center;
+  gap: 12px;
+  .ant-table {
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      padding: 8px 10px !important;
+      font-size: 14px !important;
+    }
+  }
+  .action-icon {
+    font-size: $text-sm;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &.edit {
+      color: #1890ff;
+      &:hover {
+        color: #40a9ff;
+      }
+    }
+
+    &.delete {
+      color: #ff4d4f;
+      &:hover {
+        color: #ff7875;
+      }
+    }
+
+    &.status {
+      &.activate {
+        color: #52c41a;
+        &:hover {
+          color: #73d13d;
+        }
+      }
+
+      &.deactivate {
+        color: #faad14;
+        &:hover {
+          color: #ffc53d;
+        }
+      }
+    }
+  }
+}
+
+.edit-line-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.edit-line-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}

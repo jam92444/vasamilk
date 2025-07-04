@@ -18,7 +18,7 @@ const InventoryStats: React.FC<InventoryStatsProps> = ({
     <div className="inventory-stats-container">
       <Row gutter={[24, 24]}>
         <Col xs={24} sm={24} md={8}>
-          <Card bordered={false}>
+          <Card variant="borderless">
             <Statistic
               title="Total Inventory"
               value={total_inventory_count}
@@ -34,7 +34,7 @@ const InventoryStats: React.FC<InventoryStatsProps> = ({
           </Card>
         </Col>
         <Col xs={24} sm={12} md={8}>
-          <Card bordered={false}>
+          <Card variant="borderless">
             <Statistic
               title="Morning Slot Count"
               value={mrng_slot_count}
@@ -51,7 +51,7 @@ const InventoryStats: React.FC<InventoryStatsProps> = ({
         </Col>
 
         <Col xs={24} sm={12} md={8}>
-          <Card bordered={false}>
+          <Card variant="borderless">
             <Statistic
               title="Evening Slot Count"
               value={eve_slot_count}

@@ -18,6 +18,47 @@
 .distributor-dashboard {
   padding: 16px;
   // overflow-x: scroll;
+
+  .customer-cards {
+    @media (max-width: 470px) {
+      .ant-card .ant-card-head {
+        padding: 12px;
+      }
+    }
+    .ant-card-head-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+
+      @media (max-width: 470px) {
+        padding: 10px;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+
+        // Make title wrap and take full width when stacked
+        .ant-card-head-title {
+          white-space: normal !important; // allow multiline wrap
+          overflow: visible !important;
+          text-overflow: unset !important;
+          word-break: break-word;
+          width: 100%; // full width so it wraps properly
+          margin-bottom: 8px; // spacing below title
+          color: white; // since bg is black, keep text readable
+        }
+
+        // If you have extra actions or buttons on the right
+        .ant-card-extra {
+          width: 100%;
+          margin-top: 8px;
+          display: flex;
+          justify-content: flex-start; // or flex-end if you prefer aligned right
+        }
+      }
+    }
+  }
+
   .ant-card {
     border-radius: 8px;
     border: 1px solid #e6e6e6;

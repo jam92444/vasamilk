@@ -204,3 +204,53 @@ export const dailyInventoryByDate = (payload: any) => {
 export const getRouteOfDistributor = (payload: any) => {
   return axiosInstance.post("/milk-api/drop-down/lines-drop-down", payload);
 };
+
+//------------------------------------ MASTERS API -------------------------------------/
+
+//--------SLOT management----------/
+export const getSlotsList = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/list-slot", payload);
+};
+export const updateSlots = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/update-slot", payload);
+};
+
+//-----------LIST MANAGEMENT-------------------------------------//
+export const getLineLists = (
+  page: number = 1,
+  size: number = 10,
+  payload: any
+) => {
+  return axiosInstance.post(
+    `/milk-api/masters/list-lines?page=${page}&size=${size}`,
+    payload
+  );
+};
+export const createList = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/create-lines", payload);
+};
+export const inactiveList = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/inactive-lines", payload);
+};
+export const updateLine = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/update-lines", payload);
+};
+export const deleteLine = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/delete-lines", payload);
+};
+
+//--------------PRICE TAG----------------------------------------------//
+export const getPricetagList = (
+  page: number = 1,
+  pageSize: number = 10,
+  payload: any
+) => {
+  return axiosInstance.post(
+    `/milk-api/masters/list-price-tag?page=${page}&size=${pageSize}`,
+    payload
+  );
+};
+
+export const updatePriceTag = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/inactive-price-tag", payload);
+};

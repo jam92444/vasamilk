@@ -1,8 +1,10 @@
-import ReactApexChart from "react-apexcharts";
-import { getUserToken } from "../../../Utils/Data";
 import { useEffect, useState } from "react";
-import { dailyInventoryReport } from "../../../Services/ApiService";
+import ReactApexChart from "react-apexcharts";
+import { Spin, Alert } from "antd";
 import type { ApexOptions } from "apexcharts";
+
+import { getUserToken } from "../../../Utils/Data";
+import { dailyInventoryReport } from "../../../Services/ApiService";
 import "../../../Styles/pages/_inventory.scss";
 
 const InventoryChart = () => {
@@ -16,10 +18,17 @@ const InventoryChart = () => {
     categories: [],
   });
 
-  const formData = new FormData();
-  formData.append("token", getUserToken());
-  const handleGetReport = () => {
-    setLoading(true);
+  useEffect(() => {
+    const token = getUserToken();
+    if (!token) {
+      setError("User token not found");
+      setLoading(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("token", token);
+
     dailyInventoryReport(formData)
       .then((res) => {
         const blocks = res.data?.data;
@@ -44,7 +53,7 @@ const InventoryChart = () => {
         });
 
         const allDates = Array.from(
-          new Set([...Array.from(mrngMap.keys()), ...Array.from(eveMap.keys())])
+          new Set([...mrngMap.keys(), ...eveMap.keys()])
         ).sort((a, b) => {
           const [da, ma, ya] = a.split("-").map(Number);
           const [db, mb, yb] = b.split("-").map(Number);
@@ -72,33 +81,27 @@ const InventoryChart = () => {
         setError("Failed to fetch inventory report");
       })
       .finally(() => setLoading(false));
-  };
-  // parse first date for month name
+  }, []);
+
   const firstDateStr = chartData.categories[0];
   let monthTitle = "Month";
 
   if (firstDateStr) {
-    const parts = firstDateStr.split("-");
-    if (parts.length === 3) {
-      const [day, month, year] = parts;
-      const date = new Date(`${year}-${month}-${day}`);
+    const [day, month, year] = firstDateStr.split("-");
+    const parsed = new Date(`${year}-${month}-${day}`);
+    if (!isNaN(parsed.getTime())) {
       monthTitle =
-        date.toLocaleDateString("en-US", { month: "long" }) + " Month";
+        parsed.toLocaleDateString("en-US", { month: "long" }) + " Month";
     }
   }
-
-  useEffect(() => {
-    handleGetReport();
-  }, []);
-
-  if (loading) return <p>Loading chart...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   const options: ApexOptions = {
     chart: {
       height: 350,
       type: "line",
       toolbar: { show: false },
+      zoom: { enabled: false }, // <-- disable zoom to avoid passive event warning
+      animations: { enabled: true }, // optional, you can keep or remove
     },
     colors: ["#52c41a", "blue"],
     dataLabels: { enabled: false },
@@ -112,17 +115,12 @@ const InventoryChart = () => {
       title: { text: monthTitle },
       labels: {
         formatter: (value: string | undefined) => {
-          if (!value) return ""; // handle undefined or empty
-
-          const parts = value.split("-");
-          if (parts.length !== 3) return value; // unexpected format, fallback to original
-
-          const [day, month, year] = parts;
+          if (!value) return "";
+          const [day, month, year] = value.split("-");
           const date = new Date(`${year}-${month}-${day}`);
-
-          return date.toLocaleDateString("en-US", {
-            day: "numeric",
-          });
+          return isNaN(date.getTime())
+            ? value
+            : date.toLocaleDateString("en-US", { day: "numeric" });
         },
       },
     },
@@ -134,6 +132,25 @@ const InventoryChart = () => {
       horizontalAlign: "right",
     },
   };
+
+  if (loading) {
+    return (
+      <div
+        className="inventory-graph"
+        style={{ textAlign: "center", padding: "2rem" }}
+      >
+        <Spin tip="Loading inventory chart..." />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="inventory-graph" style={{ padding: "1rem" }}>
+        <Alert message="Error" description={error} type="error" showIcon />
+      </div>
+    );
+  }
 
   return (
     <div className="inventory-graph">

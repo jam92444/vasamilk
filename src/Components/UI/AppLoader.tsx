@@ -1,6 +1,6 @@
 import React from "react";
 import { Spin } from "antd";
-import "../../Styles/components/Spinner.scss";
+
 interface AppLoaderProps {
   message?: string;
   size?: "small" | "default" | "large";
@@ -16,15 +16,19 @@ const AppLoader: React.FC<AppLoaderProps> = ({
     <div
       style={{
         display: "flex",
+        flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
         height: fullScreen ? "100vh" : "100%",
         width: "100%",
-        textAlign: "center",
         padding: "2rem",
+        textAlign: "center",
       }}
     >
-      <Spin tip={message} size={size} style={{ color: "blue" }} />
+      <Spin size={size} />
+      <div style={{ marginTop: 10, color: "#1890ff", fontSize: "14px" }}>
+        {message}
+      </div>
     </div>
   );
 };

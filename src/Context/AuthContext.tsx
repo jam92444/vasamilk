@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getDecryptedCookie } from "../Utils/cookies";
-import Spinner from "../Components/Spinner";
 
 interface UserDetails {
   token: string;
@@ -35,7 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
-  const [loading, setLoading] = useState(true); // loading starts true
+  const [loading, setLoading] = useState(false); // loading starts true
 
   useEffect(() => {
     const userData = getDecryptedCookie<UserDetails>("user_token");
@@ -48,10 +47,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
     setLoading(false);
   }, []);
-
-  if (loading) {
-    return <Spinner />;
-  }
 
   return (
     <AuthContext.Provider

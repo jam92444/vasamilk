@@ -71,7 +71,7 @@ const MilkRequiredReport = () => {
       <Spin spinning={loading} tip="Loading data...">
         <Row justify="center">
           <Col xs={24}>
-            <Card bordered={false} className="summary-card-container">
+            <Card variant="borderless" className="summary-card-container">
               {/* Summary Cards */}
               <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
                 <Col xs={24} sm={12} md={12} lg={6} xl={6}>

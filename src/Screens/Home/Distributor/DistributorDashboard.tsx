@@ -10,6 +10,7 @@ import {
 } from "../../../Services/ApiService";
 import { getUserData, getUserToken } from "../../../Utils/Data";
 import AppLoader from "../../../Components/UI/AppLoader";
+import { useAuth } from "../../../Context/AuthContext";
 
 interface MilkSlotData {
   slot_id: number;
@@ -26,11 +27,11 @@ interface RouteItem {
 
 const DistributorDashboard: React.FC = () => {
   const today = dayjs();
+  const { loading, setLoading } = useAuth();
   const [selectedDate, setSelectedDate] = useState(today);
   const [remaining, setRemaining] = useState<number>(0);
   const [milkData, setMilkData] = useState<MilkSlotData[]>([]);
   const [route, setRoute] = useState<RouteItem[]>([]);
-  const [loading, setLoading] = useState(true); // ✅ Main loading state
 
   const disabledDate = (current: Dayjs) =>
     Boolean(current && current > today.endOf("day"));
@@ -127,6 +128,7 @@ const DistributorDashboard: React.FC = () => {
   return (
     <div className="container distributor-dashboard" style={{ padding: 16 }}>
       {/* Calendar & Stats */}
+      {/* <AppLoader message="Fetching dashboard data..." /> */}
       <Row gutter={[24, 24]}>
         {/* Calendar */}
         <Col xs={24} lg={12}>

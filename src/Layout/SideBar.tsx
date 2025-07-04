@@ -38,6 +38,21 @@ const menuConfig: {
 }[] = [
   {
     item: getItem(
+      "Masters", // label
+      "masters", // key (string unique id)
+      <img src={asset.masters} width={18} alt="User" />, // icon
+      [
+        // children (submenus)
+        getItem("Slot Management", "masters/slot"),
+        getItem("Price Tag Management", "masters/pricetag"),
+        getItem("Line Management", "masters/line"),
+        getItem("Reason Management", "masters/reason"),
+      ]
+    ),
+    allowedUserTypes: [1, 2],
+  },
+  {
+    item: getItem(
       "User",
       "user",
       <img src={asset.user} width={18} alt="User" />

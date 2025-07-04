@@ -2,11 +2,9 @@ import { useNavigate } from "react-router-dom";
 import CustomButton from "../../../Components/UI/CustomButton";
 import UserList from "./UserList";
 import "../../../Styles/pages/_customer.scss";
-import { getUserData } from "../../../Utils/Data";
 
 const CustomerManagement = () => {
   const navigate = useNavigate();
-  console.log(getUserData());
   return (
     <div>
       <div className="customer">

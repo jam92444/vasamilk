@@ -1,5 +1,5 @@
 import React from "react";
-import { Calendar, Flex, Radio, Select, theme } from "antd";
+import { Calendar, Select, theme } from "antd";
 import type { CalendarProps } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
@@ -28,61 +28,59 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     overflowX: "auto",
   };
 
+  const currentYear = dayjs().year();
+  const currentMonth = dayjs().month();
+
+  const defaultDisabledDate = (current: Dayjs) => {
+    return current.isAfter(dayjs(), "day");
+  };
+
   return (
-    <div style={wrapperStyle} className="container">
+    <div style={wrapperStyle} className="">
       <Calendar
         fullscreen={false}
-        disabledDate={disabledDate}
+        disabledDate={disabledDate || defaultDisabledDate}
         onSelect={onSelect}
         onPanelChange={onPanelChange}
-        headerRender={({ value, type, onChange, onTypeChange }) => {
-          const year = value.year();
-          const month = value.month();
-
-          const yearOptions = Array.from({ length: 20 }, (_, i) => {
-            const label = year - 10 + i;
-            return { label, value: label };
+        headerRender={({ value, onChange }) => {
+          const yearOptions = Array.from({ length: 5 }, (_, i) => {
+            const year = currentYear - 4 + i;
+            return { label: year.toString(), value: year };
           });
 
-          const monthOptions = value
-            .localeData()
-            .monthsShort()
-            .map((label, index) => ({
-              label,
-              value: index,
-            }));
+          const monthOptions =
+            value.year() === currentYear
+              ? Array.from({ length: currentMonth + 1 }, (_, i) => ({
+                  label: dayjs().month(i).format("MMM"),
+                  value: i,
+                }))
+              : Array.from({ length: 12 }, (_, i) => ({
+                  label: dayjs().month(i).format("MMM"),
+                  value: i,
+                }));
 
           return (
-            <div style={{ padding: 8 }}>
-              <Flex wrap="wrap" gap={8}>
-                <Radio.Group
-                  size="small"
-                  onChange={(e) => onTypeChange(e.target.value)}
-                  value={type}
-                >
-                  <Radio.Button value="month">Month</Radio.Button>
-                  <Radio.Button value="year">Year</Radio.Button>
-                </Radio.Group>
-                <Select
-                  size="small"
-                  value={year}
-                  options={yearOptions}
-                  onChange={(newYear) => {
-                    const now = value.clone().year(newYear);
-                    onChange(now);
-                  }}
-                />
-                <Select
-                  size="small"
-                  style={{ width: "4rem" }}
-                  value={month}
-                  options={monthOptions}
-                  onChange={(newMonth) => {
-                    const now = value.clone().month(newMonth);
-                    onChange(now);
-                  }}
-                />
-              </Flex>
+            <div style={{ padding: 8, display: "flex", gap: "8px" }}>
+              <Select
+                style={{ width: "70px" }}
+                size="small"
+                value={value.year()}
+                options={yearOptions}
+                onChange={(newYear) => {
+                  const newDate = value.clone().year(newYear);
+                  onChange(newDate);
+                }}
+              />
+              <Select
+                style={{ width: "70px" }}
+                size="small"
+                value={value.month()}
+                options={monthOptions}
+                onChange={(newMonth) => {
+                  const newDate = value.clone().month(newMonth);
+                  onChange(newDate);
+                }}
+              />
             </div>
           );
         }}

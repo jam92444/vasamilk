@@ -18,19 +18,13 @@
   }
 }
 
-// // Custom pagination circle buttons
+// Custom pagination circle buttons
 .circular-page-btn {
   background-color: white;
   border-radius: 50%;
   color: var(--primary-color);
   font-size: $text-xs;
-  width: 50px;
-  height: 50px;
+
   transition: 0.3s;
   cursor: pointer;
 }
-
-// .ant-pagination-item-active > .circular-page-btn {
-//   background-color: var(--primary-color);
-//   color: white;
-// }
