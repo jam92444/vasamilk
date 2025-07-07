@@ -300,3 +300,10 @@ export const deleteReason = (payload: any) => {
 export const getActiveSlots = (payload: any) => {
   return axiosInstance.post("/milk-api/masters/get-active-slot", payload);
 };
+
+export const placeDirectCustomerLog = (payload: any) => {
+  return axiosInstance.post(
+    "/milk-api/milk-sales/direct-customer-log",
+    payload
+  );
+};

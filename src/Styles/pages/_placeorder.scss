@@ -11,6 +11,11 @@
     background-color: #fff;
     max-width: 900px;
     margin: 0 auto;
+
+    .inactive {
+      color: red;
+      margin-top: 1rem;
+    }
   }
   .submit-btn {
     @include flex($justify: end, $align: end);

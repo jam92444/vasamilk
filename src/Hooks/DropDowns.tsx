@@ -39,7 +39,7 @@ export function useDropdownData() {
   const CustomerDropdownOptions = useDropdownOptions({
     data: customerRaw,
     labelKey: "name",
-    valueKey: "user_id",
+    valueKey: "id",
   });
 
   const distributorDropdownOptions = useDropdownOptions({
@@ -144,7 +144,6 @@ export function useDropdownData() {
       .then((res) => {
         if (res.data.status === 1) {
           setDistributorRaw(res.data.data);
-          console.log(res.data.data);
         } else {
           toast.error(res.data.msg || "Failed to fetch distributor data");
         }

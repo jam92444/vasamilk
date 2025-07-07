@@ -1,6 +1,10 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { getActiveSlots, getUserById } from "../../../Services/ApiService";
+import {
+  getActiveSlots,
+  getCustomer,
+  getUserById,
+} from "../../../Services/ApiService";
 import { getUserToken } from "../../../Utils/Data";
 import { useAuth } from "../../../Context/AuthContext";
 import { useDropdownData } from "../../../Hooks/DropDowns";
@@ -47,22 +51,17 @@ const PlaceOrder = () => {
   const navigate = useNavigate();
   const { loading, setLoading } = useAuth();
 
-  const {
-    CustomerDropdownOptions,
-    priceOptionsRaw,
-    customerDropDown,
-    slotDropDown,
-    payTagIdDropDown,
-    customerRaw,
-  } = useDropdownData() as {
-    CustomerDropdownOptions: any[];
-    priceOptionsRaw: PriceOption[];
-    customerDropDown: (arg: any) => void;
-    slotDropDown: { value: string; label: string }[];
-    payTagIdDropDown: () => void;
-    customerRaw: any;
-  };
+  const { priceOptionsRaw, slotDropDown, payTagIdDropDown } =
+    useDropdownData() as {
+      priceOptionsRaw: PriceOption[];
+      slotDropDown: { value: string; label: string }[];
+      payTagIdDropDown: () => void;
+    };
 
+  const [customerRaw, setCustomerRaw] = useState<any[]>([]);
+  const [CustomerDropdownOptions, setCustomerDropDownOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
   const [customerDetails, setCustomerDetails] = useState<any>(null);
   const [isActiveSlot, setIsActiveSlot] = useState<boolean>(true);
   const type = 1;
@@ -101,7 +100,7 @@ const PlaceOrder = () => {
   useEffect(() => {
     handleGetActiveSlot();
     payTagIdDropDown();
-    customerDropDown({ type });
+    handleGetCustomerDropDown({ type });
   }, []);
 
   useEffect(() => {
@@ -125,10 +124,34 @@ const PlaceOrder = () => {
           setIsActiveSlot(true);
         } else if (res.data.status === 2) {
           setIsActiveSlot(false);
-        } else console.info(res.data.msg);
+        } else {
+          console.info(res.data.msg);
+        }
       })
       .catch(console.log)
       .finally(() => setLoading(false));
+  };
+
+  const handleGetCustomerDropDown = ({ type }: { type: number }) => {
+    const formData = new FormData();
+    formData.append("token", getUserToken());
+    formData.append("type", type.toString());
+
+    getCustomer(formData)
+      .then(async (res) => {
+        if (res.data.status === 1) {
+          const rawData = res.data.data;
+          setCustomerRaw(rawData);
+          const dropdownData: any = rawData.map((item: any) => ({
+            label: String(item.name),
+            value: String(item.user_id),
+          }));
+          setCustomerDropDownOptions(dropdownData);
+        } else {
+          console.info(res.data.msg);
+        }
+      })
+      .catch(console.log);
   };
 
   const handleGetUserDetails = (selectedUser: string) => {
@@ -181,12 +204,17 @@ const PlaceOrder = () => {
     formik.values.slotQuantities,
     customerDetails,
     formik.values.selectedPriceTagId,
-    priceOptionsRaw,
+    customerRaw,
   ]);
+
+  // ---------------------------
+  // RENDER
+  // ---------------------------
 
   return (
     <div className="masters placeorder">
       {loading && <AppLoader message="Loading please wait..." />}
+
       <div className="management-title">
         <aside>PLACE ORDER</aside>
         <CustomButton
@@ -206,21 +234,24 @@ const PlaceOrder = () => {
           onChange={(value) =>
             formik.setFieldValue("customer_id", value ? value.toString() : "")
           }
+          disabled={!isActiveSlot}
         />
 
-        <p className="content">
-          Can't Find Customer?{" "}
-          <span
-            className="add-user"
-            onClick={() =>
-              navigate("/add-user", {
-                state: { user_type: 5, from: "/place-order" },
-              })
-            }
-          >
-            Add new customer
-          </span>
-        </p>
+        {isActiveSlot && (
+          <p className="content">
+            Can't Find Customer?{" "}
+            <span
+              className="add-user"
+              onClick={() =>
+                navigate("/add-user", {
+                  state: { user_type: 5, from: "/place-order" },
+                })
+              }
+            >
+              Add new customer
+            </span>
+          </p>
+        )}
 
         {customerDetails && (
           <div className="customer-info">
@@ -250,7 +281,6 @@ const PlaceOrder = () => {
                 {customerDetails.pay_type === 1 ? "Daily" : "Monthly"}
               </strong>
             </div>
-
             <div className="field">
               Unit Price:{" "}
               <strong>
@@ -267,7 +297,6 @@ const PlaceOrder = () => {
                 const slotExists = customerDetails.slot_data?.some(
                   (s: any) => s.slot_id === slotId
                 );
-
                 const isEveningSlot = slot.label
                   .toLowerCase()
                   .includes("evening");
@@ -314,7 +343,9 @@ const PlaceOrder = () => {
             {formik.values.paymentType === "2" &&
               customerDetails.pay_type !== 2 && (
                 <div className="qr-container">
-                  <p>UPI : vvasamilk@icici</p>
+                  <p>
+                    UPI: <strong>vvasamilk@icici</strong>
+                  </p>
                   <div className="QR">Sample QR</div>
                 </div>
               )}
@@ -325,7 +356,19 @@ const PlaceOrder = () => {
           </div>
         )}
 
-        <CustomButton text="Submit" className="submit-btn" htmlType="submit" />
+        <CustomButton
+          text="Submit"
+          className="submit-btn"
+          htmlType="submit"
+          disabled={!isActiveSlot}
+        />
+
+        {!isActiveSlot && (
+          <p className="inactive">
+            Can't Place Order, Slot is inactive at this moment. You can try
+            again later.
+          </p>
+        )}
       </form>
     </div>
   );
