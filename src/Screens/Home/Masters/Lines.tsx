@@ -171,12 +171,6 @@ const Lines = () => {
       key: "description",
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status: number) => (status === 1 ? "Active" : "Inactive"),
-    },
-    {
       title: "Created At",
       dataIndex: "created_at",
       key: "created_at",
@@ -185,6 +179,12 @@ const Lines = () => {
       title: "Updated At",
       dataIndex: "updated_at",
       key: "updated_at",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status: number) => (status === 1 ? "Active" : "Inactive"),
     },
     {
       title: "Action",

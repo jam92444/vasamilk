@@ -1,0 +1,162 @@
+@use "../abstracts/index.scss" as *;
+
+.placeorder {
+  padding: 1.5rem;
+  font-family: $font-helvetica;
+
+  form {
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .submit-btn {
+    @include flex($justify: end, $align: end);
+    padding: 0.4rem 1rem !important;
+    margin-top: 2rem;
+  }
+  .content {
+    margin-top: 1rem;
+    font-size: $text-sm;
+    color: $text-secondary;
+
+    .add-user {
+      cursor: pointer;
+      color: $text-link;
+      font-weight: $font-semibold;
+      text-decoration: underline;
+
+      &:hover {
+        color: darken($text-link, 15%);
+      }
+    }
+  }
+
+  .select {
+    margin-bottom: 1.5rem;
+  }
+
+  .customer-info {
+    margin-top: 2.5rem;
+    padding: 2rem;
+    border-radius: 8px;
+    background: $glass-white-bg;
+    // box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+
+    .field {
+      font-size: $text-sm;
+      color: $text-primary;
+
+      strong {
+        font-weight: $font-semibold;
+        color: $text-black;
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 1rem;
+      }
+    }
+
+    .slots {
+      grid-column: 1 / -1; // full width under fields
+      // margin-top: 2rem;
+
+      h4 {
+        font-size: $text-xl;
+        font-weight: $font-bold;
+        margin-bottom: 1.25rem;
+        border-bottom: 2px solid $bg-blue;
+        padding-bottom: 0.5rem;
+        color: $bg-blue;
+      }
+
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+
+      .slot-entry {
+        display: flex;
+        flex-direction: column;
+
+        label {
+          font-weight: $font-semibold;
+          margin-bottom: 0.4rem;
+          color: $text-primary;
+        }
+
+        input {
+          padding: 0.5rem 0.75rem;
+          font-size: $text-base;
+          border: 1.5px solid lighten($text-secondary, 30%);
+          border-radius: 6px;
+          transition: border-color 0.2s ease;
+
+          &:focus {
+            border-color: $bg-blue;
+            outline: none;
+            box-shadow: 0 0 6px rgba($bg-blue, 0.3);
+          }
+
+          &:disabled {
+            background: #f9f9f9;
+            color: $text-muted;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+    .qr-container {
+      @include flex($direction: column);
+      padding: 1rem;
+      p {
+        margin-bottom: 1rem;
+        font-size: $text-base;
+        font-weight: $font-semibold;
+        letter-spacing: 1.2px;
+        width: 100%;
+        color: $text-white;
+        text-align: center;
+        max-width: 300px;
+        background: $bg-darkBlue;
+      }
+      .QR {
+        width: 300px;
+        height: 300px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid $bg-darkBlue;
+      }
+    }
+
+    .total-price {
+      grid-column: 1 / -1;
+      margin-top: 2rem;
+      font-size: $text-2xl;
+      font-weight: $font-extrabold;
+      color: $bg-blue;
+      text-align: right;
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 700px) {
+    padding: 0rem;
+    form {
+      padding: 1rem;
+    }
+    .customer-info {
+      grid-template-columns: 1fr;
+
+      .total-price {
+        text-align: left;
+      }
+    }
+  }
+}

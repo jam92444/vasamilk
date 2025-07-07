@@ -1,5 +1,5 @@
 import type { RouteObject } from "react-router-dom";
-import { AdminRoute, DistributorRoute } from "./PrivateRoute";
+import { AdminRoute, DistributorRoute, VendorRoute } from "./PrivateRoute";
 import CustomerManagement from "../Screens/Home/User/CustomerManagement";
 import LayoutWrapper from "../Layout/LayoutWrapper";
 import InventoryList from "../Screens/Home/Inventory/InventoryList";
@@ -15,6 +15,7 @@ import Slot from "../Screens/Home/Masters/Slot";
 import Lines from "../Screens/Home/Masters/Lines";
 import Reason from "../Screens/Home/Masters/Reason";
 import PriceTag from "../Screens/Home/Masters/PriceTag";
+import PlaceOrder from "../Screens/Home/Orders/PlaceOrder";
 export const HomeRoutes: RouteObject[] | undefined = [
   {
     element: <LayoutWrapper />,
@@ -83,6 +84,10 @@ export const HomeRoutes: RouteObject[] | undefined = [
             path: `/masters/pricetag`,
             element: <PriceTag />,
           },
+          {
+            path: "place-order",
+            element: <PlaceOrder />,
+          },
         ],
       },
       {
@@ -91,6 +96,16 @@ export const HomeRoutes: RouteObject[] | undefined = [
           {
             path: "/distributor-dashboard",
             element: <DistributorDashboard />,
+          },
+        ],
+      },
+      {
+        path: "/vendor",
+        element: <VendorRoute />,
+        children: [
+          {
+            path: "place-order",
+            element: <PlaceOrder />,
           },
         ],
       },

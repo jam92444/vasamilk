@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Spin } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useAddUserFormik from "./useAddUserFormik";
 import CustomButton from "../../../Components/UI/CustomButton";
 import CustomInput from "../../../Components/UI/CustomInput";
@@ -25,9 +25,11 @@ const AddUser: React.FC = () => {
     isSubmitting,
     isEdit,
     methodOptions,
+    setDropdownsLoaded,
   } = useAddUserFormik();
+  const location = useLocation();
+  const { from } = location.state || {};
 
-  //api drop down calls
   const {
     priceTagDropdownOptions,
     loadLineDropdowns,
@@ -38,10 +40,13 @@ const AddUser: React.FC = () => {
 
   const isCustomer = values.user_type === 5;
   const isRegularCustomer = Number(values.customer_type) === 1;
-
   useEffect(() => {
-    payTagIdDropDown();
-    loadLineDropdowns();
+    const fetchDropdowns = async () => {
+      await Promise.all([payTagIdDropDown(), loadLineDropdowns()]);
+      setDropdownsLoaded(true); // ✅ Set this after both dropdowns are ready
+    };
+
+    fetchDropdowns();
   }, []);
 
   return (
@@ -128,7 +133,7 @@ const AddUser: React.FC = () => {
             onChange={(val) => setFieldValue("user_type", val)}
             onBlur={handleBlur}
             error={errors.user_type as string}
-            touched={touched.user_type}
+            touched={touched.user_type ? true : false}
             required
           />
 
@@ -150,11 +155,7 @@ const AddUser: React.FC = () => {
                 label="Select Line"
                 name="line_id"
                 value={values.line_id}
-                options={
-                  lineDropdownOptions.length
-                    ? lineDropdownOptions
-                    : [{ label: "No lines", value: "" }]
-                }
+                options={lineDropdownOptions}
                 onChange={(val) => setFieldValue("line_id", val)}
                 onBlur={handleBlur}
                 error={errors.line_id as string}
@@ -166,11 +167,7 @@ const AddUser: React.FC = () => {
                 label="Price Tag"
                 name="price_tag_id"
                 value={values.price_tag_id}
-                options={
-                  priceTagDropdownOptions.length
-                    ? priceTagDropdownOptions
-                    : [{ label: "No price tags", value: "" }]
-                }
+                options={priceTagDropdownOptions}
                 onChange={(val) => setFieldValue("price_tag_id", val)}
                 onBlur={handleBlur}
                 error={errors.price_tag_id as string}
@@ -265,7 +262,13 @@ const AddUser: React.FC = () => {
               loading={isSubmitting}
             />
             <CustomButton
-              onClick={() => navigate("/user")}
+              onClick={() => {
+                if (from === "/place-order") {
+                  navigate("/place-order");
+                } else {
+                  navigate("/user");
+                }
+              }}
               htmlType="button"
               text="Cancel"
               className=" backBtn btn"

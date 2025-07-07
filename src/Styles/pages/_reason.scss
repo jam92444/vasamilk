@@ -1,0 +1,85 @@
+@use "../abstracts/index.scss" as *;
+
+.reason {
+  font-family: $font-helvetica;
+
+  .table-actions {
+    display: flex;
+    gap: 12px;
+
+    .action-icon {
+      font-size: 13px;
+      cursor: pointer;
+      transition: color 0.3s ease;
+
+      &.edit {
+        color: #1890ff;
+      }
+      &.deactivate {
+        color: #fa8c16;
+      }
+      &.activate {
+        color: #52c41a;
+      }
+      &.delete {
+        color: #ff4d4f;
+      }
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  .reason-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 10px;
+
+    .form-actions {
+      display: flex;
+      margin: 1rem 0;
+      justify-content: flex-end;
+      gap: 10px;
+
+      .btn,
+      .submit-btn {
+        min-width: 100px;
+      }
+    }
+
+    .custom-input-wrapper {
+      transition: all 0.3s ease;
+
+      .custom-input-label {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 6px;
+        display: block;
+      }
+
+      .custom-input-field {
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        padding: 8px 12px;
+        transition: border 0.2s;
+
+        &:focus {
+          border-color: #1890ff;
+          box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+
+        &.input-error {
+          border-color: #ff4d4f;
+        }
+      }
+
+      .error-text {
+        color: #ff4d4f;
+        font-size: 12px;
+        margin-top: 4px;
+      }
+    }
+  }
+}

@@ -36,7 +36,10 @@ export const getPriceTagDropDown = (payload: any) => {
 
 // Distributor Drop Down
 export const getDistributorDropDown = (payload: any) => {
-  return axiosInstance.post("/milk-api/drop-down/customer-drop-down", payload);
+  return axiosInstance.post(
+    "/milk-api/drop-down/distributer-drop-down",
+    payload
+  );
 };
 
 // fetchUserList
@@ -252,5 +255,48 @@ export const getPricetagList = (
 };
 
 export const updatePriceTag = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/update-price-tag", payload);
+};
+export const createPriceTag = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/create-price-tag", payload);
+};
+
+export const deletePriceTag = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/delete-price-tag", payload);
+};
+
+export const inactivePriceTag = (payload: any) => {
   return axiosInstance.post("/milk-api/masters/inactive-price-tag", payload);
+};
+
+//--------------REASON API----------------------------------------------//
+export const listReason = (
+  page: number = 1,
+  pageSize: number = 10,
+  payload: any
+) => {
+  return axiosInstance.post(
+    `/milk-api/masters/list-reason?page=${page}&size=${pageSize}`,
+    payload
+  );
+};
+
+export const toggleReasonStatus = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/inactive-reason", payload);
+};
+
+export const createReason = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/create-reason", payload);
+};
+
+export const updateReason = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/update-reason", payload);
+};
+
+export const deleteReason = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/delete-reason", payload);
+};
+
+export const getActiveSlots = (payload: any) => {
+  return axiosInstance.post("/milk-api/masters/get-active-slot", payload);
 };

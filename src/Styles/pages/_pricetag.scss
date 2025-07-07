@@ -2,7 +2,7 @@
 
 .pricetag {
   padding: 20px;
-
+  font-family: $font-helvetica;
   .management-title {
     display: flex;
     justify-content: space-between;
@@ -15,7 +15,7 @@
     gap: 12px;
 
     .action-icon {
-      font-size: 18px;
+      font-size: 13px;
       cursor: pointer;
       transition: color 0.3s ease;
 

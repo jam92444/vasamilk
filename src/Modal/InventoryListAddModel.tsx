@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import CustomModal from "../Components/UI/CustomModal";
@@ -27,7 +27,7 @@ const InventoryListAddModel: React.FC<InventoryEditModalProps> = ({
   onClose,
   onSave,
 }) => {
-  const { distributorDropdownOptions } = useDropdownData();
+  const { distributorDropdownOptions, distributorDropDown } = useDropdownData();
 
   const formik = useFormik({
     initialValues: {
@@ -42,6 +42,10 @@ const InventoryListAddModel: React.FC<InventoryEditModalProps> = ({
       resetForm();
     },
   });
+
+  useEffect(() => {
+    distributorDropDown();
+  }, []);
 
   return (
     <CustomModal

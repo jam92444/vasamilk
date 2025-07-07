@@ -39,7 +39,7 @@ export function useDropdownData() {
   const CustomerDropdownOptions = useDropdownOptions({
     data: customerRaw,
     labelKey: "name",
-    valueKey: "id",
+    valueKey: "user_id",
   });
 
   const distributorDropdownOptions = useDropdownOptions({
@@ -114,9 +114,9 @@ export function useDropdownData() {
   const customerDropDown = async ({
     slot_id,
     line_id,
-    type,
+    type = 0,
   }: CustomerDropDownParams = {}) => {
-    const isType = type ? type.toString() : "4";
+    const isType = type > 0 ? type.toString() : "4";
     const formData = new FormData();
     formData.append("token", getUserToken());
     formData.append("type", isType);
@@ -144,6 +144,7 @@ export function useDropdownData() {
       .then((res) => {
         if (res.data.status === 1) {
           setDistributorRaw(res.data.data);
+          console.log(res.data.data);
         } else {
           toast.error(res.data.msg || "Failed to fetch distributor data");
         }
@@ -174,7 +175,7 @@ export function useDropdownData() {
       return res.data.data || [];
     } catch (err) {
       console.error("Failed to load assign route", err);
-      return []; // ✅ fail-safe return
+      return [];
     }
   };
 
@@ -195,5 +196,7 @@ export function useDropdownData() {
     distributorDropDown,
     payTagIdDropDown,
     loadLineDropdowns,
+    customerRaw,
+    priceOptionsRaw,
   };
 }

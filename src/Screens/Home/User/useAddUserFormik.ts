@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useLocation, useNavigate } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  type NavigateFunction,
+} from "react-router-dom";
 import {
   createUser,
   getUserById,
@@ -83,8 +87,9 @@ const useAddUserFormik = () => {
   const { token } = useUserDetails();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user_id } = location.state || {};
+  const { user_id, user_type: preselectedUserType = 2 } = location.state || {};
   const [isSubmitting] = useState(false);
+  const [dropdownsLoaded, setDropdownsLoaded] = useState(false);
   const isEdit = !!user_id;
 
   const slotOptions = [
@@ -97,50 +102,40 @@ const useAddUserFormik = () => {
     { label: "Distributor", value: 2 },
   ];
 
-  const handleAddUser = (values: any, { resetForm }: any) => {
+  const handleAddUser = async (
+    values: any,
+    token: string,
+    isEdit: boolean,
+    user_id: string | undefined,
+    preselectedUserType: number,
+    resetForm: () => void,
+    navigate: NavigateFunction
+  ) => {
     if (!token) {
       toast.error("Login to access any pages");
       navigate("/");
       return;
     }
 
-    const onSuccess = (res: any) => {
-      if (res.data.status === 1) {
-        toast.success(res.data.msg);
-        resetForm();
-        navigate("/user");
-      } else {
-        toast.info(res.data.msg);
-      }
-    };
-
-    const onError = (error: any) => {
-      console.error(error.message);
-      toast.error("Something went wrong!");
-    };
-
-    const payload = {
+    const payload: any = {
       token,
       user_name: values.user_name,
       name: values.name,
       phone: values.phone,
-      user_type: values.user_type,
+      user_type: preselectedUserType,
 
-      // Optional fields
       ...(values.email && { email: values.email }),
       ...(values.alternative_number && {
         alternative_number: values.alternative_number,
       }),
       ...(!isEdit && { password: values.password }),
 
-      // Fields for user_type === 5
-      ...(values.user_type === 5 && {
+      ...(preselectedUserType === 5 && {
         customer_type: values.customer_type,
         line_id: values.line_id,
         pay_type: values.pay_type,
         ...(values.price_tag_id && { price_tag_id: values.price_tag_id }),
 
-        // Conditional slot_data only if customer_type === 1
         ...(values.customer_type === 1 && {
           slot_data: values.slot_data
             .filter((slot: any) => slot.quantity > 0 && slot.method > 0)
@@ -155,11 +150,26 @@ const useAddUserFormik = () => {
       }),
     };
 
+    const onSuccess = (res: any) => {
+      if (res.data.status === 1) {
+        toast.success(res.data.msg);
+        resetForm();
+        navigate("/place-order");
+      } else {
+        toast.info(res.data.msg);
+      }
+    };
+
+    const onError = (err: any) => {
+      console.error(err.message);
+      toast.error("Something went wrong!");
+    };
+
     if (isEdit && user_id) {
       payload.id = Number(user_id);
-      updateUser(payload).then(onSuccess).catch(onError);
+      await updateUser(payload).then(onSuccess).catch(onError);
     } else {
-      createUser(payload).then(onSuccess).catch(onError);
+      await createUser(payload).then(onSuccess).catch(onError);
     }
   };
   const today = new Date().toISOString().split("T")[0]; // e.g. "2025-06-26"
@@ -196,14 +206,24 @@ const useAddUserFormik = () => {
       isEdit,
     },
     validationSchema: validationSchema(isEdit),
-    onSubmit: handleAddUser,
+    onSubmit: (values, { resetForm }) => {
+      handleAddUser(
+        values,
+        token,
+        isEdit,
+        user_id,
+        preselectedUserType,
+        resetForm,
+        navigate
+      );
+    },
     enableReinitialize: true,
   });
 
   const { setFieldValue, setValues } = formik;
 
   useEffect(() => {
-    if (!user_id || !token) return;
+    if (!user_id || !token || !dropdownsLoaded) return;
 
     (async () => {
       const formData = new FormData();
@@ -251,14 +271,13 @@ const useAddUserFormik = () => {
           start_date:
             userData.slot_data?.find((s: any) => s.slot_id === 1)?.start_date ||
             "",
-
           isEdit: true,
         });
       } else {
         toast.error(res.data.msg || "Failed to fetch user data");
       }
     })();
-  }, [user_id, token]);
+  }, [user_id, token, dropdownsLoaded]); // 🧠 Add dropdownsLoaded dependency
 
   return {
     ...formik,
@@ -267,6 +286,8 @@ const useAddUserFormik = () => {
     slotOptions,
     isEdit,
     methodOptions,
+    dropdownsLoaded,
+    setDropdownsLoaded,
   };
 };
 

@@ -12,7 +12,13 @@ import { toast } from "react-toastify";
 import { useAuth } from "../../../Context/AuthContext";
 import { getUserToken } from "../../../Utils/Data";
 import { useEffect, useState } from "react";
-import { getPricetagList, updatePriceTag } from "../../../Services/ApiService";
+import {
+  createPriceTag,
+  deletePriceTag,
+  getPricetagList,
+  inactivePriceTag,
+  updatePriceTag,
+} from "../../../Services/ApiService";
 import AppLoader from "../../../Components/UI/AppLoader";
 import CustomButton from "../../../Components/UI/CustomButton";
 import CustomTable from "../../../Components/UI/CustomTable";
@@ -33,6 +39,7 @@ interface PriceTagType {
 const PriceTag = () => {
   const { loading, setLoading } = useAuth();
   const [priceTagList, setPriceTagList] = useState<PriceTagType[]>([]);
+  const [modalKey, setModalKey] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTag, setSelectedTag] = useState<PriceTagType | null>(null);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
@@ -40,6 +47,7 @@ const PriceTag = () => {
     pageSize: 10,
     total: 0,
   });
+
   // get list
   const handleGetPriceTagList = () => {
     const formData = new FormData();
@@ -64,12 +72,12 @@ const PriceTag = () => {
       .finally(() => setLoading(false));
   };
 
+  // Add and update API
   const handleFormSubmit = (values: PriceTagFormValues) => {
     const formData = new FormData();
     formData.append("token", getUserToken());
     formData.append("name", values.name);
 
-    // convert price string to number safely
     const priceNumber =
       typeof values.price === "string"
         ? parseFloat(values.price)
@@ -80,35 +88,35 @@ const PriceTag = () => {
     if (values.id) {
       formData.append("price_tag_id", values.id.toString());
 
-      // updatePriceTag(formData)
-      //   .then((res) => {
-      //     if (res.data.status === 1) {
-      //       toast.success("Price tag updated successfully");
-      //       setModalVisible(false);
-      //       handleGetPriceTagList();
-      //     } else {
-      //       toast.error(res.data.msg || "Update failed");
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.error(err);
-      //     toast.error("Something went wrong while updating");
-      //   });
+      updatePriceTag(formData)
+        .then((res) => {
+          if (res.data.status === 1) {
+            toast.success("Price tag updated successfully");
+            setModalVisible(false);
+            handleGetPriceTagList();
+          } else {
+            toast.error(res.data.msg || "Update failed");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error("Something went wrong while updating");
+        });
     } else {
-      // createPriceTag(formData)
-      //   .then((res) => {
-      //     if (res.data.status === 1) {
-      //       toast.success("Price tag created successfully");
-      //       setModalVisible(false);
-      //       handleGetPriceTagList();
-      //     } else {
-      //       toast.error(res.data.msg || "Creation failed");
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.error(err);
-      //     toast.error("Something went wrong while creating");
-      //   });
+      createPriceTag(formData)
+        .then((res) => {
+          if (res.data.status === 1) {
+            toast.success("Price tag created successfully");
+            setModalVisible(false);
+            handleGetPriceTagList();
+          } else {
+            toast.error(res.data.msg || "Creation failed");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error("Something went wrong while creating");
+        });
     }
   };
 
@@ -121,33 +129,49 @@ const PriceTag = () => {
   };
 
   const handleAdd = () => {
+    setModalKey((prev) => prev + 1);
     setSelectedTag(null);
     setModalVisible(true);
   };
 
   const handleEdit = (record: PriceTagType) => {
+    setModalKey((prev) => prev + 1);
     setSelectedTag(record);
     setModalVisible(true);
   };
 
   const handleDelete = (record: PriceTagType) => {
-    console.log("Delete", record);
+    const formData = new FormData();
+    formData.append("token", getUserToken());
+    formData.append("id", record.id.toString());
+    setLoading(true);
+    deletePriceTag(formData)
+      .then((res) => {
+        if (res.data.status === 1) {
+          toast.success(res.data.msg);
+          handleGetPriceTagList();
+        } else {
+          toast.info(res.data.msg);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const handleStatusToggle = (record: PriceTagType) => {
     const changeStatus = record.status === 1 ? 2 : 1;
-    console.log("Toggle status", record);
     const formData = new FormData();
     formData.append("token", getUserToken());
     formData.append("id", record.id.toString());
     formData.append("status", changeStatus.toString());
-    updatePriceTag(formData)
+    inactivePriceTag(formData)
       .then((res) => {
         if (res.data.status === 1) {
-          handleGetPriceTagList();
           toast.success(
             `Status ${changeStatus === 1 ? "Activated" : "Deactivated"}`
           );
+          handleGetPriceTagList();
         } else {
           toast.info(res.data.msg);
         }
@@ -165,14 +189,14 @@ const PriceTag = () => {
       key: "price",
       render: (v: number) => `₹ ${v}`,
     },
+    { title: "Created At", dataIndex: "created_at", key: "created_at" },
+    { title: "Updated At", dataIndex: "updated_at", key: "updated_at" },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       render: (status: number) => (status === 1 ? "Active" : "Inactive"),
     },
-    { title: "Created At", dataIndex: "created_at", key: "created_at" },
-    { title: "Updated At", dataIndex: "updated_at", key: "updated_at" },
     {
       title: "Action",
       key: "action",
@@ -217,7 +241,7 @@ const PriceTag = () => {
           text="Create Price Tag"
           className="submit-btn"
           type="primary"
-          onClick={() => console.log("clicked")}
+          onClick={() => handleAdd()}
         />
       </div>
 
@@ -232,6 +256,7 @@ const PriceTag = () => {
 
       {/* modal */}
       <PriceTagFormModal
+        key={modalKey}
         visible={modalVisible}
         onClose={() => {
           setModalVisible(false);

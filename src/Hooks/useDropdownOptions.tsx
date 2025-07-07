@@ -6,7 +6,7 @@ type UseDropdownOptionsProps<T> = {
   valueKey: keyof T;
 };
 
-type Option = {
+export type Option = {
   label: string;
   value: string | number;
 };

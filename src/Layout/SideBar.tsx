@@ -85,6 +85,14 @@ const menuConfig: {
   },
   {
     item: getItem(
+      "Place Order",
+      "place-order",
+      <img src={asset.orderIcon} width={20} alt="Distributor Dashboard" />
+    ),
+    allowedUserTypes: [1, 2, 3],
+  },
+  {
+    item: getItem(
       "Logout",
       "logout",
       <img src={asset.logout} width={18} alt="Logout" />

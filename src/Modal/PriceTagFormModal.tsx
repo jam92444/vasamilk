@@ -4,6 +4,7 @@ import CustomModal from "../Components/UI/CustomModal";
 import CustomInput from "../Components/UI/CustomInput";
 import CustomButton from "../Components/UI/CustomButton";
 import "../Styles/pages/_pricetag.scss";
+
 export interface PriceTagFormValues {
   id?: number;
   name: string;
@@ -39,9 +40,8 @@ const PriceTagFormModal = ({
       width={600}
     >
       <Formik
-        key={initialData?.id ?? "new"}
         initialValues={initialData}
-        enableReinitialize
+        enableReinitialize={true}
         validationSchema={validationSchema}
         onSubmit={(values) => onSubmit(values)}
       >
