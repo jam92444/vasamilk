@@ -111,7 +111,6 @@ const useAddUserFormik = () => {
     token: string,
     isEdit: boolean,
     user_id: string | undefined,
-    preselectedUserType: number,
     resetForm: () => void,
     navigate: NavigateFunction
   ) => {
@@ -126,7 +125,7 @@ const useAddUserFormik = () => {
       user_name: values.user_name,
       name: values.name,
       phone: values.phone,
-      user_type: preselectedUserType,
+      user_type: values.user_type,
 
       ...(values.email && { email: values.email }),
       ...(values.alternative_number && {
@@ -134,7 +133,7 @@ const useAddUserFormik = () => {
       }),
       ...(!isEdit && { password: values.password }),
 
-      ...(preselectedUserType === 5 && {
+      ...(values.user_type === 5 && {
         customer_type: values.customer_type,
         line_id: values.line_id,
         pay_type: values.pay_type,
@@ -153,7 +152,7 @@ const useAddUserFormik = () => {
         }),
       }),
     };
-
+    console.log("Payload: ", payload);
     const onSuccess = (res: any) => {
       if (res.data.status === 1) {
         toast.success(res.data.msg);
@@ -180,7 +179,9 @@ const useAddUserFormik = () => {
       await createUser(payload).then(onSuccess).catch(onError);
     }
   };
-  const today = new Date().toISOString().split("T")[0]; // e.g. "2025-06-26"
+
+  const today = new Date().toISOString().split("T")[0];
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -215,15 +216,7 @@ const useAddUserFormik = () => {
     },
     validationSchema: validationSchema(isEdit),
     onSubmit: (values, { resetForm }) => {
-      handleAddUser(
-        values,
-        token,
-        isEdit,
-        user_id,
-        preselectedUserType,
-        resetForm,
-        navigate
-      );
+      handleAddUser(values, token, isEdit, user_id, resetForm, navigate);
     },
     enableReinitialize: true,
   });
@@ -281,11 +274,14 @@ const useAddUserFormik = () => {
             "",
           isEdit: true,
         });
+
+        // Optional: ensure user_type form value updates immediately
+        setFieldValue("user_type", userData.user_type);
       } else {
         toast.error(res.data.msg || "Failed to fetch user data");
       }
     })();
-  }, [user_id, token, dropdownsLoaded]); // 🧠 Add dropdownsLoaded dependency
+  }, [user_id, token, dropdownsLoaded]);
 
   return {
     ...formik,
