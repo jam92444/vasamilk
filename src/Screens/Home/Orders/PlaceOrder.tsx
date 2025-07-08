@@ -19,11 +19,6 @@ import * as Yup from "yup";
 import { toast } from "react-toastify";
 import CustomInput from "../../../Components/UI/CustomInput";
 
-interface PriceOption {
-  id: number;
-  price_tag_value: number;
-}
-
 interface SlotQuantityMap {
   [slot_id: number]: number;
 }
@@ -80,19 +75,30 @@ const PlaceOrder = () => {
       (sum: number, qty) => sum + (typeof qty === "number" ? qty : 0),
       0
     );
+    const isMonthly = customerDetails?.pay_type === 2;
+    const hasInvoice = customerDetails?.invoice_data?.length > 0;
+    const invoice = hasInvoice ? customerDetails.invoice_data[0] : null;
 
-    const payload = {
+    const payload: any = {
       token: getUserToken(),
       customer_id: parseInt(values.customer_id),
-      quantity: totalQuantity,
-      payment_type: parseInt(values.paymentType),
-      is_paid: values.paymentType === "2" ? 1 : 0,
-      transaction_id: values.paymentType === "2" ? values.transactionId : null,
-      is_monthly_paid: 0,
-      monthly_id: 0,
-      monthly_payment_type: null,
-      monthly_transaction_id: null,
+      quantity: totalQuantity, // quantity required for both daily and monthly users
+      payment_type: isMonthly ? 0 : parseInt(values.paymentType), // only for daily
+      is_paid: isMonthly ? 0 : values.paymentType === "2" ? 1 : 0,
+      transaction_id: isMonthly
+        ? null
+        : values.paymentType === "2"
+        ? values.transactionId
+        : null,
+      is_monthly_paid: isMonthly ? 1 : 0,
     };
+
+    // Add monthly fields only if monthly user
+    if (isMonthly && invoice) {
+      payload.monthly_id = invoice.id;
+      payload.monthly_payment_type = parseInt(values.paymentType);
+      payload.monthly_transaction_id = values.transactionId;
+    }
 
     placeDirectCustomerLog(payload)
       .then((res) => {
@@ -205,6 +211,16 @@ const PlaceOrder = () => {
   };
 
   const totalPrice = useMemo(() => {
+    // Monthly customer with invoice
+    if (
+      customerDetails?.pay_type === 2 &&
+      customerDetails.invoice_data?.length > 0
+    ) {
+      const amount = parseFloat(customerDetails.invoice_data[0]?.amount || "0");
+      return isNaN(amount) ? 0 : amount;
+    }
+
+    // Daily customer price calculation
     if (
       !customerDetails?.today_slot_data ||
       !slotDetail ||
@@ -246,6 +262,19 @@ const PlaceOrder = () => {
     formik.values.customer_id,
   ]);
 
+  // Changed onChange handlers to accept value, not event
+  const handleCustomerChange = (
+    value: string | number | (string | number)[] | null
+  ) => {
+    formik.setFieldValue("customer_id", value ? value.toString() : "");
+  };
+
+  const handlePaymentTypeChange = (
+    value: string | number | (string | number)[] | null
+  ) => {
+    formik.setFieldValue("paymentType", value ? value.toString() : "1");
+  };
+
   return (
     <div className="masters placeorder">
       <div className="management-title">
@@ -265,9 +294,7 @@ const PlaceOrder = () => {
           className="select"
           value={formik.values.customer_id}
           options={CustomerDropdownOptions}
-          onChange={(value) =>
-            formik.setFieldValue("customer_id", value ? value.toString() : "")
-          }
+          onChange={handleCustomerChange}
           disabled={!isActiveSlot}
         />
 
@@ -375,86 +402,115 @@ const PlaceOrder = () => {
                   return (
                     <div key={slot.slot_id} className="slot-entry">
                       <label htmlFor={`slot-${slot.slot_id}`}>
-                        {slotLabel} Quantity
+                        {slotLabel} (Available: {slot.quantity})
                       </label>
                       <input
-                        id={`slot-${slot.slot_id}`}
                         type="number"
                         min={0}
-                        step="0.001"
+                        id={`slot-${slot.slot_id}`}
                         value={value}
                         onChange={(e) =>
                           handleQuantityChange(
                             slot.slot_id,
-                            parseFloat(e.target.value) || 0
+                            Number(e.target.value)
                           )
                         }
+                        disabled={customerDetails.pay_type === 2}
                       />
+                      {formik.errors.slotQuantities &&
+                        typeof formik.errors.slotQuantities === "string" && (
+                          <div className="error">
+                            {formik.errors.slotQuantities}
+                          </div>
+                        )}
                     </div>
                   );
                 });
               })()}
             </div>
 
-            {customerDetails.pay_type !== 2 && (
+            <h4 className="section-subtitle">Payment</h4>
+            {totalPrice > 0 && (
               <CustomSelect
                 label="Payment Type"
                 name="paymentType"
                 className="select"
                 value={formik.values.paymentType}
                 options={paymentOptions}
-                onChange={(value) =>
-                  formik.setFieldValue("paymentType", value?.toString() || "1")
+                onChange={handlePaymentTypeChange}
+                disabled={customerDetails.pay_type === 2}
+              />
+            )}
+            {formik.values.paymentType === "2" && totalPrice > 0 && (
+              <div className="qr-container" style={{ marginTop: "20px" }}>
+                <p>
+                  UPI ID: <strong>vvasamilk@icici</strong>
+                </p>
+                <div
+                  className="qr-code-placeholder"
+                  style={{
+                    width: "180px",
+                    height: "180px",
+                    backgroundColor: "#eee",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid #ccc",
+                    borderRadius: "8px",
+                    margin: "1.5rem 0",
+                  }}
+                >
+                  [ QR Code Image Here ]
+                </div>
+              </div>
+            )}
+
+            {/* Show transaction ID input only if paymentType === "2" (Online) */}
+            {formik.values.paymentType === "2" && totalPrice > 0 && (
+              <CustomInput
+                label="Transaction ID"
+                name="transactionId"
+                type="text"
+                value={formik.values.transactionId}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.transactionId && formik.errors.transactionId
+                    ? formik.errors.transactionId
+                    : ""
                 }
               />
             )}
 
-            {formik.values.paymentType === "2" &&
-              customerDetails.pay_type !== 2 && (
-                <>
-                  <div className="qr-container">
-                    <p>
-                      UPI ID: <strong>vvasamilk@icici</strong>
-                    </p>
-                    <div className="QR">[ QR Code Image Here ]</div>
-                  </div>
-                  <div className="field">
-                    <label htmlFor="transactionId">Transaction ID</label>
-                    <CustomInput
-                      id="transactionId"
-                      name="transactionId"
-                      value={formik.values.transactionId}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    />
-                    {formik.touched.transactionId &&
-                      formik.errors.transactionId && (
-                        <div className="error">
-                          {formik.errors.transactionId}
-                        </div>
-                      )}
-                  </div>
-                </>
-              )}
+            <h4 className="section-subtitle">Total Price</h4>
+            <p className="total-price">₹ {totalPrice.toFixed(2)}</p>
 
-            <div className="total-price">
-              Total Price: <strong>₹ {totalPrice.toFixed(2)}</strong>
+            {!isActiveSlot && (
+              <p className="inactive">
+                Can't Place Order, Slot is inactive at this moment. You can try
+                again later.
+              </p>
+            )}
+            <div className="btn-set">
+              <CustomButton
+                text="Place Order"
+                htmlType="submit"
+                className="submit-btn"
+                disabled={
+                  !isActiveSlot || formik.isSubmitting || totalPrice === 0
+                }
+              />
+              <CustomButton
+                text="Reset"
+                className="btn"
+                htmlType="button"
+                onClick={() => {
+                  formik.resetForm();
+                  setCustomerDetails(null); // if you want to clear customer details on reset
+                }}
+              />
             </div>
           </div>
-        )}
-
-        <CustomButton
-          text="Submit"
-          className="submit-btn"
-          htmlType="submit"
-          disabled={!isActiveSlot}
-        />
-
-        {!isActiveSlot && (
-          <p className="inactive">
-            Can't Place Order, Slot is inactive at this moment. You can try
-            again later.
-          </p>
         )}
       </form>
     </div>

@@ -166,7 +166,6 @@ const useAddUserFormik = () => {
         toast.info(res.data.msg);
       }
     };
-
     const onError = (err: any) => {
       console.error(err.message);
       toast.error("Something went wrong!");
@@ -220,7 +219,6 @@ const useAddUserFormik = () => {
     },
     enableReinitialize: true,
   });
-
   const { setFieldValue, setValues } = formik;
 
   useEffect(() => {

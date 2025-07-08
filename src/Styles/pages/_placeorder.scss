@@ -20,7 +20,6 @@
   .submit-btn {
     @include flex($justify: end, $align: end);
     padding: 0.4rem 1rem !important;
-    margin-top: 2rem;
   }
   .content {
     margin-top: 1rem;
