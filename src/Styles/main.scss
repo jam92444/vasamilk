@@ -31,7 +31,9 @@ body {
 .ant-modal-confirm-content {
   font-family: $font-helvetica !important;
 }
-
+.ant-menu-submenu-arrow {
+  color: $text-white !important;
+}
 // Layout Structure
 .main-layout {
   height: 100vh;

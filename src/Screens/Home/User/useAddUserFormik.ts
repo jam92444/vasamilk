@@ -87,7 +87,11 @@ const useAddUserFormik = () => {
   const { token } = useUserDetails();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user_id, user_type: preselectedUserType = 2 } = location.state || {};
+  const {
+    user_id,
+    from,
+    user_type: preselectedUserType = 2,
+  } = location.state || {};
   const [isSubmitting] = useState(false);
   const [dropdownsLoaded, setDropdownsLoaded] = useState(false);
   const isEdit = !!user_id;
@@ -154,7 +158,11 @@ const useAddUserFormik = () => {
       if (res.data.status === 1) {
         toast.success(res.data.msg);
         resetForm();
-        navigate("/place-order");
+        if (from == "/place-order") {
+          navigate("/place-order");
+        } else {
+          navigate("/user");
+        }
       } else {
         toast.info(res.data.msg);
       }
@@ -181,7 +189,7 @@ const useAddUserFormik = () => {
       phone: "",
       alternative_number: "",
       password: "",
-      user_type: 2,
+      user_type: preselectedUserType,
       customer_type: "",
       price_tag_id: "",
       line_id: "",

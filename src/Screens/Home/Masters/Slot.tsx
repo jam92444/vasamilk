@@ -84,11 +84,10 @@ const Slot = () => {
         setSelectedSlot(null);
         fetchSlots();
       } else {
-        alert("Update failed: " + res.data.msg);
+        toast.info(res.data.msg);
       }
     } catch (error) {
       console.error(error);
-      alert("Something went wrong updating slot.");
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Select } from "antd";
 import "../../Styles/components/UI/CustomSelect.scss";
 

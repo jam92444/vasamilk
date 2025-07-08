@@ -28,7 +28,7 @@ const AddUser: React.FC = () => {
     setDropdownsLoaded,
   } = useAddUserFormik();
   const location = useLocation();
-  const { from } = location.state || {};
+  const { user_type } = location.state || {};
 
   const {
     priceTagDropdownOptions,
@@ -263,7 +263,7 @@ const AddUser: React.FC = () => {
             />
             <CustomButton
               onClick={() => {
-                if (from === "/place-order") {
+                if (user_type) {
                   navigate("/place-order");
                 } else {
                   navigate("/user");

@@ -4,6 +4,7 @@ import {
   getActiveSlots,
   getCustomer,
   getUserById,
+  placeDirectCustomerLog,
 } from "../../../Services/ApiService";
 import { getUserToken } from "../../../Utils/Data";
 import { useAuth } from "../../../Context/AuthContext";
@@ -15,34 +16,44 @@ import "../../../Styles/pages/_placeorder.scss";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { toast } from "react-toastify";
+import CustomInput from "../../../Components/UI/CustomInput";
 
 // ---------------------------
 // TYPES
 // ---------------------------
-
-interface PriceOption {
-  id: number;
-  price_tag_value: number;
-}
-
 interface SlotQuantityMap {
   [slot_id: number]: number;
 }
 
+interface SlotDetail {
+  id: number;
+  name: string;
+  start_time: string;
+  end_time: string;
+  // add other fields used in your component if needed
+}
 // ---------------------------
 // VALIDATION SCHEMA
 // ---------------------------
-
 const orderSchema = Yup.object().shape({
   customer_id: Yup.string().required("Customer is required"),
-  selectedPriceTagId: Yup.number().nullable().required("Price tag is required"),
   paymentType: Yup.string().required("Payment type is required"),
+  transactionId: Yup.string()
+    .nullable()
+    .when("paymentType", (paymentType: any, schema) => {
+      return paymentType === "2"
+        ? schema.required("Transaction ID is required")
+        : schema;
+    }),
   slotQuantities: Yup.object().test(
-    "non-negative",
+    "non-negative-decimal",
     "Slot quantities must be non-negative numbers",
     (value) =>
       value
-        ? Object.values(value).every((v) => typeof v === "number" && v >= 0)
+        ? Object.values(value).every(
+            (v) => typeof v === "number" && !isNaN(v) && v >= 0
+          )
         : false
   ),
 });
@@ -51,21 +62,18 @@ const PlaceOrder = () => {
   const navigate = useNavigate();
   const { loading, setLoading } = useAuth();
 
-  const { priceOptionsRaw, slotDropDown, payTagIdDropDown } =
-    useDropdownData() as {
-      priceOptionsRaw: PriceOption[];
-      slotDropDown: { value: string; label: string }[];
-      payTagIdDropDown: () => void;
-    };
-
+  const { slotDropDown } = useDropdownData() as {
+    slotDropDown: { value: string; label: string }[];
+  };
   const [customerRaw, setCustomerRaw] = useState<any[]>([]);
   const [CustomerDropdownOptions, setCustomerDropDownOptions] = useState<
     { label: string; value: string }[]
   >([]);
   const [customerDetails, setCustomerDetails] = useState<any>(null);
   const [isActiveSlot, setIsActiveSlot] = useState<boolean>(true);
+  const [slotDetail, setSlotDetails] = useState<SlotDetail | null>(null);
+  // const activeSlotId = slotDetail?.id;
   const type = 1;
-
   const paymentOptions = [
     { label: "Cash", value: "1" },
     { label: "Online", value: "2" },
@@ -74,32 +82,64 @@ const PlaceOrder = () => {
   // ---------------------------
   // FORMIK
   // ---------------------------
+  const handleSubmit = (values: any) => {
+    const totalQuantity = Object.values(values.slotQuantities).reduce(
+      (sum: number, qty) => sum + (typeof qty === "number" ? qty : 0),
+      0
+    );
+    const payload = {
+      token: getUserToken(),
+      customer_id: parseInt(values.customer_id),
+      quantity: totalQuantity,
+      payment_type: parseInt(values.paymentType),
+      is_paid:
+        customerDetails?.pay_type === 2
+          ? 0
+          : values.paymentType === "2"
+          ? 1
+          : 0,
+      transaction_id:
+        customerDetails?.pay_type === 2 ? null : values.transactionId || null,
+      is_monthly_paid: 0,
+      monthly_id: 0,
+      monthly_payment_type: null,
+      monthly_transaction_id: null,
+    };
+    console.log(payload);
+    placeDirectCustomerLog(payload)
+      .then((res) => {
+        if (res.data.status === 1) {
+          toast.success("Order Completed");
+          formik.resetForm(); // <-- Reset form here
+          setCustomerDetails(null); // Optional: reset customer details
+        } else {
+          toast.info(res.data.msg);
+        }
+      })
+      .catch((error) => {
+        console.error("Order error:", error);
+      });
+  };
 
   const formik = useFormik({
     initialValues: {
       customer_id: "",
-      selectedPriceTagId: null as number | null,
       paymentType: "1",
       slotQuantities: {} as SlotQuantityMap,
+      transactionId: "", // <-- Add this
     },
     validationSchema: orderSchema,
     onSubmit: (values) => {
-      const data = {
-        ...values,
-        token: getUserToken(),
-      };
-      console.log("Form Data:", JSON.stringify(data, null, 2));
+      handleSubmit(values);
     },
     enableReinitialize: true,
   });
-
   // ---------------------------
   // EFFECTS
   // ---------------------------
 
   useEffect(() => {
     handleGetActiveSlot();
-    payTagIdDropDown();
     handleGetCustomerDropDown({ type });
   }, []);
 
@@ -122,6 +162,7 @@ const PlaceOrder = () => {
       .then((res) => {
         if (res.data.status === 1) {
           setIsActiveSlot(true);
+          setSlotDetails(res.data.data);
         } else if (res.data.status === 2) {
           setIsActiveSlot(false);
         } else {
@@ -158,15 +199,15 @@ const PlaceOrder = () => {
     const formData = new FormData();
     formData.append("token", getUserToken());
     formData.append("user_id", selectedUser);
-
+    setLoading(true);
     getUserById(formData)
       .then((res) => {
         if (res.data.status === 1) {
           const user = res.data.data;
           setCustomerDetails(user);
-          formik.setFieldValue("selectedPriceTagId", user.price_tag_id || null);
           const quantities: SlotQuantityMap = {};
-          user.slot_data?.forEach((slot: any) => {
+          // <-- Use today_slot_data instead of slot_data here
+          user.today_slot_data?.forEach((slot: any) => {
             quantities[slot.slot_id] = slot.quantity;
           });
           formik.setFieldValue("slotQuantities", quantities);
@@ -174,7 +215,8 @@ const PlaceOrder = () => {
           console.info(res.data);
         }
       })
-      .catch(console.log);
+      .catch(console.log)
+      .finally(() => setLoading(false));
   };
 
   const handleQuantityChange = (slot_id: number, value: number) => {
@@ -186,26 +228,55 @@ const PlaceOrder = () => {
 
   const totalPrice = useMemo(() => {
     if (
-      !customerDetails?.slot_data ||
-      formik.values.selectedPriceTagId === null
-    )
+      !customerDetails?.today_slot_data ||
+      !slotDetail ||
+      !formik.values.customer_id
+    ) {
       return 0;
+    }
 
-    const matchedPriceTag = customerRaw.find(
-      (opt: any) => opt.user_id == formik.values.customer_id
+    const isMorning = slotDetail.id === 1;
+    const isEvening = slotDetail.id === 2;
+
+    // Get unit price from customerRaw for selected customer
+    const selectedCustomer = customerRaw.find(
+      (cust) => cust.user_id.toString() === formik.values.customer_id
     );
-    const unitPrice = matchedPriceTag?.unit_price ?? 0;
+    const unitPrice = selectedCustomer?.unit_price ?? 0;
 
-    return customerDetails.slot_data.reduce((total: number, slot: any) => {
+    // Filter slots based on active slot type (morning/evening)
+    const relevantSlots = customerDetails.today_slot_data.filter(
+      (slot: any) => {
+        const slotInfo = slotDropDown.find(
+          (drop) => parseInt(drop.value) === slot.slot_id
+        );
+        const label = slotInfo?.label?.toLowerCase() || "";
+        return (
+          (isMorning && label.includes("morning")) ||
+          (isEvening && label.includes("evening"))
+        );
+      }
+    );
+
+    return relevantSlots.reduce((total: number, slot: any) => {
       const quantity = formik.values.slotQuantities[slot.slot_id] || 0;
       return total + quantity * unitPrice;
     }, 0);
   }, [
     formik.values.slotQuantities,
     customerDetails,
-    formik.values.selectedPriceTagId,
     customerRaw,
+    slotDetail,
+    formik.values.customer_id,
   ]);
+
+  const hasQuantity = useMemo(() => {
+    const quantities = formik.values.slotQuantities;
+    if (!quantities) return false;
+    return Object.values(quantities).some(
+      (qty) => typeof qty === "number" && qty > 0
+    );
+  }, [formik.values.slotQuantities]);
 
   // ---------------------------
   // RENDER
@@ -219,7 +290,9 @@ const PlaceOrder = () => {
         <aside>PLACE ORDER</aside>
         <CustomButton
           text="Back"
-          onClick={() => navigate(-1)}
+          onClick={() => {
+            navigate(-1);
+          }}
           className="btn"
         />
       </div>
@@ -255,99 +328,152 @@ const PlaceOrder = () => {
 
         {customerDetails && (
           <div className="customer-info">
-            <div className="field">
-              Name: <strong>{customerDetails.name}</strong>
-            </div>
-            <div className="field">
-              Phone: <strong>{customerDetails.phone}</strong>
-            </div>
-            <div className="field">
-              Email: <strong>{customerDetails.email}</strong>
-            </div>
-            <div className="field">
-              Line: <strong>{customerDetails.line_name}</strong>
-            </div>
-            <div className="field">
-              Customer Type:{" "}
-              <strong>
-                {customerDetails.customer_type === 1
-                  ? "Permanent"
-                  : "Temporary"}
-              </strong>
-            </div>
-            <div className="field">
-              Pay Type:{" "}
-              <strong>
-                {customerDetails.pay_type === 1 ? "Daily" : "Monthly"}
-              </strong>
-            </div>
-            <div className="field">
-              Unit Price:{" "}
-              <strong>
-                ₹
-                {priceOptionsRaw.find(
-                  (opt) => opt.id === formik.values.selectedPriceTagId
-                )?.price_tag_value ?? "0.00"}
-              </strong>
+            <h3 className="section-title">Customer Details</h3>
+            <div className="info-grid">
+              <div className="info-field">
+                <span className="label">Name:</span>
+                <span className="value">{customerDetails.name}</span>
+              </div>
+              <div className="info-field">
+                <span className="label">Phone:</span>
+                <span className="value">{customerDetails.phone}</span>
+              </div>
+              <div className="info-field">
+                <span className="label">Email:</span>
+                <span className="value">{customerDetails.email}</span>
+              </div>
+              <div className="info-field">
+                <span className="label">Line:</span>
+                <span className="value">{customerDetails.line_name}</span>
+              </div>
+              <div className="info-field">
+                <span className="label">Customer Type:</span>
+                <span className="value">
+                  {customerDetails.customer_type === 1
+                    ? "Permanent"
+                    : "Temporary"}
+                </span>
+              </div>
+              <div className="info-field ">
+                <span className="label">Pay Type:</span>
+                <span className="value">
+                  {customerDetails.pay_type === 1 ? "Daily" : "Monthly"}
+                </span>
+              </div>
+              <div className="info-field">
+                <span className="label">Unit Price:</span>
+                <span className="value">
+                  ₹{" "}
+                  {customerRaw.find(
+                    (cust) =>
+                      cust.user_id.toString() === formik.values.customer_id
+                  )?.unit_price ?? "0.00"}
+                </span>
+              </div>
             </div>
 
+            <h4 className="section-subtitle">Slot Quantities</h4>
             <div className="slots">
-              {slotDropDown.map((slot) => {
-                const slotId = parseInt(slot.value);
-                const slotExists = customerDetails.slot_data?.some(
-                  (s: any) => s.slot_id === slotId
-                );
-                const isEveningSlot = slot.label
-                  .toLowerCase()
-                  .includes("evening");
-                if (isEveningSlot && !slotExists) return null;
+              {(() => {
+                if (!slotDetail?.id || !customerDetails?.today_slot_data)
+                  return null;
 
-                const value = formik.values.slotQuantities[slotId] ?? 0;
+                const isMorning = slotDetail.id === 1;
+                const isEvening = slotDetail.id === 2;
 
-                return (
-                  <div key={slot.value} className="slot-entry">
-                    <label htmlFor={`slot-${slotId}`}>
-                      {slot.label} Quantity
-                    </label>
-                    <input
-                      id={`slot-${slotId}`}
-                      type="number"
-                      min={0}
-                      value={value}
-                      onChange={(e) =>
-                        handleQuantityChange(
-                          slotId,
-                          parseInt(e.target.value) || 0
-                        )
-                      }
-                    />
-                  </div>
+                const relevantSlots = customerDetails.today_slot_data.filter(
+                  (slot: any) => {
+                    const slotInfo = slotDropDown.find(
+                      (drop) => parseInt(drop.value) === slot.slot_id
+                    );
+                    const label = slotInfo?.label?.toLowerCase() || "";
+                    return (
+                      (isMorning && label.includes("morning")) ||
+                      (isEvening && label.includes("evening"))
+                    );
+                  }
                 );
-              })}
+
+                if (relevantSlots.length === 0) {
+                  return (
+                    <p className="no-slot-msg">
+                      {isMorning
+                        ? "No morning slot found for the user."
+                        : "No evening slot found for the user."}
+                    </p>
+                  );
+                }
+
+                return relevantSlots.map((slot: any) => {
+                  const slotInfo = slotDropDown.find(
+                    (drop) => parseInt(drop.value) === slot.slot_id
+                  );
+                  const slotLabel = slotInfo?.label || `Slot ${slot.slot_id}`;
+                  const value = formik.values.slotQuantities[slot.slot_id] ?? 0;
+
+                  return (
+                    <div key={slot.slot_id} className="slot-entry">
+                      <label htmlFor={`slot-${slot.slot_id}`}>
+                        {slotLabel} Quantity
+                      </label>
+                      <input
+                        id={`slot-${slot.slot_id}`}
+                        type="number"
+                        min={0}
+                        value={value}
+                        onChange={(e) =>
+                          handleQuantityChange(
+                            slot.slot_id,
+                            parseInt(e.target.value) || 0
+                          )
+                        }
+                      />
+                    </div>
+                  );
+                });
+              })()}
             </div>
 
-            {customerDetails.pay_type !== 2 && (
+            {customerDetails.pay_type !== 2 && hasQuantity && (
               <CustomSelect
                 label="Payment Type"
                 name="paymentType"
                 className="select"
                 value={formik.values.paymentType}
                 options={paymentOptions}
-                onChange={(value) => {
-                  const selected = value?.toString() || "1";
-                  formik.setFieldValue("paymentType", selected);
-                }}
+                onChange={(value) =>
+                  formik.setFieldValue("paymentType", value?.toString() || "1")
+                }
               />
             )}
 
             {formik.values.paymentType === "2" &&
+              hasQuantity &&
               customerDetails.pay_type !== 2 && (
-                <div className="qr-container">
-                  <p>
-                    UPI: <strong>vvasamilk@icici</strong>
-                  </p>
-                  <div className="QR">Sample QR</div>
-                </div>
+                <>
+                  <div className="qr-container">
+                    <p>
+                      UPI ID: <strong>vvasamilk@icici</strong>
+                    </p>
+                    <div className="QR">[ QR Code Image Here ]</div>
+                  </div>
+                  <div className="field">
+                    <label htmlFor="transactionId">Transaction ID</label>
+                    <CustomInput
+                      id="transactionId"
+                      name="transactionId"
+                      value={formik.values.transactionId}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                    {formik.touched.transactionId &&
+                      formik.errors.transactionId && (
+                        <div className="error">
+                          {formik.errors.transactionId}
+                        </div>
+                      )}
+                  </div>
+                </>
               )}
 
             <div className="total-price">

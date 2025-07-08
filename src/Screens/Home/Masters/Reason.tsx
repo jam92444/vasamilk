@@ -22,7 +22,9 @@ import { getUserToken } from "../../../Utils/Data";
 import "../../../Styles/pages/_reason.scss";
 import type { TablePaginationConfig } from "antd/lib";
 import { toast } from "react-toastify";
-import ReasonFormModal from "../../../Modal/ReasonFormModal";
+import ReasonFormModal, {
+  type ReasonFormValues,
+} from "../../../Modal/ReasonFormModal";
 
 interface reasonType {
   id: number;
@@ -85,7 +87,8 @@ const Reason = () => {
   };
 
   const handleAdd = () => {
-    setFormData(null);
+    // Set default type to 1 for new reason (matches form default)
+    setFormData({ name: "", type: 1 } as reasonType);
     setModalKey((prev) => prev + 1);
     setModalVisible(true);
   };
@@ -98,7 +101,20 @@ const Reason = () => {
       .then((res) => {
         if (res.data.status === 1) {
           toast.success(res.data.msg);
-          handleGetReasonList();
+
+          // Adjust pagination if last item on page deleted
+          if (
+            listOfReason.length === 1 &&
+            pagination.current &&
+            pagination.current > 1
+          ) {
+            setPagination((prev) => ({
+              ...prev,
+              current: prev.current! - 1,
+            }));
+          } else {
+            handleGetReasonList();
+          }
         } else {
           toast.info(res.data.msg);
         }
@@ -137,21 +153,18 @@ const Reason = () => {
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination(pagination);
   };
-
-  //Form submit logic for both create & update//
-  const handleFormSubmit = (values: { name: string }) => {
+  const handleFormSubmit = (values: ReasonFormValues) => {
     const formPayload = new FormData();
     formPayload.append("token", getUserToken());
     formPayload.append("name", values.name);
-    formPayload.append("type", "1"); // Replace with dynamic type if needed
+    // Convert type to number explicitly (since values.type could be string or number)
+    formPayload.append("type", Number(values.type).toString());
 
-    const apiCall = formData?.id
-      ? updateReason(
-          (() => {
-            formPayload.append("reason_id", String(formData.id));
-            return formPayload;
-          })()
-        )
+    const apiCall = values.id
+      ? (() => {
+          formPayload.append("reason_id", String(values.id));
+          return updateReason(formPayload);
+        })()
       : createReason(formPayload);
 
     setLoading(true);
@@ -160,7 +173,7 @@ const Reason = () => {
       .then((res) => {
         if (res.data.status === 1) {
           toast.success(
-            formData?.id
+            values.id
               ? "Reason updated successfully"
               : "Reason created successfully"
           );
@@ -183,6 +196,7 @@ const Reason = () => {
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Created At", dataIndex: "created_at", key: "created_at" },
     { title: "Updated At", dataIndex: "updated_at", key: "updated_at" },
+    { title: "Type", dataIndex: "type_name", key: "type_name" },
     {
       title: "Status",
       dataIndex: "status_text",
@@ -252,7 +266,7 @@ const Reason = () => {
         key={modalKey}
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        initialData={formData || { name: "" }}
+        initialData={formData || { name: "", type: 1 }}
         onSubmit={handleFormSubmit}
       />
     </div>

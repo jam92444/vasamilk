@@ -7,12 +7,13 @@ export const siteName = "Vasamilk";
 
 const App: React.FC = () => {
   const originalAddEventListener = EventTarget.prototype.addEventListener;
+
   EventTarget.prototype.addEventListener = function (type, listener, options) {
-    if (type === "touchstart" || type === "touchmove" || type === "wheel") {
+    if (type === "wheel" || type === "touchstart" || type === "touchmove") {
       if (typeof options === "object") {
-        options = { ...options, passive: true };
-      } else {
-        options = { passive: true };
+        options = { ...options, passive: false };
+      } else if (options === true) {
+        options = { passive: false };
       }
     }
     return originalAddEventListener.call(this, type, listener, options);
