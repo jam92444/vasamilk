@@ -19,7 +19,12 @@ import type { ColumnsType } from "antd/es/table";
 
 const Sales = () => {
   const navigate = useNavigate();
-  const { distributorDropDown, distributorDropdownOptions } = useDropdownData();
+  const {
+    distributorDropDown,
+    distributorDropdownOptions,
+    vendorDropDown,
+    vendorDropdownOptions,
+  } = useDropdownData();
   const { loading, setLoading } = useAuth();
 
   const [dataList, setDataList] = useState<any[]>([]);
@@ -32,6 +37,7 @@ const Sales = () => {
   const [milkReport, setMilkReport] = useState<any>(null);
   const [selectedType, setSelectedType] = useState<string>("vendor");
   const [distributor, setDistributor] = useState<string | null>(null);
+  const [vendor, setVendor] = useState<string | null>(null);
   const [fromDate, setFromDate] = useState<string>(
     dayjs().format("YYYY-MM-DD")
   );
@@ -100,8 +106,16 @@ const Sales = () => {
     formData.append("token", getUserToken());
     formData.append("from_date", fromDate);
     formData.append("to_date", toDate);
-    if (selectedType === "distributor" && distributor) {
-      formData.append("distributor_id", distributor);
+
+    const idValue =
+      selectedType === "vendor"
+        ? vendor
+        : selectedType === "distributor"
+        ? distributor
+        : null;
+
+    if (idValue) {
+      formData.append("distributor_id", idValue); // key remains distributor_id
     }
 
     setLoading(true);
@@ -129,8 +143,16 @@ const Sales = () => {
     formData.append("from_date", fromDate);
     formData.append("to_date", toDate);
     formData.append("log_type", selectedType === "distributor" ? "1" : "2");
-    if (selectedType === "distributor" && distributor) {
-      formData.append("distributor_id", distributor);
+
+    const idValue =
+      selectedType === "vendor"
+        ? vendor
+        : selectedType === "distributor"
+        ? distributor
+        : null;
+
+    if (idValue) {
+      formData.append("distributor_id", idValue); // unified key
     }
 
     setLoading(true);
@@ -165,11 +187,12 @@ const Sales = () => {
 
   useEffect(() => {
     distributorDropDown();
+    vendorDropDown();
   }, []);
 
   useEffect(() => {
     handleGetVendorMilkReport();
-  }, [selectedType, fromDate, toDate, distributor]);
+  }, [selectedType, fromDate, toDate, distributor, vendor]);
 
   useEffect(() => {
     handleGetDistributorList();
@@ -178,9 +201,20 @@ const Sales = () => {
     pagination.pageSize,
     selectedType,
     distributor,
+    vendor,
     fromDate,
     toDate,
   ]);
+
+  const handleResetFilters = () => {
+    setSelectedType("vendor");
+    setDistributor(null);
+    setVendor(null);
+    const today = dayjs().format("YYYY-MM-DD");
+    setFromDate(today);
+    setToDate(today);
+    setPagination({ current: 1, pageSize: 10, total: 0 });
+  };
 
   const renderReportData = () => {
     if (!milkReport) {
@@ -247,8 +281,8 @@ const Sales = () => {
             options={userTypeOptions}
             onChange={(value) => {
               setSelectedType(value?.toString() || "vendor");
-              setDistributor(null); // reset distributor when type changes
-              // Reset pagination to first page on type change
+              setDistributor(null);
+              setVendor(null);
               setPagination((prev) => ({ ...prev, current: 1 }));
             }}
           />
@@ -265,6 +299,20 @@ const Sales = () => {
               }))}
               onChange={(val: any) => {
                 setDistributor(val?.toString() || "");
+                setPagination((prev) => ({ ...prev, current: 1 }));
+              }}
+            />
+          )}
+
+          {selectedType === "vendor" && (
+            <CustomSelect
+              label="Vendor"
+              name="vendor"
+              className="fields"
+              value={vendor}
+              options={vendorDropdownOptions}
+              onChange={(val: any) => {
+                setVendor(val?.toString() || "");
                 setPagination((prev) => ({ ...prev, current: 1 }));
               }}
             />
@@ -292,6 +340,12 @@ const Sales = () => {
               setToDate(e.target.value);
               setPagination((prev) => ({ ...prev, current: 1 }));
             }}
+          />
+
+          <CustomButton
+            text="Reset"
+            onClick={handleResetFilters}
+            className="btn btn-reset"
           />
         </div>
       </div>

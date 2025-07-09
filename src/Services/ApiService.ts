@@ -41,6 +41,9 @@ export const getDistributorDropDown = (payload: any) => {
     payload
   );
 };
+export const getVendorDropDown = (payload: any) => {
+  return axiosInstance.post("/milk-api/drop-down/vendor-drop-down", payload);
+};
 
 // fetchUserList
 export const fetchUserList = (

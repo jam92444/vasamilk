@@ -5,6 +5,7 @@ import {
   getDistributor,
   getLinesDropDown,
   getPriceTagDropDown,
+  getVendorDropDown,
 } from "../Services/ApiService";
 import { useDropdownOptions } from "./useDropdownOptions";
 import { toast } from "react-toastify";
@@ -19,6 +20,7 @@ interface CustomerDropDownParams {
 export function useDropdownData() {
   const [priceOptionsRaw, setPriceOptionsRaw] = useState([]);
   const [lineOptionsRaw, setLineOptionsRaw] = useState([]);
+  const [vendorOptionsRaw, setVendorOptionsRaw] = useState([]);
   const [customerRaw, setCustomerRaw] = useState([]);
   const [distributorRaw, setDistributorRaw] = useState([]);
   const [assignRoute, setAssignRoute] = useState([]);
@@ -44,6 +46,11 @@ export function useDropdownData() {
 
   const distributorDropdownOptions = useDropdownOptions({
     data: distributorRaw,
+    labelKey: "name",
+    valueKey: "id",
+  });
+  const vendorDropdownOptions = useDropdownOptions({
+    data: vendorOptionsRaw,
     labelKey: "name",
     valueKey: "id",
   });
@@ -153,6 +160,22 @@ export function useDropdownData() {
       });
   };
 
+  const vendorDropDown = () => {
+    const formData = new FormData();
+    formData.append("token", getUserToken());
+    getVendorDropDown(formData)
+      .then((res) => {
+        if (res.data.status === 1) {
+          setVendorOptionsRaw(res.data.data);
+        } else {
+          console.info(res.data);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const AssignRouteDropDown = async (
     type: number = 1,
     slot_id: number = 1,
@@ -197,5 +220,7 @@ export function useDropdownData() {
     loadLineDropdowns,
     customerRaw,
     priceOptionsRaw,
+    vendorDropDown,
+    vendorDropdownOptions,
   };
 }
