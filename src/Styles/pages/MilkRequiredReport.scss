@@ -1,8 +1,7 @@
 @use "../abstracts/index.scss" as *;
 
 .milk-required-report {
-  padding: 24px;
-
+  margin-top: 2rem;
   .ant-typography {
     font-family: $font-helvetica;
   }

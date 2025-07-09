@@ -55,6 +55,7 @@ const Sales = () => {
       title: "Customer Name",
       dataIndex: "customer_name",
       key: "customer_name",
+      render: (value: any) => (value ? value : "-"),
     },
     {
       title: "Given By",

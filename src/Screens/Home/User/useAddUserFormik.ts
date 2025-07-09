@@ -262,7 +262,7 @@ const useAddUserFormik = () => {
           password: "",
           user_type: userData.user_type,
           customer_type: userData.customer_type || "",
-          price_tag_id: userData.price_tag_id.toString() || "",
+          price_tag_id: userData.price_tag_id?.toString() || "",
           line_id: userData.line_id?.toString() || "",
           pay_type: userData.pay_type || "",
           slot_data: updatedSlots,
