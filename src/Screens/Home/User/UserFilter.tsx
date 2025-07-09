@@ -146,12 +146,14 @@ const UserFilters: React.FC<UserFiltersProps> = ({
           style={{ fontSize: "12px", marginRight: ".5rem" }}
           htmlType="button"
           text="Filters"
+          className="btn"
           onClick={exportFilters}
         />
         <CustomButton
           style={{ fontSize: "12px" }}
           htmlType="button"
           text="Reset"
+          className="btn-reset"
           onClick={onResetFilters}
         />
       </div>

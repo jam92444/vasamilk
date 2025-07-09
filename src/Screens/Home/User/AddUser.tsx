@@ -258,7 +258,7 @@ const AddUser: React.FC = () => {
             <CustomButton
               htmlType="submit"
               text="Submit"
-              className="submit-button backBtn btn"
+              className="submit-btn"
               loading={isSubmitting}
             />
             <CustomButton
@@ -271,7 +271,7 @@ const AddUser: React.FC = () => {
               }}
               htmlType="button"
               text="Cancel"
-              className=" backBtn btn"
+              className=" btn"
             />
           </div>
         </form>

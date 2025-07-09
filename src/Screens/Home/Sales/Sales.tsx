@@ -1,21 +1,21 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import CustomButton from "../../../Components/UI/CustomButton";
-import CustomSelect from "../../../Components/UI/CustomSelect";
-import CustomInput from "../../../Components/UI/CustomInput";
+import type { ColumnsType } from "antd/es/table";
+import type { TablePaginationConfig } from "antd";
 import {
   getListDistributorLog,
   getVendorMilkReport,
 } from "../../../Services/ApiService";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { getUserToken } from "../../../Utils/Data";
-import dayjs from "dayjs";
-import "../../../Styles/pages/_sales.scss";
 import { useDropdownData } from "../../../Hooks/DropDowns";
-import type { TablePaginationConfig } from "antd";
 import { useAuth } from "../../../Context/AuthContext";
-import AppLoader from "../../../Components/UI/AppLoader";
+import dayjs from "dayjs";
+import CustomButton from "../../../Components/UI/CustomButton";
+import CustomSelect from "../../../Components/UI/CustomSelect";
+import CustomInput from "../../../Components/UI/CustomInput";
 import CustomTable from "../../../Components/UI/CustomTable";
-import type { ColumnsType } from "antd/es/table";
+import AppLoader from "../../../Components/UI/AppLoader";
+import "../../../Styles/pages/_sales.scss";
 
 const Sales = () => {
   const navigate = useNavigate();

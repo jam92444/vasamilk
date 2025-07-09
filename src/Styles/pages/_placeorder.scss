@@ -20,11 +20,9 @@
   .submit-btn {
     @include flex($justify: end, $align: end);
     padding: 0.4rem 1rem !important;
+    // color: #0a4d8c !important;
   }
-  .btn {
-    min-width: 80px !important;
-    padding: 0.25rem 1rem !important;
-  }
+
   .content {
     margin-top: 1rem;
     font-size: $text-sm;

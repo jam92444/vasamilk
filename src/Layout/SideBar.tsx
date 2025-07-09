@@ -167,19 +167,22 @@ const MainLayout: React.FC<LayoutProps> = ({ children }) => {
         className="main-layout__sider"
       >
         <div className="main-layout__logo">VASAMILK</div>
-        <Menu
-          mode="inline"
-          selectedKeys={[currentKey]}
-          items={menuItems}
-          onClick={({ key }) => {
-            if (key === "logout") {
-              handleLogout();
-            } else {
-              navigate(`/${key}`);
-            }
-          }}
-          className="main-layout__menu"
-        />
+
+        <div className="main-layout__menu-scroll">
+          <Menu
+            mode="inline"
+            selectedKeys={[currentKey]}
+            items={menuItems}
+            onClick={({ key }) => {
+              if (key === "logout") {
+                handleLogout();
+              } else {
+                navigate(`/${key}`);
+              }
+            }}
+            className="main-layout__menu"
+          />
+        </div>
       </Sider>
 
       <Layout>
