@@ -97,7 +97,9 @@ const ForgetPassword: React.FC = () => {
             touched={touched.identifier}
           />
 
-          <span className="forget-password">&lt; Go Back</span>
+          <span onClick={() => navigate("/")} className="forget-password">
+            &lt; Go Back
+          </span>
 
           <CustomButton htmlType="submit" text="Send OTP" />
         </form>
