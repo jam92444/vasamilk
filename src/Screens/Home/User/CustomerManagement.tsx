@@ -6,7 +6,7 @@ import "../../../Styles/pages/_customer.scss";
 const CustomerManagement = () => {
   const navigate = useNavigate();
   return (
-    <div>
+    <div className="masters">
       <div className="customer">
         {/* title */}
         <div className="customer-title">

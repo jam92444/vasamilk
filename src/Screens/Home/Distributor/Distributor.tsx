@@ -128,7 +128,7 @@ const Distributor = () => {
   }
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div className="masters">
       <div className="flex-center-between" style={{ marginBottom: "1rem" }}>
         <h2>Distributor List</h2>
         <CustomButton
