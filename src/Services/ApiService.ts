@@ -307,3 +307,15 @@ export const placeDirectCustomerLog = (payload: any) => {
     payload
   );
 };
+
+//-------------------------------- SALES REPORT --------------------------------//
+export const getListDistributorLog = (
+  page: number = 1,
+  pageSize: number = 50,
+  payload: any
+) => {
+  return axiosInstance.post(
+    `/milk-api/milk-sales/list-distributor-log?page=${page}&size=${pageSize}`,
+    payload
+  );
+};

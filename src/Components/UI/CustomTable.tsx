@@ -26,7 +26,7 @@ const CustomTable = <RecordType extends object>({
   size = "small",
   scrollX = true,
   emptyText = "No data found",
-  className,
+  className = "",
 }: CustomTableProps<RecordType>) => {
   const scroll: { x?: string | number | true } = {};
   if (scrollX) {
@@ -36,16 +36,25 @@ const CustomTable = <RecordType extends object>({
   return (
     <Spin spinning={loading}>
       <Table
-        className={`${className}  compact-table`}
+        className={`${className} compact-table`}
         columns={columns}
         dataSource={data}
         rowKey={rowKey}
         pagination={{
           ...pagination,
           showSizeChanger: true,
+          pageSizeOptions: ["10", "20", "50", "100"],
           style: { marginTop: 16, textAlign: "center" },
         }}
-        onChange={onChange}
+        onChange={(paginationConfig) => {
+          // forward only pagination (current page and pageSize) to parent
+          if (onChange) {
+            onChange({
+              current: paginationConfig.current,
+              pageSize: paginationConfig.pageSize,
+            });
+          }
+        }}
         size={size}
         scroll={scroll}
         locale={{ emptyText }}

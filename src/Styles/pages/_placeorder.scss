@@ -21,6 +21,10 @@
     @include flex($justify: end, $align: end);
     padding: 0.4rem 1rem !important;
   }
+  .btn {
+    min-width: 80px !important;
+    padding: 0.25rem 1rem !important;
+  }
   .content {
     margin-top: 1rem;
     font-size: $text-sm;

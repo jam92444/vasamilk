@@ -16,6 +16,7 @@ import Lines from "../Screens/Home/Masters/Lines";
 import Reason from "../Screens/Home/Masters/Reason";
 import PriceTag from "../Screens/Home/Masters/PriceTag";
 import PlaceOrder from "../Screens/Home/Orders/PlaceOrder";
+import Sales from "../Screens/Home/Sales/Sales";
 export const HomeRoutes: RouteObject[] | undefined = [
   {
     element: <LayoutWrapper />,
@@ -26,6 +27,10 @@ export const HomeRoutes: RouteObject[] | undefined = [
           {
             path: "/user",
             element: <CustomerManagement />,
+          },
+          {
+            path: "/sales",
+            element: <Sales />,
           },
           {
             path: "/add-user",

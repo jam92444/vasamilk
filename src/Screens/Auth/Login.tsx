@@ -52,28 +52,36 @@ const Login: React.FC = () => {
       .then((response) => {
         setLoading(false);
         console.log("Login success:", response.data);
-        if (response.data?.token) {
-          const userData = {
-            token: response.data.token,
-            user_id: response.data.user_id,
-            user_name: response.data.user_name,
-            user_type: response.data.user_type,
-            is_daily: response.data.is_daily,
-            is_occasional: response.data.is_occasional,
-          };
+        if (response.data.status === 1) {
+          if (response.data?.token) {
+            const userData = {
+              token: response.data.token,
+              user_id: response.data.user_id,
+              user_name: response.data.user_name,
+              user_type: response.data.user_type,
+              is_daily: response.data.is_daily,
+              is_occasional: response.data.is_occasional,
+            };
 
-          setEncryptedCookie("user_token", userData, { expires: 365 });
-          toast.success("Logged in successfully!");
+            setEncryptedCookie("user_token", userData, { expires: 365 });
+            toast.success("Logged in successfully!");
 
-          if (response.data.user_type === 1) {
-            navigate("/user");
-          } else if (response.data.user_type === 4) {
-            navigate("/distributor-dashboard");
+            if (response.data.user_type === 1) {
+              navigate("/user");
+            } else if (response.data.user_type === 4) {
+              navigate("/distributor-dashboard");
+            } else {
+              navigate("/");
+            }
           } else {
-            navigate("/");
+            toast.error("Invalid credentials or missing token.");
           }
+        } else if (response.data.status === 2) {
+          toast.info(response.data.msg);
+          setEncryptedCookie("reset_key", response.data.reset_key);
+          navigate("/otp-verfication");
         } else {
-          toast.error("Invalid credentials or missing token.");
+          toast.error(response.data.msg);
         }
       })
       .catch((error: any) => {

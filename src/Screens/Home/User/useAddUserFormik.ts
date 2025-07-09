@@ -221,13 +221,12 @@ const useAddUserFormik = () => {
   });
   const { setFieldValue, setValues } = formik;
 
-  useEffect(() => {
-    if (!user_id || !token || !dropdownsLoaded) return;
-
-    (async () => {
+  const fetchAndSetUserData = async (user_id: string, token: string) => {
+    try {
       const formData = new FormData();
       formData.append("token", token);
       formData.append("user_id", user_id.toString());
+
       const res = await getUserById(formData);
 
       if (res.data.status === 1) {
@@ -257,15 +256,15 @@ const useAddUserFormik = () => {
         setValues({
           name: userData.name,
           user_name: userData.user_name,
-          email: userData.email,
+          email: userData.email || "",
           phone: userData.phone,
           alternative_number: userData.alternative_number || "",
           password: "",
           user_type: userData.user_type,
-          customer_type: userData.customer_type,
-          price_tag_id: userData.price_tag_id,
-          line_id: userData.line_id,
-          pay_type: userData.pay_type,
+          customer_type: userData.customer_type || "",
+          price_tag_id: userData.price_tag_id.toString() || "",
+          line_id: userData.line_id?.toString() || "",
+          pay_type: userData.pay_type || "",
           slot_data: updatedSlots,
           start_date:
             userData.slot_data?.find((s: any) => s.slot_id === 1)?.start_date ||
@@ -273,13 +272,20 @@ const useAddUserFormik = () => {
           isEdit: true,
         });
 
-        // Optional: ensure user_type form value updates immediately
         setFieldValue("user_type", userData.user_type);
       } else {
         toast.error(res.data.msg || "Failed to fetch user data");
       }
-    })();
-  }, [user_id, token, dropdownsLoaded]);
+    } catch (err: any) {
+      console.error("Failed to fetch user data", err);
+      toast.error("An error occurred while fetching user data");
+    }
+  };
+
+  useEffect(() => {
+    if (!user_id || !token) return;
+    fetchAndSetUserData(user_id, token);
+  }, [user_id, token]);
 
   return {
     ...formik,

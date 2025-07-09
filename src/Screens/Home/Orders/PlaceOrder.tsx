@@ -297,7 +297,12 @@ const PlaceOrder = () => {
           onChange={handleCustomerChange}
           disabled={!isActiveSlot}
         />
-
+        {!isActiveSlot && (
+          <p className="inactive">
+            Can't Place Order, Slot is inactive at this moment. You can try
+            again later.
+          </p>
+        )}
         {isActiveSlot && (
           <p className="content">
             Can't Find Customer?{" "}
@@ -485,12 +490,6 @@ const PlaceOrder = () => {
             <h4 className="section-subtitle">Total Price</h4>
             <p className="total-price">₹ {totalPrice.toFixed(2)}</p>
 
-            {!isActiveSlot && (
-              <p className="inactive">
-                Can't Place Order, Slot is inactive at this moment. You can try
-                again later.
-              </p>
-            )}
             <div className="btn-set">
               <CustomButton
                 text="Place Order"

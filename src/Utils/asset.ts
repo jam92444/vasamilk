@@ -11,6 +11,7 @@ import logout from "../assets/Icons/png/shutdown.png";
 import distributor from "../assets/Icons/png/distributor.png";
 import masters from "../assets/Icons/png/mastersIcon.png";
 import orderIcon from "../assets/Icons/png/package.png";
+import report from "../assets/Icons/png/file-report.png";
 
 const asset: { [key: string]: string } = {
   LoginImage,
@@ -26,6 +27,7 @@ const asset: { [key: string]: string } = {
   distributor,
   masters,
   orderIcon,
+  report,
 };
 
 export default asset;

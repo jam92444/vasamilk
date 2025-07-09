@@ -53,6 +53,14 @@ const menuConfig: {
   },
   {
     item: getItem(
+      "Sales",
+      "sales",
+      <img src={asset.report} width={18} alt="report" />
+    ),
+    allowedUserTypes: [1, 2],
+  },
+  {
+    item: getItem(
       "User",
       "user",
       <img src={asset.user} width={18} alt="User" />
