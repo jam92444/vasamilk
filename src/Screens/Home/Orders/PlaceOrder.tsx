@@ -364,7 +364,6 @@ const PlaceOrder = () => {
                 </span>
               </div>
             </div>
-
             <h4 className="section-subtitle">Slot Quantities</h4>
             <div className="slots">
               {(() => {
@@ -433,63 +432,78 @@ const PlaceOrder = () => {
                 });
               })()}
             </div>
+            {/* PAYMENT SECTION */}
+            {(customerDetails.pay_type === 1 || // Daily
+              (customerDetails.pay_type === 2 &&
+                customerDetails.invoice_data?.length > 0)) && (
+              <>
+                <h4 className="section-subtitle">Payment</h4>
+                {totalPrice > 0 && (
+                  <CustomSelect
+                    label="Payment Type"
+                    name="paymentType"
+                    className="select"
+                    value={formik.values.paymentType}
+                    options={paymentOptions}
+                    onChange={handlePaymentTypeChange}
+                    disabled={
+                      customerDetails.pay_type === 2 &&
+                      customerDetails.invoice_data?.length === 0
+                    }
+                  />
+                )}
 
-            <h4 className="section-subtitle">Payment</h4>
-            {totalPrice > 0 && (
-              <CustomSelect
-                label="Payment Type"
-                name="paymentType"
-                className="select"
-                value={formik.values.paymentType}
-                options={paymentOptions}
-                onChange={handlePaymentTypeChange}
-                disabled={customerDetails.pay_type === 2}
-              />
+                {formik.values.paymentType === "2" && totalPrice > 0 && (
+                  <div className="qr-container" style={{ marginTop: "20px" }}>
+                    <p>
+                      UPI ID: <strong>vvasamilk@icici</strong>
+                    </p>
+                    <div
+                      className="qr-code-placeholder"
+                      style={{
+                        width: "180px",
+                        height: "180px",
+                        backgroundColor: "#eee",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "1px solid #ccc",
+                        borderRadius: "8px",
+                        margin: "1.5rem 0",
+                      }}
+                    >
+                      [ QR Code Image Here ]
+                    </div>
+                  </div>
+                )}
+
+                {formik.values.paymentType === "2" && totalPrice > 0 && (
+                  <CustomInput
+                    label="Transaction ID"
+                    name="transactionId"
+                    type="text"
+                    value={formik.values.transactionId}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={
+                      formik.touched.transactionId &&
+                      formik.errors.transactionId
+                        ? formik.errors.transactionId
+                        : ""
+                    }
+                  />
+                )}
+              </>
             )}
-            {formik.values.paymentType === "2" && totalPrice > 0 && (
-              <div className="qr-container" style={{ marginTop: "20px" }}>
-                <p>
-                  UPI ID: <strong>vvasamilk@icici</strong>
-                </p>
-                <div
-                  className="qr-code-placeholder"
-                  style={{
-                    width: "180px",
-                    height: "180px",
-                    backgroundColor: "#eee",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "1px solid #ccc",
-                    borderRadius: "8px",
-                    margin: "1.5rem 0",
-                  }}
-                >
-                  [ QR Code Image Here ]
-                </div>
-              </div>
+            {/* TOTAL PRICE only if customer is daily OR monthly with invoice */}
+            {(customerDetails.pay_type === 1 ||
+              (customerDetails.pay_type === 2 &&
+                customerDetails.invoice_data?.length > 0)) && (
+              <>
+                <h4 className="section-subtitle">Total Price</h4>
+                <p className="total-price">₹ {totalPrice.toFixed(2)}</p>
+              </>
             )}
-
-            {/* Show transaction ID input only if paymentType === "2" (Online) */}
-            {formik.values.paymentType === "2" && totalPrice > 0 && (
-              <CustomInput
-                label="Transaction ID"
-                name="transactionId"
-                type="text"
-                value={formik.values.transactionId}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.transactionId && formik.errors.transactionId
-                    ? formik.errors.transactionId
-                    : ""
-                }
-              />
-            )}
-
-            <h4 className="section-subtitle">Total Price</h4>
-            <p className="total-price">₹ {totalPrice.toFixed(2)}</p>
-
             <div className="btn-set">
               <CustomButton
                 text="Place Order"
@@ -505,10 +519,10 @@ const PlaceOrder = () => {
                 htmlType="button"
                 onClick={() => {
                   formik.resetForm();
-                  setCustomerDetails(null); // if you want to clear customer details on reset
+                  setCustomerDetails(null);
                 }}
               />
-            </div>
+            </div>{" "}
           </div>
         )}
       </form>

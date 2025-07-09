@@ -35,10 +35,6 @@
       color: $text-link;
       font-weight: $font-semibold;
       text-decoration: underline;
-
-      &:hover {
-        color: darken($text-link, 15%);
-      }
     }
   }
 
