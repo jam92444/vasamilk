@@ -14,7 +14,7 @@ export const useUserDetails = () => {
   return {
     token: userDetails?.token,
     userDetails,
-    type: userDetails?.user_type, // Add type if used separately
+    type: userDetails?.user_type,
   };
 };
 

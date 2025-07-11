@@ -9,14 +9,14 @@ import {
 import { getUserToken } from "../../../Utils/Data";
 import { useAuth } from "../../../Context/AuthContext";
 import { useDropdownData } from "../../../Hooks/DropDowns";
+import { toast } from "react-toastify";
+import { useFormik } from "formik";
 import AppLoader from "../../../Components/UI/AppLoader";
 import CustomSelect from "../../../Components/UI/CustomSelect";
 import CustomButton from "../../../Components/UI/CustomButton";
 import "../../../Styles/pages/_placeorder.scss";
 
-import { useFormik } from "formik";
 import * as Yup from "yup";
-import { toast } from "react-toastify";
 import CustomInput from "../../../Components/UI/CustomInput";
 
 interface SlotQuantityMap {
@@ -179,7 +179,6 @@ const PlaceOrder = () => {
       })
       .catch(console.log);
   };
-
   const handleGetUserDetails = (selectedUser: string) => {
     const formData = new FormData();
     formData.append("token", getUserToken());
@@ -190,6 +189,7 @@ const PlaceOrder = () => {
         if (res.data.status === 1) {
           const user = res.data.data;
           setCustomerDetails(user);
+          console.log(user);
           const quantities: SlotQuantityMap = {};
           user.today_slot_data?.forEach((slot: any) => {
             quantities[slot.slot_id] = Number(slot.quantity);
@@ -433,11 +433,13 @@ const PlaceOrder = () => {
               })()}
             </div>
             {/* PAYMENT SECTION */}
-            {(customerDetails.pay_type === 1 || // Daily
+            {(customerDetails.pay_type === 1 ||
               (customerDetails.pay_type === 2 &&
                 customerDetails.invoice_data?.length > 0)) && (
               <>
-                <h4 className="section-subtitle">Payment</h4>
+                {totalPrice > 0 && (
+                  <h4 className="section-subtitle">Payment</h4>
+                )}
                 {totalPrice > 0 && (
                   <CustomSelect
                     label="Payment Type"
@@ -500,8 +502,12 @@ const PlaceOrder = () => {
               (customerDetails.pay_type === 2 &&
                 customerDetails.invoice_data?.length > 0)) && (
               <>
-                <h4 className="section-subtitle">Total Price</h4>
-                <p className="total-price">₹ {totalPrice.toFixed(2)}</p>
+                {totalPrice > 0 && (
+                  <h4 className="section-subtitle">Total Price</h4>
+                )}
+                {totalPrice > 0 && (
+                  <p className="total-price">₹ {totalPrice.toFixed(2)}</p>
+                )}
               </>
             )}
             <div className="btn-set">

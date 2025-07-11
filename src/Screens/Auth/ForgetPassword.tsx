@@ -18,7 +18,7 @@ const forgetPasswordSchema = Yup.object().shape({
       "Enter a valid email or phone number",
       function (value) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const phoneRegex = /^\+?\d{10,14}$/; // Adjust pattern to your country format if needed
+        const phoneRegex = /^\+?\d{10}$/; // Adjust pattern to your country format if needed
         return emailRegex.test(value!) || phoneRegex.test(value!);
       }
     )
@@ -50,15 +50,17 @@ const ForgetPassword: React.FC = () => {
     formData.append("email", values.identifier);
     forgetPassword(formData)
       .then((res) => {
-        if (res.data.status === 0) {
-          toast.error(res.data.msg);
-        } else {
+        if (res.data.status === 1) {
           toast.success("OTP sent!");
           console.log("reset key for OTP:", res.data.reset_key);
           setEncryptedCookie("reset_key", res.data.reset_key, {
             expires: expirationDate,
           });
           navigate("/otp-verfication", { state: { from: "forget-password" } });
+        } else if (res.data.status === 0) {
+          toast.error(res.data.msg);
+        } else {
+          console.info(res.data);
         }
       })
       .catch((error: any) => {

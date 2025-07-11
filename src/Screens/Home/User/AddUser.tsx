@@ -106,6 +106,7 @@ const AddUser: React.FC = () => {
             onBlur={handleBlur}
             error={errors.phone}
             touched={touched.phone}
+            maxLength={10}
             required
           />
 

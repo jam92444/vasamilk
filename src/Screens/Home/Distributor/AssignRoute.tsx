@@ -150,9 +150,7 @@ const AssignRoute = () => {
     if (field == "line_id") {
       const selectedLineId = value as string;
       const type = assignType === 1 ? 1 : assignType === 2 ? 2 : 4;
-      console.log(type);
       const slotId = Number(slot);
-      console.log(slotId, selectedLineId);
       if (slotId && selectedLineId) {
         try {
           const formData = new FormData();
@@ -167,7 +165,6 @@ const AssignRoute = () => {
             label: c.name,
             value: String(c.user_id),
           }));
-          console.log(res.data.data);
           setCustomersPerAssignment((prev) => ({
             ...prev,
             [index]: customers,

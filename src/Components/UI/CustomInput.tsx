@@ -41,7 +41,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, CustomInputProps>(
 
         <Input
           {...rest}
-          suffix={rest.suffix} // ✅ Allows EyeTwoTone / EyeInvisibleOutlined to show
+          suffix={rest.suffix}
           ref={(node) => {
             if (inputRef) inputRef(node?.input ?? null);
             if (typeof ref === "function") ref(node?.input ?? null);

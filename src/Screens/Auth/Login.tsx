@@ -4,13 +4,13 @@ import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { loginUser } from "../../Services/ApiService";
 import { sha1 } from "js-sha1";
-import CustomInput from "../../Components/UI/CustomInput";
-import CustomButton from "../../Components/UI/CustomButton";
-import "../../Styles/pages/_login.scss";
 import { useNavigate } from "react-router-dom";
 import { setEncryptedCookie } from "../../Utils/cookies";
 import { siteName } from "../../App";
 import { SALT_KEY } from "../../../public/config";
+import CustomInput from "../../Components/UI/CustomInput";
+import CustomButton from "../../Components/UI/CustomButton";
+import "../../Styles/pages/_login.scss";
 // schema
 const loginSchema = Yup.object().shape({
   user_name: Yup.string()

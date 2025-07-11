@@ -21,13 +21,7 @@ const App: React.FC = () => {
 
   return (
     <div className="main">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        toastClassName={() => "custom-toast"} // ✅ Safe + typed
-        progressClassName="custom-toast-progress" // TS may still warn, but works
-        className="custom-toast-container"
-      />
+      <ToastContainer position="top-right" autoClose={3000} />
       <RouterProvider router={router} />
     </div>
   );

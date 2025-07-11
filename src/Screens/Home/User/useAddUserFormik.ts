@@ -200,7 +200,7 @@ const useAddUserFormik = () => {
           ...(isEdit && { id: 0 }),
           slot_id: 1,
           quantity: 0,
-          method: 0,
+          method: 1,
           start_date: "",
         },
         {
@@ -286,6 +286,28 @@ const useAddUserFormik = () => {
     if (!user_id || !token) return;
     fetchAndSetUserData(user_id, token);
   }, [user_id, token]);
+
+  useEffect(() => {
+    const userType = formik.values.user_type;
+
+    if (userType !== 5) {
+      setFieldValue("customer_type", "");
+      setFieldValue("line_id", "");
+      setFieldValue("pay_type", "");
+      setFieldValue("price_tag_id", "");
+      setFieldValue("slot_data", [
+        { slot_id: 1, quantity: 0, method: 0, start_date: "" },
+        { slot_id: 2, quantity: 0, method: 0, start_date: "" },
+      ]);
+    }
+    const customer_type = Number(formik.values.customer_type);
+    if (customer_type !== 1) {
+      setFieldValue("slot_data", [
+        { slot_id: 1, quantity: 0, method: 0, start_date: "" },
+        { slot_id: 2, quantity: 0, method: 0, start_date: "" },
+      ]);
+    }
+  }, [formik.values.user_type, formik.values.customer_type]);
 
   return {
     ...formik,

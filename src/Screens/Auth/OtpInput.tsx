@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { siteName } from "../../App";
 import "../../Styles/pages/_login.scss";
 import "../../Styles/pages/_opt.scss";
+
 const OtpInput: React.FC = () => {
   const navigate = useNavigate();
 
